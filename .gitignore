@@ -1,0 +1,40 @@
+# Dependencies
+/node_modules/
+
+# Build outputs and caches
+/build/
+/dist/
+/coverage/
+/.vite/
+/.parcel-cache/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env*
+!.env.example
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+/.vscode/
+/.idea/
+*.iml
+
+# Local tooling and agent/spec artifacts
+/.agent/
+/.agents/
+/.git.broken-*/
+/.osgrep/
+/.memsearch/
+/.specify/
+/docs/agent-playbooks/
+/specs/
+/setup-agent-skills.ps1
+/skills-lock.json

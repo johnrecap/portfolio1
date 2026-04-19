@@ -1,0 +1,166 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: 'Sora', var(--font-sans);
+  --font-sans: 'Inter', sans-serif;
+  
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-highlight: var(--primary-highlight);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface2);
+  --color-surface-offset: var(--surface-offset);
+  --color-text-faint: var(--text-faint);
+  --color-text-inverse: var(--text-inverse);
+  --color-divider: var(--divider);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: 9999px;
+}
+
+:root {
+  --background: #F7F8FC;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  --primary: #4F46E5;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #4338CA;
+  --primary-highlight: #EEF2FF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0F172A;
+  --muted: #F8FAFC;
+  --muted-foreground: #475569;
+  --accent: #14B8A6;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #4F46E5;
+  
+  --surface: #FFFFFF;
+  --surface2: #F8FAFC;
+  --surface-offset: #F1F5F9;
+  --text-faint: #94A3B8;
+  --text-inverse: #FFFFFF;
+  --divider: #E5E7EB;
+  --success: #16A34A;
+  --warning: #D97706;
+
+  --sidebar: #0F172A;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #4F46E5;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1E293B;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #1E293B;
+  --sidebar-ring: #4F46E5;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius: 8px;
+}
+
+.dark {
+  --background: #282C34;
+  --foreground: #ABB2BF;
+  --card: #21252B;
+  --card-foreground: #ABB2BF;
+  --popover: #21252B;
+  --popover-foreground: #ABB2BF;
+  --primary: #C678DD; /* Purple */
+  --primary-foreground: #282C34;
+  --primary-hover: #D55FDE;
+  --primary-highlight: #3B4048; /* Highlighted line */
+  --secondary: #3E4451;
+  --secondary-foreground: #ABB2BF;
+  --muted: #3E4451;
+  --muted-foreground: #5C6370; /* Comments */
+  --accent: #61AFEF;  /* Functions */
+  --accent-foreground: #282C34;
+  --destructive: #E06C75; /* Error Red */
+  --destructive-foreground: #282C34;
+  --border: #3E4451; /* Subtle editor borders */
+  --input: #3E4451;
+  --ring: #C678DD;
+
+  --surface: #21252B;
+  --surface2: #282C34;
+  --surface-offset: #3E4451;
+  --text-faint: #5C6370;
+  --text-inverse: #282C34;
+  --divider: #3E4451;
+  --success: #98C379; /* Strings/Success Green */
+  --warning: #E5C07B; /* Yellow */
+
+  --sidebar: #21252B;
+  --sidebar-foreground: #ABB2BF;
+  --sidebar-primary: #C678DD;
+  --sidebar-primary-foreground: #282C34;
+  --sidebar-accent: #3E4451;
+  --sidebar-accent-foreground: #ABB2BF;
+  --sidebar-border: #3E4451;
+  --sidebar-ring: #C678DD;
+}
+
+/* Syntax highlighting utilities for Dev theme */
+@layer utilities {
+  .text-dev-keyword { color: var(--primary); }
+  .text-dev-string { color: var(--success); }
+  .text-dev-func { color: var(--accent); }
+  .text-dev-var { color: var(--destructive); }
+  .text-dev-number { color: #D19A66; } /* Orange */
+  .text-dev-comment { color: var(--muted-foreground); }
+  .text-dev-bracket { color: var(--foreground); }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+}

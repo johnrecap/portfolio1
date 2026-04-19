@@ -1,0 +1,139 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.email == "mohamedsaied.m20@gmail.com" && request.auth.token.email_verified == true);
+    }
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function validStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+        request.resource.data[field].size() >= minLen &&
+        request.resource.data[field].size() <= maxLen;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser() {
+      return hasOnlyAllowedFields(['email', 'role', 'createdAt']) &&
+        hasRequiredFields(['email', 'role']) &&
+        isValidEmail(request.resource.data.email) &&
+        request.resource.data.role in ['admin', 'user'];
+    }
+
+    function isValidProject() {
+      return hasRequiredFields(['title', 'slug', 'description', 'category', 'image']) &&
+        validStringLength('title', 1, 100) &&
+        validStringLength('slug', 1, 100) &&
+        validStringLength('description', 1, 5000) &&
+        validStringLength('category', 1, 50) &&
+        validStringLength('image', 1, 2000000) && // Allowed base64 images
+        (!('demoUrl' in request.resource.data) || request.resource.data.demoUrl is string) &&
+        (!('githubUrl' in request.resource.data) || request.resource.data.githubUrl is string) &&
+        (!('color' in request.resource.data) || request.resource.data.color is string) &&
+        (!('tags' in request.resource.data) || request.resource.data.tags is list);
+    }
+
+    function isValidBlog() {
+      return hasRequiredFields(['title', 'slug', 'excerpt', 'content', 'category', 'createdAt']) &&
+        validStringLength('title', 1, 200) &&
+        validStringLength('slug', 1, 200) &&
+        validStringLength('excerpt', 1, 1000) &&
+        validStringLength('content', 1, 50000) &&
+        validStringLength('category', 1, 50);
+    }
+
+    function isValidSkill() {
+      return hasRequiredFields(['name', 'category', 'proficiency']) &&
+        validStringLength('name', 1, 50) &&
+        validStringLength('category', 1, 50) &&
+        request.resource.data.proficiency is number &&
+        request.resource.data.proficiency >= 0 &&
+        request.resource.data.proficiency <= 100;
+    }
+
+    function isValidMessage() {
+      // Allow optional budget and optional whatsapp if authenticated
+      return hasRequiredFields(['name', 'email', 'message', 'createdAt']) &&
+        validStringLength('name', 1, 100) &&
+        isValidEmail(request.resource.data.email) &&
+        validStringLength('message', 1, 5000) &&
+        (!('whatsapp' in request.resource.data) || request.resource.data.whatsapp is string) &&
+        (!('budget' in request.resource.data) || request.resource.data.budget is string);
+    }
+
+    function isValidSettings() {
+      // Basic validation for settings map
+      return request.resource.data is map &&
+        validStringLength('displayName', 1, 100) &&
+        validStringLength('title', 1, 150);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow create: if isAdmin() && isValidUser();
+      allow update: if isAdmin() && isValidUser();
+      allow delete: if isAdmin();
+    }
+
+    match /projects/{projectId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidProject();
+      allow update: if isAdmin() && isValidProject();
+      allow delete: if isAdmin();
+    }
+
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidBlog();
+      allow update: if isAdmin() && isValidBlog();
+      allow delete: if isAdmin();
+    }
+
+    match /skills/{skillId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidSkill();
+      allow update: if isAdmin() && isValidSkill();
+      allow delete: if isAdmin();
+    }
+
+    match /messages/{messageId} {
+      allow read: if isAdmin();
+      allow create: if isValidMessage();
+      allow update: if isAdmin() && isValidMessage();
+      allow delete: if isAdmin();
+    }
+  }
+}
