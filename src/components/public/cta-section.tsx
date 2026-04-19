@@ -1,99 +1,123 @@
-import { motion } from "motion/react";
-import { Terminal, Download, Mail, MessageCircle } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { useProfile } from "@/hooks/useProfile";
+import { motion } from 'motion/react';
+import { ArrowRight, Github, Linkedin, Terminal } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useProfile } from '@/hooks/useProfile';
+import { buttonVariants } from '@/components/ui/button';
 
 export const CTASection = () => {
   const { t } = useTranslation();
   const { profile } = useProfile();
 
-  const handleDownloadCV = () => {
-    // In a real scenario, link to an actual PDF
-    window.open('/', '_blank');
-  };
+  const actions = [
+    {
+      href: '/contact',
+      label: t('ctaSection.primaryAction'),
+      internal: true,
+      icon: ArrowRight,
+    },
+    profile.githubUrl
+      ? {
+          href: profile.githubUrl,
+          label: 'GitHub',
+          internal: false,
+          icon: Github,
+        }
+      : null,
+    profile.linkedinUrl
+      ? {
+          href: profile.linkedinUrl,
+          label: 'LinkedIn',
+          internal: false,
+          icon: Linkedin,
+        }
+      : null,
+  ].filter(Boolean) as Array<{
+    href: string;
+    label: string;
+    internal: boolean;
+    icon: typeof ArrowRight;
+  }>;
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-20">
       <motion.div
-        className="max-w-4xl mx-auto px-4 sm:px-6 font-mono text-sm md:text-base relative w-full"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        dir="ltr"
+        className="mx-auto max-w-5xl overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl"
       >
-        <div className="bg-[#1e1e1e] border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
-          <div className="bg-[#2d2d2d] border-b border-slate-800 px-4 py-3 flex items-center gap-2 select-none">
-            <div className="flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
-            </div>
-            <div className="mx-auto flex items-center gap-2 text-slate-400 text-xs">
-              <Terminal className="w-4 h-4" /> root@portfolio:~
+        <div className="flex items-center gap-2 border-b border-slate-800 bg-[#161b22] px-5 py-3 font-mono text-xs text-slate-400">
+          <div className="flex gap-2">
+            <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
+            <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
+            <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
+          </div>
+          <div className="mx-auto flex items-center gap-2">
+            <Terminal className="h-4 w-4" />
+            root@portfolio:~# connect
+          </div>
+        </div>
+
+        <div className="grid gap-10 p-8 lg:grid-cols-[1fr_0.9fr] lg:p-10">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
+              {t('ctaSection.eyebrow')}
+            </p>
+            <h2 className="mt-4 font-heading text-3xl font-black tracking-tight text-white md:text-5xl">
+              {t('ctaSection.title')}
+            </h2>
+            <p className="mt-4 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
+              {t('ctaSection.description')}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              {actions.map((action) =>
+                action.internal ? (
+                  <Link
+                    key={action.href}
+                    to={action.href}
+                    className={buttonVariants({
+                      className:
+                        'h-12 gap-2 rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground hover:bg-primary-hover',
+                    })}
+                  >
+                    <action.icon className="h-4 w-4" />
+                    {action.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={action.href}
+                    href={action.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={buttonVariants({
+                      variant: 'outline',
+                      className:
+                        'h-12 gap-2 rounded-full border-white/10 bg-white/5 px-6 text-sm font-bold text-white hover:bg-white/10 hover:text-white',
+                    })}
+                  >
+                    <action.icon className="h-4 w-4" />
+                    {action.label}
+                  </a>
+                ),
+              )}
             </div>
           </div>
 
-          <div className="p-6 md:p-8">
-            <div className="flex items-center gap-2 text-slate-300 mb-4 whitespace-nowrap">
-              <span className="text-green-500">visitor@web</span>
-              <span className="text-slate-500">:</span>
-              <span className="text-blue-400">~</span>
-              <span className="text-slate-500">$</span>
-              <span className="font-semibold text-slate-100">contact --status</span>
+          <div className="grid gap-4">
+            <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-6">
+              <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                {t('ctaSection.responseTitle')}
+              </p>
+              <p className="mt-3 text-lg font-semibold text-white">{t('ctaSection.responseValue')}</p>
+              <p className="mt-2 text-sm leading-7 text-slate-400">{t('ctaSection.responseDescription')}</p>
             </div>
-            
-            <div className="mb-8 ml-0 md:ml-4 border-l-2 border-slate-800 pl-4 py-2 space-y-2">
-               <div className="text-teal-400 font-bold mb-2">
-                 {t("ctaSection.systemOnline")}
-               </div>
-               <div className="text-slate-400 max-w-2xl">
-                 {t("cta.description", { defaultValue: "Let's build something extraordinary together. My inbox is always open whether you have a question or just want to say hi." })}
-               </div>
-            </div>
-
-            <div className="flex items-center gap-2 text-slate-300 mb-6 whitespace-nowrap">
-              <span className="text-green-500">visitor@web</span>
-              <span className="text-slate-500">:</span>
-              <span className="text-blue-400">~</span>
-              <span className="text-slate-500">$</span>
-              <span className="font-semibold text-slate-100">ls -la /connect</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-               <a 
-                  href={`mailto:hello@example.com`}
-                  className="flex flex-col items-center justify-center gap-3 bg-slate-900 border border-slate-700 hover:border-teal-500/50 hover:bg-teal-500/10 text-slate-300 font-medium p-6 rounded-lg transition-all group"
-               >
-                 <Mail className="w-8 h-8 text-slate-400 group-hover:text-teal-400 transition-colors" />
-                 <span>{t("ctaSection.emailMe")}</span>
-               </a>
-               
-               <a 
-                  href={`https://wa.me/201012345678`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex flex-col items-center justify-center gap-3 bg-slate-900 border border-slate-700 hover:border-[#25D366]/50 hover:bg-[#25D366]/10 text-slate-300 font-medium p-6 rounded-lg transition-all group"
-               >
-                 <MessageCircle className="w-8 h-8 text-slate-400 group-hover:text-[#25D366] transition-colors" />
-                 <span>{t("ctaSection.whatsapp")}</span>
-               </a>
-
-               <button 
-                  onClick={handleDownloadCV}
-                  className="flex flex-col items-center justify-center gap-3 bg-slate-900 border border-slate-700 hover:border-primary/50 hover:bg-primary/10 text-slate-300 font-medium p-6 rounded-lg transition-all group"
-               >
-                 <Download className="w-8 h-8 text-slate-400 group-hover:text-primary transition-colors" />
-                 <span>{t("ctaSection.resumePdf")}</span>
-               </button>
-            </div>
-
-            <div className="flex items-center gap-2 text-slate-300 mt-8">
-              <span className="text-green-500">visitor@web</span>
-              <span className="text-slate-500">:</span>
-              <span className="text-blue-400">~</span>
-              <span className="text-slate-500">$</span>
-              <span className="animate-pulse w-2.5 h-4 bg-slate-400 block"></span>
+            <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-6">
+              <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                {t('ctaSection.focusTitle')}
+              </p>
+              <p className="mt-3 text-lg font-semibold text-white">{t('ctaSection.focusValue')}</p>
+              <p className="mt-2 text-sm leading-7 text-slate-400">{t('ctaSection.focusDescription')}</p>
             </div>
           </div>
         </div>

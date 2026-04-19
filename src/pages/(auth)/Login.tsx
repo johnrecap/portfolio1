@@ -44,28 +44,40 @@ export default function Login() {
   }
 
   async function loginWithGoogle() {
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       
       if (result.user.email !== 'mohamedsaied.m20@gmail.com') {
         await auth.signOut();
         toast.error(t('login.unauthorized'), { duration: 5000 });
-        setIsLoading(false);
         return;
       }
       
       toast.success(t('login.success'));
       navigate('/dashboard');
-    } catch (error: any) {
-      toast.error(error?.message || t('login.failed'));
+    } catch (error: unknown) {
+      const authError = error as { code?: string; message?: string };
+
+      if (authError.code === 'auth/unauthorized-domain') {
+        toast.error(t('login.unauthorizedDomain'), { duration: 8000 });
+        return;
+      }
+
+      if (authError.code === 'auth/popup-closed-by-user') {
+        return;
+      }
+
+      toast.error(authError.message || t('login.failed'));
+    } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 bg-card rounded-xl shadow-2xl overflow-hidden border border-border">
+    <div className="mx-auto grid w-full max-w-6xl grid-cols-1 overflow-hidden rounded-xl border border-border bg-card shadow-2xl lg:grid-cols-2">
       {/* Left Branding Panel */}
       <div className="bg-slate-900 text-white p-10 lg:p-16 flex flex-col justify-between relative overflow-hidden hidden lg:flex">
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>

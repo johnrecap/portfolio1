@@ -1,176 +1,211 @@
 import { motion } from 'motion/react';
-import { 
-  ChevronRight, 
-  ExternalLink, 
-  Code, 
-  Cpu,
-  Monitor
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, Code, ExternalLink, Monitor, Rocket } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { useCollection } from '@/hooks/useFirestore';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import { PageSeo } from '@/components/shared/PageSeo';
+import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
+import { useCollection } from '@/hooks/useFirestore';
+import { getLocalizedCaseStudyValue, type ProjectRecord } from '@/lib/project-utils';
 
 export const ProjectDetail = () => {
   const { slug } = useParams();
-  const { data: projects, loading } = useCollection<any>('projects');
+  const { data: projects, loading } = useCollection<ProjectRecord>('projects');
   const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === 'ar';
 
-  const project = projects?.find((p: any) => p.slug === slug);
+  const isArabic = i18n.language === 'ar';
+  const backIconClass = isArabic ? 'rotate-180' : '';
+  const project = projects.find((item) => item.slug === slug);
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 max-w-7xl mx-auto w-full font-mono text-slate-500">
-        $ Fetching project details...
+      <div className="mx-auto w-full max-w-6xl py-10">
+        <SkeletonBlocks count={3} />
       </div>
     );
   }
 
   if (!project) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 max-w-7xl mx-auto w-full text-center">
-        <h1 className="text-4xl font-heading font-bold mb-4">Project Not Found</h1>
-        <p className="text-muted-foreground mb-8 text-lg hover:text-primary">The requested project could not be located in the database.</p>
-        <Link to="/projects">
-           <Button>Return to Projects</Button>
-        </Link>
+      <div className="mx-auto w-full max-w-4xl py-20">
+        <EmptyState
+          title={t('projectDetail.notFoundTitle')}
+          description={t('projectDetail.notFoundDescription')}
+        />
       </div>
     );
   }
 
+  const caseStudyBlocks = [
+    {
+      key: 'problem',
+      title: t('projectDetail.problem'),
+      value: getLocalizedCaseStudyValue(project.problem, project.problemAr, isArabic),
+    },
+    {
+      key: 'solution',
+      title: t('projectDetail.solution'),
+      value: getLocalizedCaseStudyValue(project.solution, project.solutionAr, isArabic),
+    },
+    {
+      key: 'projectRole',
+      title: t('projectDetail.role'),
+      value: getLocalizedCaseStudyValue(project.projectRole, project.projectRoleAr, isArabic),
+    },
+    {
+      key: 'result',
+      title: t('projectDetail.result'),
+      value: getLocalizedCaseStudyValue(project.result, project.resultAr, isArabic),
+    },
+  ].filter((item) => item.value);
+
   return (
-    <div className="flex flex-col flex-grow pt-12 pb-24 relative max-w-[1200px] mx-auto w-full px-4 sm:px-6">
-      
-      {/* Breadcrumbs */}
-      <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 font-mono mb-12 relative z-10 uppercase tracking-widest bg-[#0D1117] p-3 rounded-lg border border-slate-800 w-fit">
-        <Link to="/" className="hover:text-primary transition-colors">~</Link>
-        <span className="opacity-50">/</span>
-        <Link to="/projects" className="hover:text-primary transition-colors">projects</Link>
-        <span className="opacity-50">/</span>
-        <span className="text-primary font-bold">{project.slug || project.title.toLowerCase().replace(/\s+/g, '-')}</span>
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 pt-10 pb-20">
+      <PageSeo title={project.title} description={project.description} image={project.image} />
+
+      <div className="flex flex-wrap items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        <Link to="/" className="transition-colors hover:text-primary">
+          {t('projectDetail.breadcrumbHome')}
+        </Link>
+        <span>/</span>
+        <Link to="/projects" className="transition-colors hover:text-primary">
+          {t('projectDetail.breadcrumbProjects')}
+        </Link>
+        <span>/</span>
+        <span className="text-primary">{project.slug}</span>
       </div>
 
-      {/* Hero Section */}
-      <section className="mb-20 relative z-10 w-full" dir={isRTL ? 'rtl' : 'ltr'}>
-        <div className="flex flex-col gap-8 w-full max-w-4xl mx-auto text-center items-center">
-          <motion.div initial={{opacity:0, y:-10}} animate={{opacity:1,y:0}} className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary font-mono text-xs md:text-sm border border-primary/20 shadow-sm">
+      <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+        <div className="space-y-6">
+          <span className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
             {project.category}
-          </motion.div>
-          
-          <motion.h1 initial={{opacity:0, y:20}} animate={{opacity:1,y:0}} className="text-4xl md:text-6xl lg:text-7xl font-heading font-black leading-[1.1] text-foreground tracking-tight">
-            {project.title}
-          </motion.h1>
-          
-          <motion.p initial={{opacity:0, y:20}} animate={{opacity:1,y:0}} transition={{delay:0.1}} className="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
-            {project.description}
-          </motion.p>
-          
-          <motion.div initial={{opacity:0, y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}} className="flex flex-wrap items-center justify-center gap-4 pt-4 w-full sm:w-auto font-mono">
-            {project.demoUrl && (
-              <a href={project.demoUrl} target="_blank" rel="noreferrer" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto px-8 py-6 rounded-md text-sm font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all gap-3 bg-primary hover:bg-primary-hover text-white">
-                  Live Preview <ExternalLink className="w-4 h-4" />
+          </span>
+          <div className="space-y-4">
+            <h1 className="font-heading text-4xl font-black tracking-tight text-foreground md:text-6xl">
+              {project.title}
+            </h1>
+            <p className="max-w-3xl text-base leading-8 text-muted-foreground md:text-lg">
+              {project.description}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {project.demoUrl ? (
+              <a href={project.demoUrl} target="_blank" rel="noreferrer">
+                <Button size="lg" className="gap-2">
+                  {t('projectDetail.livePreview')}
+                  <ExternalLink className="h-4 w-4" />
                 </Button>
               </a>
-            )}
-            {project.githubUrl && (
-              <a href={project.githubUrl} target="_blank" rel="noreferrer" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-6 rounded-md text-sm font-bold bg-[#21262D] hover:bg-[#30363D] border-slate-700 hover:border-slate-600 text-slate-200 transition-colors gap-3">
-                  Source Code <Code className="w-4 h-4" />
+            ) : null}
+            {project.githubUrl ? (
+              <a href={project.githubUrl} target="_blank" rel="noreferrer">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="gap-2 border-border/70 bg-card/60"
+                >
+                  {t('projectDetail.sourceCode')}
+                  <Code className="h-4 w-4" />
                 </Button>
               </a>
-            )}
-          </motion.div>
+            ) : null}
+          </div>
         </div>
-      </section>
 
-      {/* Visual / Details Split */}
-      <section className="relative z-10 w-full mb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
-        
-        {/* Left Side: Mockup Preview */}
-        <motion.div 
-          initial={{opacity:0, scale: 0.95}} 
-          animate={{opacity:1, scale: 1}} 
-          transition={{delay: 0.3}}
-          className="lg:col-span-8 w-full bg-[#0D1117] rounded-xl border border-slate-800 shadow-2xl p-2 sm:p-4"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl"
         >
-          {/* Browser Bar */}
-          <div className="h-10 bg-[#161B22] rounded-t-lg border border-slate-800 flex items-center px-4 gap-2 mb-[-1px] relative z-10 shrink-0" dir="ltr">
-             <div className="flex gap-2 mr-4">
-                <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-                <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-                <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
-             </div>
-             <div className="flex-1 flex justify-center">
-                 <div className="bg-[#0D1117] text-slate-400 text-[10px] sm:text-xs rounded border border-slate-700/50 px-4 py-1 flex items-center gap-2 max-w-sm w-full font-mono truncate">
-                    <Monitor className="w-3 h-3 shrink-0" />
-                    <span className="truncate">https://{project.slug || 'localhost:3000'}</span>
-                 </div>
-             </div>
-             <div className="w-16"></div>
+          <div className="flex items-center justify-between border-b border-slate-800 bg-[#161b22] px-5 py-3 font-mono text-xs text-slate-400">
+            <span>{project.slug}.app</span>
+            <Monitor className="h-4 w-4" />
           </div>
-          
-          <div className="bg-[#0A0D12] overflow-hidden rounded-b-lg border border-slate-800 relative aspect-[16/10] sm:aspect-video w-full flex items-center justify-center">
+          <div className="aspect-video bg-slate-950">
             {project.image ? (
-               <img 
-                 src={project.image} 
-                 alt={project.title} 
-                 className="w-full h-full object-cover object-top"
-                 referrerPolicy="no-referrer"
-               />
+              <img
+                src={project.image}
+                alt={project.title}
+                referrerPolicy="no-referrer"
+                className="h-full w-full object-cover object-top"
+              />
             ) : (
-               <div className="text-slate-600 font-mono flex flex-col items-center gap-4">
-                 <Monitor className="w-16 h-16 opacity-50" />
-                 no-preview-available.jpg
-               </div>
+              <div className="flex h-full items-center justify-center text-sm text-slate-600">
+                {t('projectDetail.emptyPreview')}
+              </div>
             )}
           </div>
         </motion.div>
-
-        {/* Right Side: Technical Specs */}
-        <motion.div 
-          initial={{opacity:0, x: 20}} 
-          animate={{opacity:1, x: 0}} 
-          transition={{delay: 0.4}}
-          className="lg:col-span-4 w-full space-y-8" 
-          dir={isRTL ? 'rtl' : 'ltr'}
-        >
-          <div className="bg-[#0D1117] rounded-xl border border-slate-800 p-8 shadow-xl">
-             <div className="flex items-center gap-3 mb-8 pb-4 border-b border-slate-800">
-               <Cpu className="text-primary w-6 h-6" />
-               <h3 className="text-xl font-heading font-bold">Tech Stack</h3>
-             </div>
-
-             <div className="space-y-6">
-                <div>
-                  <h4 className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-3" dir="ltr">Technologies</h4>
-                  <div className="flex flex-wrap gap-2" dir="ltr">
-                    {project.tags && project.tags.length > 0 ? project.tags.map((tag: string) => (
-                      <span key={tag} className="px-3 py-1.5 rounded-md bg-[#161B22] text-slate-300 font-mono text-xs border border-slate-700/50 shadow-sm">
-                        {tag}
-                      </span>
-                    )) : (
-                       <span className="text-slate-500 text-sm">Not specified</span>
-                    )}
-                  </div>
-                </div>
-                
-                <div>
-                   <h4 className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-3">Status</h4>
-                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-green-500/10 text-green-400 font-mono text-xs border border-green-500/20">
-                     <span className="relative flex h-2 w-2">
-                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                       <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                     </span>
-                     Deployed
-                   </div>
-                </div>
-             </div>
-          </div>
-        </motion.div>
-
       </section>
+
+      <section className="grid gap-8 lg:grid-cols-[1fr_320px] lg:items-start">
+        <div className="space-y-6">
+          {caseStudyBlocks.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {caseStudyBlocks.map((item) => (
+                <div
+                  key={item.key}
+                  className="rounded-[1.5rem] border border-border/60 bg-card/60 p-6 shadow-sm"
+                >
+                  <p className="font-mono text-xs uppercase tracking-[0.18em] text-primary">
+                    {item.title}
+                  </p>
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-[1.5rem] border border-border/60 bg-card/60 p-6 shadow-sm">
+              <p className="font-mono text-xs uppercase tracking-[0.18em] text-primary">
+                {t('projectDetail.overview')}
+              </p>
+              <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                {t('projectDetail.caseStudyFallback')}
+              </p>
+            </div>
+          )}
+        </div>
+
+        <aside className="space-y-5 rounded-[1.5rem] border border-border/60 bg-card/60 p-6 shadow-sm">
+          <div className="flex items-center gap-2 text-primary">
+            <Rocket className="h-5 w-5" />
+            <h2 className="font-heading text-xl font-bold text-foreground">
+              {t('projectDetail.techStack')}
+            </h2>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                {t('projectDetail.technologies')}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2" dir="ltr">
+                {(project.tags ?? []).length > 0 ? (
+                  (project.tags ?? []).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-border px-3 py-1 text-xs text-foreground"
+                    >
+                      {tag}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">{t('projectDetail.noTech')}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <div>
+        <Link to="/projects">
+          <Button variant="ghost" className="gap-2 px-0 text-primary hover:bg-transparent">
+            <ArrowLeft className={`h-4 w-4 ${backIconClass}`} />
+            {t('projectDetail.backToProjects')}
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 };

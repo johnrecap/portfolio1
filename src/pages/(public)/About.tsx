@@ -1,453 +1,190 @@
-import { motion } from "motion/react";
-import { useProfile } from "@/hooks/useProfile";
-import { useTranslation } from "react-i18next";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { buttonVariants } from "@/components/ui/button";
-import { useCollection } from "@/hooks/useFirestore";
-import {
-  FileJson,
-  FileCode2,
-  TerminalIcon,
-  Layout,
-  Database,
-  Smartphone,
-  Cloud,
-  Download,
-  ArrowRight,
-  CheckCircle2,
-} from "lucide-react";
+import { useState } from 'react';
+import { motion } from 'motion/react';
+import { ArrowRight, CheckCircle2, FileCode2, FileJson, Terminal } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { buttonVariants } from '@/components/ui/button';
+import { PageSeo } from '@/components/shared/PageSeo';
+import { useProfile } from '@/hooks/useProfile';
+import { useCollection } from '@/hooks/useFirestore';
+
+type AboutTab = 'profile' | 'focus' | 'stack';
 
 export const About = () => {
+  const [activeTab, setActiveTab] = useState<AboutTab>('profile');
   const { profile } = useProfile();
-  const { data: projects } = useCollection("projects");
+  const { data: projects } = useCollection<any>('projects');
   const { t, i18n } = useTranslation();
-  const [activeTab, setActiveTab] = useState<"about" | "experience" | "skills">(
-    "about",
-  );
 
-  const displayName =
-    i18n.language === "ar"
-      ? profile.displayNameAr || profile.displayName
-      : profile.displayName;
-  const bio =
-    (i18n.language === "ar" ? profile.bioAr || profile.bio : profile.bio) || "";
+  const isArabic = i18n.language === 'ar';
+  const displayName = isArabic
+    ? profile.displayNameAr || profile.displayName
+    : profile.displayName;
+  const bio = isArabic ? profile.bioAr || profile.bio : profile.bio;
 
-  const renderAboutContent = () => (
-    <div className="text-sm md:text-base font-mono">
-      <div className="text-slate-500 mb-4">
-        /**
-        <br />* {t("about.subtitle")}
-        <br />
-        */
-      </div>
-      <div>
-        <span className="text-[#c678dd]">class</span>{" "}
-        <span className="text-[#e5c07b]">Developer</span>{" "}
-        <span className="text-[#c678dd]">extends</span>{" "}
-        <span className="text-[#e5c07b]">Human</span>{" "}
-        <span className="text-[#abb2bf]">{`{`}</span>
-      </div>
-      <div className="pl-4 md:pl-8 mt-2 space-y-2">
-        <div>
-          <span className="text-[#c678dd]">constructor</span>
-          <span className="text-[#abb2bf]">() {`{`}</span>
-        </div>
-        <div className="pl-4 md:pl-8">
-          <span className="text-[#c678dd]">super</span>
-          <span className="text-[#abb2bf]">();</span>
-          <br />
-          <span className="text-[#e06c75]">this</span>.
-          <span className="text-[#abb2bf]">name</span>{" "}
-          <span className="text-[#abb2bf]">=</span>{" "}
-          <span className="text-[#98c379]">"{displayName}"</span>;<br />
-          <span className="text-[#e06c75]">this</span>.
-          <span className="text-[#abb2bf]">role</span>{" "}
-          <span className="text-[#abb2bf]">=</span>{" "}
-          <span className="text-[#98c379]">"{profile.title}"</span>;<br />
-          <span className="text-[#e06c75]">this</span>.
-          <span className="text-[#abb2bf]">base</span>{" "}
-          <span className="text-[#abb2bf]">=</span>{" "}
-          <span className="text-[#98c379]">"{t("about.basedIn")}"</span>;<br />
-        </div>
-        <div>
-          <span className="text-[#abb2bf]">{`}`}</span>
-        </div>
-        <br />
-        <div>
-          <span className="text-[#61afef]">getBio</span>
-          <span className="text-[#abb2bf]">() {`{`}</span>
-        </div>
-        <div className="pl-4 md:pl-8">
-          <span className="text-[#c678dd]">return</span>{" "}
-          <span className="text-[#98c379]">
-            "{bio.split('\n')[0]}"
-          </span>
-          {bio.split('\n').length > 1 && (
-            <span className="text-[#98c379]">
-              {bio.split('\n').slice(1).map((line, i) => (
-                <div key={i} className="pl-6">"{line}"</div>
-              ))}
-            </span>
-          )};
-        </div>
-        <div>
-          <span className="text-[#abb2bf]">{`}`}</span>
-        </div>
-        <br />
-        <div>
-          <span className="text-[#61afef]">getAvailability</span>
-          <span className="text-[#abb2bf]">() {`{`}</span>
-        </div>
-        <div className="pl-4 md:pl-8">
-          <span className="text-[#c678dd]">return</span>{" "}
-          <span className="text-[#abb2bf]">[</span>
-          <br />
-          <span className="pl-4 text-[#98c379]">
-            "{t("about.basedInSub")}"
-          </span>
-          ,<br />
-          <span className="pl-4 text-[#98c379]">"{t("about.remoteSub")}"</span>
-          <br />
-          <span className="text-[#abb2bf]">]</span>;
-        </div>
-        <div>
-          <span className="text-[#abb2bf]">{`}`}</span>
-        </div>
-      </div>
-      <div>
-        <span className="text-[#abb2bf]">{`}`}</span>
-      </div>
-    </div>
-  );
-
-  const renderExperienceContent = () => (
-    <div className="text-sm md:text-base font-mono">
-      <div>
-        <span className="text-[#c678dd]">const</span>{" "}
-        <span className="text-[#e5c07b]">experience</span>{" "}
-        <span className="text-[#abb2bf]">=</span>{" "}
-        <span className="text-[#abb2bf]">[</span>
-      </div>
-      <div className="pl-4 md:pl-8 space-y-4 py-2">
-        {/* Senior */}
-        <div>
-          <span className="text-[#abb2bf]">{`{`}</span>
-          <br />
-          <span className="pl-4 text-[#e06c75]">year:</span>{" "}
-          <span className="text-[#d19a66]">2026</span>,<br />
-          <span className="pl-4 text-[#e06c75]">role:</span>{" "}
-          <span className="text-[#98c379]">"{t("about.senior")}"</span>,<br />
-          <span className="pl-4 text-[#e06c75]">description:</span>{" "}
-          <span className="text-[#98c379]">"{t("about.seniorDesc")}"</span>
-          <br />
-          <span className="text-[#abb2bf]">{`}`}</span>,
-        </div>
-        {/* Mid */}
-        <div>
-          <span className="text-[#abb2bf]">{`{`}</span>
-          <br />
-          <span className="pl-4 text-[#e06c75]">year:</span>{" "}
-          <span className="text-[#d19a66]">2020</span>,<br />
-          <span className="pl-4 text-[#e06c75]">role:</span>{" "}
-          <span className="text-[#98c379]">"{t("about.midLevel")}"</span>,
-          <br />
-          <span className="pl-4 text-[#e06c75]">description:</span>{" "}
-          <span className="text-[#98c379]">"{t("about.midLevelDesc")}"</span>
-          <br />
-          <span className="text-[#abb2bf]">{`}`}</span>,
-        </div>
-        {/* Junior */}
-        <div>
-          <span className="text-[#abb2bf]">{`{`}</span>
-          <br />
-          <span className="pl-4 text-[#e06c75]">year:</span>{" "}
-          <span className="text-[#d19a66]">2015</span>,<br />
-          <span className="pl-4 text-[#e06c75]">role:</span>{" "}
-          <span className="text-[#98c379]">"{t("about.junior")}"</span>,<br />
-          <span className="pl-4 text-[#e06c75]">description:</span>{" "}
-          <span className="text-[#98c379]">"{t("about.juniorDesc")}"</span>
-          <br />
-          <span className="text-[#abb2bf]">{`}`}</span>
-        </div>
-      </div>
-      <div>
-        <span className="text-[#abb2bf]">]</span>;
-      </div>
-    </div>
-  );
-
-  const renderSkillsContent = () => (
-    <div className="text-sm md:text-base font-mono">
-      <div className="text-[#c678dd] mb-2">
-        <span className="text-[#c678dd]">export const</span>{" "}
-        <span className="text-[#e5c07b]">techArsenal</span>{" "}
-        <span className="text-[#abb2bf]">=</span>{" "}
-        <span className="text-[#abb2bf]">{`{`}</span>
-      </div>
-
-      <div className="pl-4 md:pl-8 space-y-4">
-        <div>
-          <span className="text-[#e06c75]">frontend:</span>{" "}
-          <span className="text-[#abb2bf]">[</span>
-          <span className="text-[#98c379]">"React"</span>,{" "}
-          <span className="text-[#98c379]">"Next.js"</span>,{" "}
-          <span className="text-[#98c379]">"Tailwind CSS"</span>,{" "}
-          <span className="text-[#98c379]">"TypeScript"</span>
-          <span className="text-[#abb2bf]">]</span>,
-        </div>
-
-        <div>
-          <span className="text-[#e06c75]">backend:</span>{" "}
-          <span className="text-[#abb2bf]">[</span>
-          <span className="text-[#98c379]">"Node.js"</span>,{" "}
-          <span className="text-[#98c379]">"Express"</span>,{" "}
-          <span className="text-[#98c379]">"PostgreSQL"</span>,{" "}
-          <span className="text-[#98c379]">"MongoDB"</span>
-          <span className="text-[#abb2bf]">]</span>,
-        </div>
-
-        <div>
-          <span className="text-[#e06c75]">mobile:</span>{" "}
-          <span className="text-[#abb2bf]">[</span>
-          <span className="text-[#98c379]">"React Native"</span>,{" "}
-          <span className="text-[#98c379]">"Expo"</span>
-          <span className="text-[#abb2bf]">]</span>,
-        </div>
-
-        <div>
-          <span className="text-[#e06c75]">devops:</span>{" "}
-          <span className="text-[#abb2bf]">[</span>
-          <span className="text-[#98c379]">"Docker"</span>,{" "}
-          <span className="text-[#98c379]">"AWS"</span>,{" "}
-          <span className="text-[#98c379]">"CI/CD"</span>,{" "}
-          <span className="text-[#98c379]">"Vercel"</span>
-          <span className="text-[#abb2bf]">]</span>
-        </div>
-      </div>
-
-      <div className="text-[#abb2bf] mt-2">{`};`}</div>
-    </div>
-  );
+  const editorContent = {
+    profile: [
+      `name: "${displayName}"`,
+      `role: "${isArabic ? profile.titleAr || profile.title : profile.title}"`,
+      `location: "${t('about.locationValue')}"`,
+      `availability: "${t(profile.isAvailable ? 'about.availableNow' : 'about.unavailableNow')}"`,
+    ],
+    focus: [
+      `1. ${t('about.strength1')}`,
+      `2. ${t('about.strength2')}`,
+      `3. ${t('about.strength3')}`,
+    ],
+    stack: ['React', 'TypeScript', 'Firebase', 'Node.js', 'Tailwind CSS', 'Express'],
+  } as const;
 
   return (
-    <div className="w-full flex-1 pt-8 pb-16 relative z-10 font-sans">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-16">
-        {/* Right side (or Left in LTR): Text Content */}
+    <div className="flex w-full flex-1 flex-col gap-12 pt-8 pb-16">
+      <PageSeo title={t('nav.about')} description={t('about.subtitle')} />
+
+      <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
         <motion.div
-          initial={{ opacity: 0, x: i18n.language === "ar" ? 20 : -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-8"
         >
-          <div className="space-y-3">
-            <h2 className="text-base text-teal-400 font-bold uppercase tracking-wider font-heading">
-              {t("about.title")}
-            </h2>
-            <h3 className="text-4xl md:text-5xl font-heading font-black text-foreground leading-[1.1]">
-              {t("about.subtitle")}
-            </h3>
+          <div className="space-y-4">
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
+              {t('about.title')}
+            </p>
+            <h1 className="font-heading text-4xl font-black tracking-tight text-foreground md:text-6xl">
+              {t('about.subtitle')}
+            </h1>
+            <p className="max-w-2xl text-base leading-8 text-muted-foreground md:text-lg">
+              {t('about.intro')}
+            </p>
+            <p className="max-w-2xl text-base leading-8 text-muted-foreground">{bio}</p>
           </div>
 
-          <div className="text-base md:text-lg text-slate-400 leading-relaxed font-body">
-            {i18n.language === "ar"
-              ? profile.bioAr || profile.bio
-              : profile.bio}
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[t('about.strength1'), t('about.strength2'), t('about.strength3')].map((item) => (
+              <div
+                key={item}
+                className="rounded-[1.5rem] border border-border/60 bg-card/60 p-5 shadow-sm"
+              >
+                <CheckCircle2 className="h-5 w-5 text-primary" />
+                <p className="mt-4 text-sm font-semibold leading-7 text-foreground">{item}</p>
+              </div>
+            ))}
           </div>
 
-          <ul className="space-y-3 pt-2">
-            {[t("about.bullet1"), t("about.bullet2"), t("about.bullet3")].map(
-              (bullet, idx) => (
-                <li key={idx} className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
-                  <span className="text-slate-200 font-medium font-body">{bullet}</span>
-                </li>
-              )
-            )}
-          </ul>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-[1.5rem] border border-border/60 bg-card/60 p-5 shadow-sm">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                {t('about.statProjects')}
+              </p>
+              <p className="mt-3 font-heading text-4xl font-black text-foreground">{projects.length}</p>
+            </div>
+            <div className="rounded-[1.5rem] border border-border/60 bg-card/60 p-5 shadow-sm">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                {t('about.statAvailability')}
+              </p>
+              <p className="mt-3 font-heading text-xl font-bold text-foreground">
+                {t(profile.isAvailable ? 'about.availableNow' : 'about.unavailableNow')}
+              </p>
+            </div>
+            <div className="rounded-[1.5rem] border border-border/60 bg-card/60 p-5 shadow-sm">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                {t('about.statDisciplines')}
+              </p>
+              <p className="mt-3 font-heading text-4xl font-black text-foreground">3</p>
+            </div>
+          </div>
 
-          <div className="flex flex-wrap gap-4 pt-6">
-            <a
-              href="#"
+          <div className="flex flex-wrap gap-4">
+            <Link
+              to="/projects"
               className={buttonVariants({
-                size: "lg",
-                className: "h-12 px-8 font-bold font-body",
+                size: 'lg',
+                className: 'h-12 gap-2 px-7 text-sm font-bold',
               })}
-              onClick={(e) => {
-                e.preventDefault();
-                alert("CV Download functionality to be implemented.");
-              }}
             >
-              <Download
-                className={`w-4 h-4 ${
-                  i18n.language === "ar" ? "ml-2" : "mr-2"
-                }`}
-              />
-              {t("about.downloadResume")}
-            </a>
+              {t('about.viewProjects')}
+              <ArrowRight className={`h-4 w-4 ${isArabic ? 'rotate-180' : ''}`} />
+            </Link>
             <Link
               to="/contact"
               className={buttonVariants({
-                variant: "outline",
-                size: "lg",
-                className:
-                  "h-12 px-8 font-bold border-slate-700 hover:bg-slate-800 text-slate-200 font-body",
+                variant: 'outline',
+                size: 'lg',
+                className: 'h-12 border-border/70 bg-card/60 px-7 text-sm font-bold',
               })}
             >
-              {t("nav.contact")}
-              <ArrowRight
-                className={`w-4 h-4 ${
-                  i18n.language === "ar" ? "mr-2 rotate-180" : "ml-2"
-                }`}
-              />
+              {t('about.contactCta')}
             </Link>
           </div>
         </motion.div>
 
-        {/* Left side (or Right in LTR): VS Code Block */}
         <motion.div
-          initial={{ opacity: 0, x: i18n.language === "ar" ? -20 : 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="rounded-xl overflow-hidden shadow-2xl border border-slate-800 bg-[#1e1e1e] font-mono flex flex-col h-[380px] w-full max-w-lg mx-auto lg:ml-auto lg:mr-0 select-none group"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl"
           dir="ltr"
         >
-          {/* Editor Header / Title Bar */}
-          <div className="bg-[#1e1e1e] flex items-center px-4 py-2.5 border-b border-slate-800">
-            <div className="flex gap-2 mr-4">
-              <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+          <div className="flex items-center justify-between border-b border-slate-800 bg-[#161b22] px-5 py-3 font-mono text-xs text-slate-400">
+            <div className="flex gap-2">
+              <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
+              <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
+              <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
             </div>
-            <div className="mx-auto text-xs text-slate-400 font-sans">
-              portfolio — VS Code
+            <div className="flex items-center gap-2">
+              <Terminal className="h-4 w-4" />
+              about-workspace.ts
             </div>
+            <div className="w-12" />
           </div>
 
-          {/* Editor Tabs bar */}
-          <div className="flex overflow-x-auto bg-[#252526] border-b border-slate-800 scrollbar-hide select-none transition-colors">
-            <button
-              onClick={() => setActiveTab("about")}
-              className={`flex items-center gap-2 px-4 py-2 border-t-2 text-xs md:text-sm whitespace-nowrap transition-colors outline-none ${
-                activeTab === "about"
-                  ? "bg-[#1e1e1e] border-primary text-slate-200"
-                  : "border-transparent text-slate-500 hover:bg-[#2d2d2d]"
-              }`}
-            >
-              <FileCode2 className="w-4 h-4 text-blue-400 shrink-0" />
-              about.ts
-            </button>
-            <button
-              onClick={() => setActiveTab("experience")}
-              className={`flex items-center gap-2 px-4 py-2 border-t-2 text-xs md:text-sm whitespace-nowrap transition-colors outline-none ${
-                activeTab === "experience"
-                  ? "bg-[#1e1e1e] border-primary text-slate-200"
-                  : "border-transparent text-slate-500 hover:bg-[#2d2d2d]"
-              }`}
-            >
-              <FileJson className="w-4 h-4 text-yellow-400 shrink-0" />
-              history.json
-            </button>
-            <button
-              onClick={() => setActiveTab("skills")}
-              className={`flex items-center gap-2 px-4 py-2 border-t-2 text-xs md:text-sm whitespace-nowrap transition-colors outline-none ${
-                activeTab === "skills"
-                  ? "bg-[#1e1e1e] border-primary text-slate-200"
-                  : "border-transparent text-slate-500 hover:bg-[#2d2d2d]"
-              }`}
-            >
-              <FileCode2 className="w-4 h-4 text-blue-400 shrink-0" />
-              skills.ts
-            </button>
+          <div className="flex border-b border-slate-800 bg-[#141820]">
+            {[
+              { key: 'profile' as const, label: t('about.tabs.profile'), icon: FileCode2 },
+              { key: 'focus' as const, label: t('about.tabs.focus'), icon: FileJson },
+              { key: 'stack' as const, label: t('about.tabs.stack'), icon: FileCode2 },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`inline-flex items-center gap-2 border-t-2 px-4 py-3 text-xs transition-colors sm:text-sm ${
+                  activeTab === tab.key
+                    ? 'border-primary bg-[#0d1117] text-slate-100'
+                    : 'border-transparent text-slate-500 hover:bg-[#1a1f28]'
+                }`}
+              >
+                <tab.icon className="h-4 w-4" />
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-          {/* Editor Body */}
-          <div className="flex flex-1 bg-[#1e1e1e] overflow-hidden relative">
-            {/* Line Numbers */}
-            <div className="w-10 md:w-12 shrink-0 py-4 font-mono text-[10px] md:text-xs text-slate-600 text-right pr-3 select-none border-r border-[#333]">
-              {Array.from({ length: 40 }).map((_, i) => (
-                <div key={i} className="leading-[1.4] md:leading-[1.5]">
-                  {i + 1}
+          <div className="grid grid-cols-[52px_1fr]">
+            <div className="border-e border-slate-800 bg-[#0b0f14] py-5 text-right font-mono text-xs text-slate-600">
+              {Array.from({ length: 18 }).map((_, index) => (
+                <div key={index} className="px-3 leading-7">
+                  {index + 1}
                 </div>
               ))}
             </div>
-
-            {/* Code Content */}
-            <div className="flex-1 px-4 py-3 h-full overflow-y-auto overflow-x-hidden font-mono text-[10px] md:text-[13px] text-slate-300 relative leading-[1.4] md:leading-[1.5] scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
-              {activeTab === "about" && renderAboutContent()}
-              {activeTab === "experience" && renderExperienceContent()}
-              {activeTab === "skills" && renderSkillsContent()}
-
-              {/* Blinking cursor */}
-              <motion.div
-                animate={{ opacity: [1, 0] }}
-                transition={{ repeat: Infinity, duration: 0.8 }}
-                className="inline-block w-2 md:w-2 h-3 md:h-[1rem] bg-slate-400 ml-1 align-middle translate-y-[-1px] md:translate-y-[-2px]"
-              />
-            </div>
-          </div>
-
-          {/* Editor Footer */}
-          <div className="bg-[#007acc] text-white px-3 py-1 flex justify-between items-center text-[10px] md:text-xs font-mono select-none">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1 cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded">
-                <TerminalIcon className="w-3 h-3" /> main*
-              </span>
-              <span className="hidden sm:inline-flex items-center gap-1 cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded">
-                0 errors, 0 warnings
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="hidden sm:inline cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded">
-                UTF-8
-              </span>
-              <span className="hidden sm:inline cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded">
-                {activeTab === "experience" ? "JSON" : "TypeScript"}
-              </span>
-              <span className="cursor-pointer hover:bg-white/10 px-2 py-0.5 rounded">
-                Prettier: <span className="text-green-300">✓</span>
-              </span>
+            <div className="space-y-3 px-5 py-5 font-mono text-sm text-slate-300">
+              <p className="text-slate-500">/** {t('about.editorComment')} */</p>
+              {editorContent[activeTab].map((line) => (
+                <div key={line} className="leading-7">
+                  {activeTab === 'stack' ? (
+                    <span className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-200">
+                      {line}
+                    </span>
+                  ) : (
+                    line
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </motion.div>
       </div>
-
-      {/* 3 Small Stat Cards under the Grid */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"
-      >
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center hover:bg-slate-800/80 transition-colors shadow-sm">
-          <div className="text-3xl lg:text-4xl font-heading font-black text-primary mb-2">
-            {t("stats.valYearsExp", { defaultValue: "+5" })}
-          </div>
-          <div className="text-xs lg:text-sm font-medium text-slate-400 font-sans uppercase tracking-wider">
-            {t("stats.yearsExp")}
-          </div>
-        </div>
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center hover:bg-slate-800/80 transition-colors shadow-sm">
-          <div className="text-3xl lg:text-4xl font-heading font-black text-primary mb-2">
-            +{projects && projects.length > 0 ? projects.length : 20}
-          </div>
-          <div className="text-xs lg:text-sm font-medium text-slate-400 font-sans uppercase tracking-wider">
-            {t("stats.projectsDelivered")}
-          </div>
-        </div>
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center hover:bg-slate-800/80 transition-colors shadow-sm">
-          <div className="text-3xl lg:text-4xl font-heading font-black text-primary mb-2">
-            3
-          </div>
-          <div className="text-xs lg:text-sm font-medium text-slate-400 font-sans uppercase tracking-wider">
-            {i18n.language === "ar"
-              ? "مجالات تخصص"
-              : "Core Disciplines"}
-          </div>
-        </div>
-      </motion.div>
     </div>
   );
 };

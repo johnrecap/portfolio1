@@ -20,9 +20,22 @@
         "slug": { "type": "string" },
         "description": { "type": "string" },
         "category": { "type": "string" },
+        "type": { "type": "string", "enum": ["web", "mobile", "dashboard", "backend", "other"] },
         "color": { "type": "string" },
         "image": { "type": "string" },
         "tags": { "type": "array" },
+        "demoUrl": { "type": "string" },
+        "githubUrl": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "featuredOrder": { "type": "number" },
+        "problem": { "type": "string" },
+        "problemAr": { "type": "string" },
+        "solution": { "type": "string" },
+        "solutionAr": { "type": "string" },
+        "projectRole": { "type": "string" },
+        "projectRoleAr": { "type": "string" },
+        "result": { "type": "string" },
+        "resultAr": { "type": "string" },
         "createdAt": { "type": "timestamp" }
       },
       "required": ["title", "slug", "description", "category", "image"]
@@ -61,7 +74,10 @@
       "properties": {
         "name": { "type": "string" },
         "email": { "type": "string", "format": "email" },
+        "userId": { "type": "string" },
+        "whatsapp": { "type": "string" },
         "budget": { "type": "string" },
+        "read": { "type": "boolean" },
         "message": { "type": "string" },
         "createdAt": { "type": "timestamp" }
       },

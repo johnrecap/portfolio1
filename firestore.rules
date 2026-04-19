@@ -54,7 +54,18 @@ service cloud.firestore {
         (!('demoUrl' in request.resource.data) || request.resource.data.demoUrl is string) &&
         (!('githubUrl' in request.resource.data) || request.resource.data.githubUrl is string) &&
         (!('color' in request.resource.data) || request.resource.data.color is string) &&
-        (!('tags' in request.resource.data) || request.resource.data.tags is list);
+        (!('tags' in request.resource.data) || request.resource.data.tags is list) &&
+        (!('type' in request.resource.data) || request.resource.data.type in ['web', 'mobile', 'dashboard', 'backend', 'other']) &&
+        (!('featured' in request.resource.data) || request.resource.data.featured is bool) &&
+        (!('featuredOrder' in request.resource.data) || request.resource.data.featuredOrder is number) &&
+        (!('problem' in request.resource.data) || request.resource.data.problem is string) &&
+        (!('problemAr' in request.resource.data) || request.resource.data.problemAr is string) &&
+        (!('solution' in request.resource.data) || request.resource.data.solution is string) &&
+        (!('solutionAr' in request.resource.data) || request.resource.data.solutionAr is string) &&
+        (!('projectRole' in request.resource.data) || request.resource.data.projectRole is string) &&
+        (!('projectRoleAr' in request.resource.data) || request.resource.data.projectRoleAr is string) &&
+        (!('result' in request.resource.data) || request.resource.data.result is string) &&
+        (!('resultAr' in request.resource.data) || request.resource.data.resultAr is string);
     }
 
     function isValidBlog() {
@@ -81,8 +92,10 @@ service cloud.firestore {
         validStringLength('name', 1, 100) &&
         isValidEmail(request.resource.data.email) &&
         validStringLength('message', 1, 5000) &&
+        (!('userId' in request.resource.data) || request.resource.data.userId is string) &&
         (!('whatsapp' in request.resource.data) || request.resource.data.whatsapp is string) &&
-        (!('budget' in request.resource.data) || request.resource.data.budget is string);
+        (!('budget' in request.resource.data) || request.resource.data.budget is string) &&
+        (!('read' in request.resource.data) || request.resource.data.read is bool);
     }
 
     function isValidSettings() {

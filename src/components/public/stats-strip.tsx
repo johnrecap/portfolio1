@@ -8,23 +8,23 @@ export const StatsStrip = () => {
   const stats = [
     { 
       label: t('stats.yearsExp'), 
-      value: t('stats.valYearsExp', { defaultValue: '+3' }), 
+      value: t('stats.valYearsExp'), 
       icon: Zap
     },
     { 
       label: t('stats.projectsDelivered'), 
-      value: t('stats.valProjects', { defaultValue: '+20' }), 
+      value: t('stats.valProjects'), 
       icon: Code2
     },
     { 
       label: t('stats.happyClients'), 
-      value: t('stats.valClients', { defaultValue: '+10' }), 
+      value: t('stats.valClients'), 
       icon: Users
     },
     { 
       label: t('stats.linesOfCode'), 
-      value: t('stats.valCode', { defaultValue: '95%' }),
-      subtitle: t('stats.clientSatisfaction', { defaultValue: 'Success Rate' }),
+      value: t('stats.valCode'),
+      subtitle: t('stats.clientSatisfaction'),
       icon: GitCommit
     },
   ];

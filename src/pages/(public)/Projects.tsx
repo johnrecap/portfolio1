@@ -1,189 +1,244 @@
-import { useState } from "react";
-import { motion } from "motion/react";
-import { Search, Terminal, ArrowRight, Image as ImageIcon, Github, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { useCollection } from "@/hooks/useFirestore";
-import { useTranslation } from "react-i18next";
+import { useState } from 'react';
+import { motion } from 'motion/react';
+import { ArrowRight, ExternalLink, Github, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Input } from '@/components/ui/input';
+import { PageSeo } from '@/components/shared/PageSeo';
+import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
+import { useCollection } from '@/hooks/useFirestore';
+import {
+  filterProjects,
+  normalizeProjectType,
+  sortProjects,
+  type ProjectRecord,
+  type ProjectSortMode,
+} from '@/lib/project-utils';
+
+const projectTypeKeyMap = {
+  all: 'projects.types.all',
+  web: 'projects.types.web',
+  mobile: 'projects.types.mobile',
+  dashboard: 'projects.types.dashboard',
+  backend: 'projects.types.backend',
+  other: 'projects.types.other',
+} as const;
 
 export const Projects = () => {
-  const { data: projects, loading } = useCollection<any>("projects");
-  const [search, setSearch] = useState("");
+  const { data: projects, loading } = useCollection<ProjectRecord>('projects');
   const { t, i18n } = useTranslation();
+  const [search, setSearch] = useState('');
+  const [activeType, setActiveType] = useState<'all' | 'web' | 'mobile' | 'dashboard' | 'backend' | 'other'>('all');
+  const [activeTag, setActiveTag] = useState('');
+  const [sortMode, setSortMode] = useState<ProjectSortMode>('featured');
 
-  const isRTL = i18n.language === 'ar';
-
-  const filteredProjects = projects.filter(
-    (p: any) =>
-      p.title?.toLowerCase().includes(search.toLowerCase()) ||
-      p.category?.toLowerCase().includes(search.toLowerCase()) ||
-      p.tags?.some((tag: string) => tag.toLowerCase().includes(search.toLowerCase()))
+  const filteredProjects = filterProjects(projects, { search, activeType, activeTag });
+  const sortedProjects = sortProjects(filteredProjects, sortMode);
+  const tags = Array.from(new Set(projects.flatMap((project) => project.tags ?? []))).sort((left, right) =>
+    left.localeCompare(right),
   );
+  const isArabic = i18n.language === 'ar';
 
   return (
-    <div className="flex flex-col relative w-full pt-12 pb-24 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
-        <div className="max-w-2xl">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-heading font-black mb-4 tracking-tight flex items-center gap-4"
-          >
-            <span className="text-primary font-mono text-3xl md:text-5xl opacity-40 select-none">~/</span>
-            {t("projects.title")}
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-muted-foreground text-lg lg:text-xl font-mono"
-            dir="ltr"
-          >
-             <span className={`${isRTL ? 'text-right block w-full rtl' : ''}`}>{t("projects.subtitle")}</span>
-          </motion.p>
+    <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 pt-10 pb-20">
+      <PageSeo title={t('nav.projects')} description={t('projects.subtitle')} />
+
+      <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-3xl">
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
+            {t('projects.portfolio')}
+          </p>
+          <h1 className="mt-4 font-heading text-4xl font-black tracking-tight text-foreground md:text-6xl">
+            {t('projects.title')} {t('projects.works')}
+          </h1>
+          <p className="mt-4 text-base leading-8 text-muted-foreground md:text-lg">
+            {t('projects.subtitle')}
+          </p>
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="w-full md:w-[350px] shrink-0 font-mono"
-          dir="ltr"
-        >
-          <div className="bg-[#0D1117] border border-slate-800 rounded-lg flex items-center px-4 py-2 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/50 transition-all shadow-sm">
-            <Search className="text-slate-500 w-4 h-4 mr-3 shrink-0" />
-            <Input
-              placeholder={`$ grep -i "projects"...`}
-              className="border-0 shadow-none focus-visible:ring-0 bg-transparent text-slate-300 placeholder:text-slate-600 w-full h-8 px-0 text-sm font-mono"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              spellCheck="false"
-            />
-          </div>
-        </motion.div>
+        <div className="relative w-full max-w-md" dir="ltr">
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder={t('projects.search')}
+            className="h-12 rounded-full border-border/70 bg-card/60 pl-11"
+          />
+        </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {loading ? (
-          <div className="col-span-full py-20 text-center font-mono text-slate-500 animate-pulse text-sm">
-            $ executing query...
-          </div>
-        ) : filteredProjects.length === 0 ? (
-          <div className="col-span-full py-20 text-center font-mono text-slate-500 text-sm">
-            $ echo "No matching projects found."
-          </div>
-        ) : (
-          filteredProjects.map((project: any, i: number) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="group flex flex-col bg-[#0D1117] border border-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1"
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-wrap gap-2">
+          {Object.keys(projectTypeKeyMap).map((key) => (
+            <button
+              key={key}
+              onClick={() => setActiveType(key as typeof activeType)}
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                activeType === key
+                  ? 'border-primary/30 bg-primary/10 text-primary'
+                  : 'border-border bg-card text-muted-foreground hover:text-foreground'
+              }`}
             >
-              {/* Window Header */}
-              <div className="px-4 py-3 bg-[#161B22] border-b border-slate-800 flex items-center justify-between shrink-0" dir="ltr">
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <div className="w-3 h-3 rounded-full bg-slate-700 group-hover:bg-[#ff5f56] transition-colors"></div>
-                  <div className="w-3 h-3 rounded-full bg-slate-700 group-hover:bg-[#ffbd2e] transition-colors"></div>
-                  <div className="w-3 h-3 rounded-full bg-slate-700 group-hover:bg-[#27c93f] transition-colors"></div>
-                </div>
-                <div className="text-slate-500 text-[10px] sm:text-xs font-mono flex items-center gap-2 truncate px-2 border border-slate-800/50 bg-[#0D1117] rounded-full py-0.5">
-                   <Terminal className="w-3 h-3" />
-                   <span className="truncate">{project.slug || project.title.toLowerCase().replace(/\s+/g, '-')}.ts</span>
-                </div>
-                <div className="w-12"></div> {/* spacer */}
-              </div>
+              {t(projectTypeKeyMap[key as keyof typeof projectTypeKeyMap])}
+            </button>
+          ))}
+        </div>
 
-              {/* Image Preview */}
-              <Link to={`/projects/${project.slug}`} className="relative w-full aspect-video bg-[#0A0D12] overflow-hidden block shrink-0 border-b border-slate-800">
-                <div className="absolute inset-0 bg-slate-900/40 group-hover:bg-transparent transition-colors z-10 duration-500" />
-                {project.image ? (
-                   <img
-                     src={project.image}
-                     alt={project.title}
-                     className="w-full h-full object-cover object-top transform transition-transform duration-700 ease-out group-hover:scale-105"
-                     referrerPolicy="no-referrer"
-                   />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <ImageIcon className="w-8 h-8 text-slate-700" />
-                  </div>
-                )}
-                
-                <div className="absolute top-3 right-3 z-20">
-                  <span className="px-2.5 py-1 bg-black/70 backdrop-blur border border-white/10 rounded font-mono text-[10px] text-primary uppercase font-bold tracking-wider shadow-lg">
-                    {project.category}
-                  </span>
-                </div>
-              </Link>
+        <div className="flex flex-col gap-4 rounded-[1.75rem] border border-border/60 bg-card/60 p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setActiveTag('')}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                activeTag === ''
+                  ? 'bg-foreground text-background'
+                  : 'bg-muted text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {t('projects.allTags')}
+            </button>
+            {tags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag(tag)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  activeTag === tag
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
 
-              {/* Content Box */}
-              <div className="p-6 flex flex-col flex-1">
-                <Link to={`/projects/${project.slug}`} className="block mb-3">
-                  <h3 className="font-heading font-bold text-xl sm:text-2xl text-slate-100 group-hover:text-primary transition-colors tracking-tight line-clamp-1">
-                    {project.title}
-                  </h3>
-                </Link>
-                
-                <p className="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-3">
-                  {project.description}
-                </p>
+          <div className="flex flex-wrap gap-2">
+            {[
+              ['featured', t('projects.sortFeatured')],
+              ['newest', t('projects.sortNewest')],
+              ['alphabetical', t('projects.sortAlphabetical')],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                onClick={() => setSortMode(value as ProjectSortMode)}
+                className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition-colors ${
+                  sortMode === value
+                    ? 'border-primary/30 bg-primary/10 text-primary'
+                    : 'border-border bg-background text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-                <div className="mt-auto">
-                  {project.tags && project.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-6" dir="ltr">
-                      {project.tags.slice(0, 4).map((tag: string) => (
-                        <span key={tag} className="text-[10px] sm:text-xs font-mono text-slate-300 bg-slate-800/80 border border-slate-700/50 px-2.5 py-0.5 rounded-md">
-                          {tag}
-                        </span>
-                      ))}
-                      {project.tags.length > 4 && (
-                        <span className="text-[10px] sm:text-xs font-mono text-slate-500 px-1 py-0.5 mt-0.5">
-                          +{project.tags.length - 4}
-                        </span>
-                      )}
+      {loading ? (
+        <SkeletonBlocks count={6} className="md:grid-cols-2 xl:grid-cols-3" />
+      ) : sortedProjects.length === 0 ? (
+        <EmptyState
+          title={t('projects.noProjects')}
+          description={t('projects.noProjectsDescription')}
+        />
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {sortedProjects.map((project, index) => {
+            const projectType = normalizeProjectType(project.type ?? project.category);
+
+            return (
+              <motion.article
+                key={project.id}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="group overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/70 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+              >
+                <Link to={`/projects/${project.slug}`} className="block aspect-[16/10] overflow-hidden bg-muted">
+                  {project.image ? (
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      referrerPolicy="no-referrer"
+                      className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                      {t('projects.emptyPreview')}
                     </div>
                   )}
+                </Link>
 
-                  <div className="flex items-center gap-3 pt-5 border-t border-slate-800/50">
-                    <Link 
-                      to={`/projects/${project.slug}`} 
-                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-md transition-colors text-xs font-semibold font-sans border border-slate-700 hover:border-slate-500 text-slate-200 ${!project.demoUrl ? 'bg-primary hover:bg-primary-hover border-transparent hover:border-transparent text-primary-foreground' : 'hover:bg-slate-800'}`}
-                    >
-                      {i18n.language === 'ar' ? 'التفاصيل' : 'Details'} <ArrowRight className={`w-3.5 h-3.5 ${isRTL ? 'rotate-180' : ''}`} />
+                <div className="space-y-5 p-6">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {t(projectTypeKeyMap[projectType])}
+                    </span>
+                    {project.featured ? (
+                      <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        {t('projects.featuredBadge')}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div>
+                    <Link to={`/projects/${project.slug}`}>
+                      <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
+                        {project.title}
+                      </h2>
                     </Link>
-                    
-                    {project.demoUrl && (
-                      <a 
-                        href={project.demoUrl} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-md transition-colors text-xs font-semibold font-sans bg-primary hover:bg-primary-hover text-white shadow-sm"
-                        title="Live Demo"
+                    <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                      {project.description}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2" dir="ltr">
+                    {(project.tags ?? []).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"
                       >
-                         <ExternalLink className="w-4 h-4" /> <span className="hidden sm:inline-block">{i18n.language === 'ar' ? 'معاينة المشروع' : 'Live Demo'}</span>
-                      </a>
-                    )}
-                    
-                    {project.githubUrl && (
-                      <a 
-                        href={project.githubUrl} 
-                        target="_blank" 
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <Link
+                      to={`/projects/${project.slug}`}
+                      className="inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-primary hover:text-primary-foreground"
+                    >
+                      {t('projects.details')}
+                      <ArrowRight className={`h-4 w-4 ${isArabic ? 'rotate-180' : ''}`} />
+                    </Link>
+                    {project.demoUrl ? (
+                      <a
+                        href={project.demoUrl}
+                        target="_blank"
                         rel="noreferrer"
-                        className="flex items-center justify-center py-2.5 px-4 rounded-md transition-colors text-xs font-semibold font-sans bg-[#21262D] border border-slate-700 hover:bg-[#30363D] hover:border-slate-600 text-slate-200 shadow-sm"
-                        title="Source Code"
+                        className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
                       >
-                        <Github className="w-4 h-4" />
+                        <ExternalLink className="h-4 w-4" />
+                        {t('projects.liveDemo')}
                       </a>
-                    )}
+                    ) : null}
+                    {project.githubUrl ? (
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+                      >
+                        <Github className="h-4 w-4" />
+                        {t('projects.sourceCode')}
+                      </a>
+                    ) : null}
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))
-        )}
-      </div>
+              </motion.article>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

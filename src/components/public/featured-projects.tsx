@@ -1,245 +1,257 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, ArrowRight, Github, ExternalLink, Image as ImageIcon, Terminal, Code2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { ArrowLeft, ArrowRight, ExternalLink, Github, Layers3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCollection } from '@/hooks/useFirestore';
 import { useTranslation } from 'react-i18next';
 import { buttonVariants } from '@/components/ui/button';
+import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
+import { useCollection } from '@/hooks/useFirestore';
+import { getFeaturedProjects, normalizeProjectType, type ProjectRecord } from '@/lib/project-utils';
+
+const projectTypeKeyMap = {
+  web: 'projects.types.web',
+  mobile: 'projects.types.mobile',
+  dashboard: 'projects.types.dashboard',
+  backend: 'projects.types.backend',
+  other: 'projects.types.other',
+} as const;
 
 export const FeaturedProjectsGrid = () => {
-  const { data: projects, loading } = useCollection<any>('projects');
-  const featured = projects.slice(0, 4); // Take up to 4 projects for the showcase
+  const { data, loading } = useCollection<ProjectRecord>('projects');
   const { t, i18n } = useTranslation();
-  
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const isRTL = i18n.language === 'ar';
-  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+  const featuredProjects = getFeaturedProjects(data, 4);
+  const activeProject = featuredProjects[Math.min(activeIndex, Math.max(featuredProjects.length - 1, 0))];
+  const isArabic = i18n.language === 'ar';
+  const ArrowIcon = isArabic ? ArrowLeft : ArrowRight;
 
   if (loading) {
     return (
-      <section className="py-24 max-w-6xl mx-auto px-4 sm:px-6">
-         <p className="text-muted-foreground text-center py-12">{t('featuredProjects.loading')}</p>
+      <section className="py-8 md:py-12">
+        <div className="mx-auto max-w-6xl">
+          <SkeletonBlocks count={2} className="lg:grid-cols-2" />
+        </div>
       </section>
     );
   }
 
-  if (featured.length === 0) return null;
+  if (featuredProjects.length === 0 || !activeProject) {
+    return (
+      <section className="py-8 md:py-12">
+        <div className="mx-auto max-w-6xl">
+          <EmptyState
+            title={t('featuredProjects.emptyTitle')}
+            description={t('featuredProjects.emptyDescription')}
+          />
+        </div>
+      </section>
+    );
+  }
 
-  const activeProject = featured[activeIndex];
+  const normalizedType = normalizeProjectType(activeProject.type ?? activeProject.category);
 
   return (
-    <section className="py-24 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col items-center text-center mx-auto max-w-2xl mb-16">
-        <motion.div initial={{opacity:0, y:20}} whileInView={{opacity:1, y:0}} viewport={{once: true}}>
-          <h2 className="text-3xl md:text-5xl font-bold font-heading mb-6 tracking-tight">
+    <section className="py-8 md:py-12">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-10 max-w-3xl">
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
+            {t('featuredProjects.eyebrow')}
+          </p>
+          <h2 className="mt-4 font-heading text-3xl font-black tracking-tight text-foreground md:text-5xl">
             {t('featuredProjects.title')}
           </h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">
+          <p className="mt-4 text-base leading-8 text-muted-foreground md:text-lg">
             {t('featuredProjects.subtitle')}
           </p>
-        </motion.div>
-      </div>
+        </div>
 
-      <motion.div 
-        initial={{opacity:0, y:30}} 
-        whileInView={{opacity:1, y:0}} 
-        viewport={{once: true}}
-        className="w-full max-w-6xl mx-auto flex flex-col gap-6"
-      >
-        {/* Switcher */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-2" dir="ltr">
-          {featured.map((p: any, idx: number) => (
+        <div className="mb-5 flex flex-wrap gap-2" dir="ltr">
+          {featuredProjects.map((project, index) => (
             <button
-              key={p.id}
-              onClick={() => setActiveIndex(idx)}
-              className={`px-4 py-2 rounded-md font-mono text-xs sm:text-sm transition-all duration-300 flex items-center gap-2 border ${
-                activeIndex === idx 
-                  ? 'bg-primary/10 border-primary/30 text-primary shadow-sm' 
-                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-300 hover:border-slate-700'
+              key={project.id}
+              onClick={() => setActiveIndex(index)}
+              className={`rounded-full border px-4 py-2 font-mono text-xs transition-colors sm:text-sm ${
+                activeProject.id === project.id
+                  ? 'border-primary/40 bg-primary/10 text-primary'
+                  : 'border-border bg-card text-muted-foreground hover:border-primary/20 hover:text-foreground'
               }`}
             >
-              <span className="opacity-50">$ open</span> {p.slug || p.title.toLowerCase().replace(/\s+/g, '-')}
+              $ open {project.slug}
             </button>
           ))}
         </div>
 
-        {/* The Window Frame */}
-        <div className="bg-[#0D1117] border border-slate-800 rounded-xl overflow-hidden shadow-2xl relative shadow-primary/5 flex flex-col">
-          
-          {/* Top Window Bar */}
-          <div className="px-4 py-3 bg-[#161B22] border-b border-slate-800 flex items-center justify-between" dir="ltr">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-              <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+        <div className="overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl">
+          <div className="flex items-center justify-between border-b border-slate-800 bg-[#161b22] px-5 py-3 font-mono text-xs text-slate-400">
+            <div className="flex gap-2">
+              <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
+              <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
+              <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
             </div>
-            <div className="flex items-center gap-2 text-slate-400 text-xs font-mono">
-              <Terminal className="w-3.5 h-3.5" />
-              <span>featured-project.ts</span>
-            </div>
-            <div className="w-16"></div> {/* Spacer to center title */}
+            <span>featured-project.ts</span>
+            <div className="w-12" />
           </div>
 
-          {/* Split Layout */}
-          <div className="flex flex-col lg:flex-row h-full">
-            
-            {/* Column 1: Terminal / Properties (40%) */}
-            <div className="w-full lg:w-[40%] bg-[#0D1117] p-6 lg:border-r border-slate-800 flex flex-col font-mono" dir="ltr">
+          <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="border-b border-slate-800 p-6 lg:border-b-0 lg:border-e">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeProject.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 10 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex-1 flex flex-col"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-6"
                 >
-                  <div className="mb-6 flex items-center gap-2 text-primary text-sm font-semibold">
-                    <Code2 className="w-4 h-4" />
-                    {t('featuredProjects.projectObject')}
+                  <div className="flex items-center gap-2 text-primary">
+                    <Layers3 className="h-4 w-4" />
+                    <span className="font-mono text-xs uppercase tracking-[0.18em]">
+                      {t('featuredProjects.projectObject')}
+                    </span>
                   </div>
-                  
-                  <div className="space-y-4 text-sm flex-1">
-                    <div className="text-slate-300 leading-relaxed">
-                      <span className="text-[#c678dd]">const</span> <span className="text-[#e5c07b]">project</span> <span className="text-[#cfcbaf]">=</span> <span className="text-[#cfcbaf]">{`{`}</span>
-                      
-                      <div className="pl-4 mt-2 space-y-2">
-                        <div>
-                          <span className="text-[#e06c75]">{t('featuredProjects.name')}:</span> <span className="text-[#98c379]">"{activeProject.title}"</span><span className="text-[#cfcbaf]">,</span>
-                        </div>
-                        <div>
-                          <span className="text-[#e06c75]">{t('featuredProjects.type')}:</span> <span className="text-[#98c379]">"{activeProject.category || 'Web App'}"</span><span className="text-[#cfcbaf]">,</span>
-                        </div>
-                        <div>
-                          <span className="text-[#e06c75]">{t('featuredProjects.status')}:</span> <span className="text-[#98c379]">"Live"</span><span className="text-[#cfcbaf]">,</span>
-                        </div>
-                        
-                        {activeProject.tags && activeProject.tags.length > 0 && (
-                          <div className="py-1">
-                            <span className="text-[#e06c75]">{t('featuredProjects.stack')}:</span> <span className="text-[#cfcbaf]">[</span>
-                            <div className="pl-4 flex flex-wrap gap-1">
-                              {activeProject.tags.map((tag: string, i: number) => (
-                                <span key={tag} className="text-[#98c379]">
-                                  "{tag}"{i < activeProject.tags.length - 1 ? <span className="text-[#cfcbaf]">,</span> : ''}
-                                </span>
-                              ))}
-                            </div>
-                            <span className="text-[#cfcbaf]">],</span>
-                          </div>
-                        )}
-                        
-                        <div className="pt-2">
-                          <span className="text-[#e06c75]">{t('featuredProjects.summary')}:</span> <span className="text-[#98c379] break-words whitespace-pre-wrap">"{activeProject.description}"</span>
-                        </div>
+
+                  <div className="space-y-4 rounded-[1.5rem] border border-slate-800 bg-slate-950/60 p-5 text-sm text-slate-200">
+                    <div>
+                      <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                        {t('featuredProjects.name')}
+                      </p>
+                      <p className="mt-2 text-lg font-semibold text-white">{activeProject.title}</p>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                          {t('featuredProjects.type')}
+                        </p>
+                        <p className="mt-2 text-sm text-slate-300">
+                          {t(projectTypeKeyMap[normalizedType])}
+                        </p>
                       </div>
-                      
-                      <div className="mt-2 text-[#cfcbaf]">{`}`}</div>
+                      <div>
+                        <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                          {t('featuredProjects.status')}
+                        </p>
+                        <p className="mt-2 text-sm text-emerald-400">{t('featuredProjects.liveStatus')}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                        {t('featuredProjects.summary')}
+                      </p>
+                      <p className="mt-2 leading-7 text-slate-300">{activeProject.description}</p>
+                    </div>
+                    <div>
+                      <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                        {t('featuredProjects.stack')}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2" dir="ltr">
+                        {(activeProject.tags ?? []).map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-200"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Buttons */}
-                  <div className="pt-8 flex flex-col sm:flex-row gap-3 mt-auto">
-                    {activeProject.demoUrl && (
-                      <a 
-                        href={activeProject.demoUrl} 
-                        target="_blank" 
+                  <div className="flex flex-wrap gap-3">
+                    {activeProject.demoUrl ? (
+                      <a
+                        href={activeProject.demoUrl}
+                        target="_blank"
                         rel="noreferrer"
-                        className="flex-1 flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white py-2.5 px-4 rounded-md transition-colors text-sm font-sans font-medium"
+                        className={buttonVariants({
+                          className:
+                            'gap-2 bg-primary text-primary-foreground hover:bg-primary-hover',
+                        })}
                       >
-                       <ExternalLink className="w-4 h-4" /> {t('featuredProjects.liveDemo')}
+                        <ExternalLink className="h-4 w-4" />
+                        {t('featuredProjects.liveDemo')}
                       </a>
-                    )}
-                    {activeProject.githubUrl && (
-                      <a 
-                         href={activeProject.githubUrl} 
-                         target="_blank" 
-                         rel="noreferrer"
-                         className="flex-1 flex items-center justify-center gap-2 bg-[#21262D] hover:bg-[#30363D] border border-slate-700 text-slate-200 py-2.5 px-4 rounded-md transition-colors text-sm font-sans font-medium"
+                    ) : null}
+                    {activeProject.githubUrl ? (
+                      <a
+                        href={activeProject.githubUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={buttonVariants({
+                          variant: 'outline',
+                          className:
+                            'gap-2 border-slate-700 bg-transparent text-slate-200 hover:bg-slate-800 hover:text-white',
+                        })}
                       >
-                        <Github className="w-4 h-4" /> {t('featuredProjects.github')}
+                        <Github className="h-4 w-4" />
+                        {t('featuredProjects.github')}
                       </a>
-                    )}
-                    <Link 
-                      to={`/projects/${activeProject.slug}`} 
-                      className={`flex-1 flex items-center justify-center gap-2 border border-slate-700 hover:border-slate-500 py-2.5 px-4 rounded-md transition-colors text-sm font-sans font-medium ${!activeProject.demoUrl && !activeProject.githubUrl ? 'bg-primary hover:bg-primary/90 text-primary-foreground border-transparent' : 'text-slate-300'}`}
+                    ) : null}
+                    <Link
+                      to={`/projects/${activeProject.slug}`}
+                      className={buttonVariants({
+                        variant: 'ghost',
+                        className: 'gap-2 text-white hover:bg-slate-800 hover:text-white',
+                      })}
                     >
                       {t('featuredProjects.details')}
+                      <ArrowIcon className="h-4 w-4" />
                     </Link>
                   </div>
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Column 2: Visual Preview (60%) */}
-            <div className="w-full lg:w-[60%] bg-[#0A0D12] relative overflow-hidden flex items-center justify-center p-6 lg:p-12 min-h-[400px]">
-              {/* Soft glow behind image */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                 <div className="w-[70%] h-[70%] bg-primary/20 blur-[100px] rounded-full" />
+            <div className="relative flex min-h-[360px] items-center justify-center bg-[#0a0d12] p-6 lg:p-10">
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                <div className="h-[70%] w-[70%] rounded-full bg-primary/15 blur-[100px]" />
               </div>
-
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeProject.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.05 }}
-                  transition={{ duration: 0.4 }}
-                  className="w-full relative z-10"
+                  exit={{ opacity: 0, scale: 1.03 }}
+                  className="relative z-10 w-full overflow-hidden rounded-[1.75rem] border border-slate-700/60 bg-[#151a21] shadow-2xl"
                 >
-                  {/* Browser Mockup Wrap */}
-                  <div className="w-full bg-[#1A1F26] rounded-t-xl rounded-b-xl border border-slate-700/50 shadow-2xl overflow-hidden flex flex-col group">
-                    <div className="h-8 bg-[#161B22] border-b border-slate-700/50 flex items-center px-3 gap-2 shrink-0">
-                      <div className="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
-                      <div className="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
-                      <div className="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
-                      <div className="mx-auto flex-1 flex justify-center">
-                        <div className="bg-[#0D1117] text-slate-400 text-[10px] sm:text-xs rounded-full px-4 py-0.5 max-w-[200px] truncate border border-slate-800">
-                          {activeProject.slug}.com
-                        </div>
+                  <div className="flex items-center justify-between border-b border-slate-700/60 px-4 py-3 font-mono text-xs text-slate-400">
+                    <span>{activeProject.slug}.app</span>
+                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-emerald-400">
+                      {t('featuredProjects.featured')}
+                    </span>
+                  </div>
+                  <div className="aspect-video overflow-hidden bg-slate-950">
+                    {activeProject.image ? (
+                      <img
+                        src={activeProject.image}
+                        alt={activeProject.title}
+                        referrerPolicy="no-referrer"
+                        className="h-full w-full object-cover object-top"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-sm text-slate-600">
+                        {t('featuredProjects.emptyPreview')}
                       </div>
-                    </div>
-                    
-                    <div className="relative w-full aspect-video bg-[#0D1117] flex items-center justify-center overflow-hidden">
-                      {activeProject.image ? (
-                        <div className="w-full h-full transform transition-transform duration-1000 ease-out group-hover:scale-105">
-                           <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition-colors z-10" />
-                           <img 
-                             src={activeProject.image} 
-                             alt={activeProject.title}
-                             className="w-full h-full object-cover object-top"
-                           />
-                        </div>
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-slate-700 p-8 border border-slate-800/50 border-dashed m-4 rounded-xl">
-                          <ImageIcon className="w-12 h-12 opacity-50" />
-                          <span className="text-sm font-mono opacity-50">no-preview.png</span>
-                        </div>
-                      )}
-                      
-                      {/* Floating Badge */}
-                      <div className="absolute top-4 right-4 z-20 backdrop-blur-md bg-black/40 border border-white/10 px-3 py-1.5 rounded-md flex items-center gap-2 shadow-xl">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                        <span className="text-[10px] sm:text-xs font-mono text-slate-200 uppercase tracking-wider font-semibold">{t('featuredProjects.featured')}</span>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </motion.div>
               </AnimatePresence>
             </div>
-            
           </div>
         </div>
 
-        <div className="flex justify-center mt-6">
-          <Link to="/projects" className={buttonVariants({ variant: "ghost", className: "gap-2 hover:bg-slate-900 font-mono text-sm" })}>
-            {t('featuredProjects.viewAll')} <ArrowIcon className="w-4 h-4" />
+        <div className="mt-6 flex justify-center">
+          <Link
+            to="/projects"
+            className={buttonVariants({
+              variant: 'ghost',
+              className: 'gap-2 font-mono text-sm hover:bg-muted',
+            })}
+          >
+            {t('featuredProjects.viewAll')}
+            <ArrowIcon className="h-4 w-4" />
           </Link>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

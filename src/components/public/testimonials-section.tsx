@@ -8,58 +8,57 @@ export const TestimonialsSection = () => {
   const testimonials = [
     {
       id: 1,
-      quote: t('testimonials.quote1', { defaultValue: "An absolute professional. Delivered high-quality code on time and went above and beyond to ensure everything was perfect. Highly recommended for any complex frontend work." }),
-      author: t('testimonials.author1', { defaultValue: "Sarah Jenkins" }),
-      role: t('testimonials.role1', { defaultValue: "Product Manager at TechFlow" }),
-      avatar: "https://picsum.photos/seed/sarah/100/100"
+      quote: t('testimonials.quote1'),
+      author: t('testimonials.author1'),
+      role: t('testimonials.role1'),
+      avatar: 'https://picsum.photos/seed/sarah/100/100',
     },
     {
       id: 2,
-      quote: t('testimonials.quote2', { defaultValue: "Transformed our slow, outdated application into a lightning-fast modern SPA. The attention to detail in both UI and core logic is unmatched." }),
-      author: t('testimonials.author2', { defaultValue: "David Chen" }),
-      role: t('testimonials.role2', { defaultValue: "CTO at RetailPro" }),
-      avatar: "https://picsum.photos/seed/david/100/100"
-    }
+      quote: t('testimonials.quote2'),
+      author: t('testimonials.author2'),
+      role: t('testimonials.role2'),
+      avatar: 'https://picsum.photos/seed/david/100/100',
+    },
   ];
 
   return (
-    <section className="py-16 md:py-24 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col items-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold font-heading mb-4 tracking-tight text-center">
-            {t('testimonials.title', { defaultValue: 'Client Feedback' })}
+    <section className="py-14 md:py-20">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-12 text-center">
+          <h2 className="font-heading text-3xl font-black tracking-tight text-foreground md:text-5xl">
+            {t('testimonials.title')}
           </h2>
-          <div className="w-20 h-1 bg-primary/50 mb-4 rounded-full"></div>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-muted-foreground">
+            {t('testimonials.subtitle')}
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {testimonials.map((tItem, i) => (
-            <motion.div
-              key={tItem.id}
+        <div className="grid gap-6 md:grid-cols-2">
+          {testimonials.map((item, index) => (
+            <motion.article
+              key={item.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
+              transition={{ delay: index * 0.08 }}
+              className="relative flex h-full flex-col rounded-[1.75rem] border border-border/60 bg-card/70 p-8 shadow-sm"
             >
-              <div className="h-full bg-slate-900/40 hover:bg-slate-900/80 transition-colors border border-slate-800 rounded-2xl p-8 relative flex flex-col">
-                <Quote className="h-10 w-10 text-primary/10 absolute top-6 rtl:left-6 ltr:right-6" />
-                <p className="text-slate-300 leading-relaxed mb-8 flex-1 relative z-10 text-lg">
-                  "{tItem.quote}"
-                </p>
-                <div className="flex items-center gap-4 mt-auto">
-                  <img
-                    src={tItem.avatar}
-                    alt={tItem.author}
-                    referrerPolicy="no-referrer"
-                    className="w-12 h-12 rounded-full object-cover border-2 border-slate-700"
-                  />
-                  <div>
-                    <h4 className="font-heading font-bold text-slate-200">{tItem.author}</h4>
-                    <p className="text-sm text-primary/80">{tItem.role}</p>
-                  </div>
+              <Quote className="absolute end-6 top-6 h-10 w-10 text-primary/10" />
+              <p className="relative z-10 flex-1 text-base leading-8 text-foreground">"{item.quote}"</p>
+              <div className="mt-8 flex items-center gap-4">
+                <img
+                  src={item.avatar}
+                  alt={item.author}
+                  referrerPolicy="no-referrer"
+                  className="h-12 w-12 rounded-full border border-border object-cover"
+                />
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-foreground">{item.author}</h3>
+                  <p className="text-sm text-muted-foreground">{item.role}</p>
                 </div>
               </div>
-            </motion.div>
+            </motion.article>
           ))}
         </div>
       </div>

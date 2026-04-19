@@ -1,21 +1,23 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Menu, X, Globe } from 'lucide-react';
-import { useTheme } from '@/components/shared/theme-provider';
-import { Button, buttonVariants } from '@/components/ui/button';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useProfile } from '@/hooks/useProfile';
+import { Globe, Menu, Moon, Sun, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { useTheme } from '@/components/shared/theme-provider';
+import { useProfile } from '@/hooks/useProfile';
 
 const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
+
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      aria-label="Toggle theme"
-      className="rounded-full shrink-0"
+      aria-label={t('nav.toggleTheme')}
+      className="shrink-0 rounded-full"
     >
       {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </Button>
@@ -23,16 +25,17 @@ const ThemeToggle = () => {
 };
 
 const LanguageToggle = () => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+
   return (
     <Button
       variant="ghost"
       size="sm"
       onClick={() => i18n.changeLanguage(i18n.resolvedLanguage === 'ar' ? 'en' : 'ar')}
-      className="font-medium flex items-center gap-2 rounded-full px-3 shrink-0"
+      className="flex shrink-0 items-center gap-2 rounded-full px-3 font-medium"
     >
       <Globe className="h-4 w-4" />
-      <span>{i18n.resolvedLanguage === 'ar' ? 'EN' : 'عربي'}</span>
+      <span>{i18n.resolvedLanguage === 'ar' ? t('nav.enShort') : t('nav.arShort')}</span>
     </Button>
   );
 };
@@ -52,76 +55,101 @@ export const PublicNavbar = () => {
     { href: '/contact', label: t('nav.contact') },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isArabic = i18n.language === 'ar';
+  const brandMark = isArabic
+    ? profile.displayNameAr || profile.displayName
+    : `${profile.displayName
+        .split(' ')
+        .map((segment: string) => segment.charAt(0))
+        .join('')}.`;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60">
-      <div className="max-w-[1344px] mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="font-heading font-bold text-xl tracking-tight text-primary">
-            {i18n.language === 'ar' 
-              ? (profile.displayNameAr || profile.displayName)
-              : profile.displayName.split(' ').map((n: string) => n.charAt(0)).join('')}.
-          </span>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/85 backdrop-blur-lg supports-[backdrop-filter]:bg-background/70">
+      <div className="mx-auto flex h-16 max-w-[1344px] items-center justify-between px-4 sm:px-8">
+        <Link to="/" className="font-heading text-xl font-bold tracking-tight text-primary">
+          {brandMark}
         </Link>
-        <nav className="hidden md:flex flex-1 justify-center items-center gap-4 lg:gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isActive(link.href) ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+
+        <nav className="hidden flex-1 items-center justify-center gap-4 md:flex lg:gap-6">
+          {navLinks.map((link) => {
+            const active = location.pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`text-sm font-medium transition-colors ${
+                  active ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
-        
-        <div className="hidden md:flex items-center gap-2 shrink-0">
+
+        <div className="hidden items-center gap-2 md:flex">
           <LanguageToggle />
-          <div className="h-4 w-px bg-border mx-1" />
+          <div className="mx-1 h-4 w-px bg-border" />
           <ThemeToggle />
-          <Link to="/contact" dir="ltr" className="ml-2 bg-primary hover:bg-primary-hover text-primary-foreground font-mono font-bold text-xs px-4 py-2 rounded transition-colors inline-flex items-center gap-1">
-            <span className="opacity-70">./</span>{i18n.language === 'ar' ? 'hire-me' : t('hero.hireMe').replace(/\s+/g, '')}.sh
+          <Link
+            to="/contact"
+            dir="ltr"
+            className="ml-2 inline-flex items-center rounded-full bg-primary px-4 py-2 font-mono text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
+          >
+            ./contact.sh
           </Link>
         </div>
 
-        <div className="flex md:hidden items-center gap-1">
+        <div className="flex items-center gap-1 md:hidden">
           <LanguageToggle />
           <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={() => setIsOpen(!isOpen)} className="rounded-full">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen((current) => !current)}
+            className="rounded-full"
+          >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
-        {isOpen && (
+        {isOpen ? (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t bg-background"
+            className="border-t bg-background md:hidden"
           >
-            <div className="flex flex-col px-4 py-4 space-y-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`text-sm font-medium p-2 rounded-md ${
-                    isActive(link.href) ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link to="/contact" className={buttonVariants({ className: "w-full rounded-full mt-2" })} onClick={() => setIsOpen(false)}>{t('hero.hireMe')}</Link>
+            <div className="space-y-3 px-4 py-4">
+              {navLinks.map((link) => {
+                const active = location.pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={`block rounded-xl px-3 py-2 text-sm font-medium ${
+                      active
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:bg-muted'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+              <Link
+                to="/contact"
+                onClick={() => setIsOpen(false)}
+                className={buttonVariants({ className: 'mt-2 w-full rounded-full' })}
+              >
+                {t('hero.secondaryCta')}
+              </Link>
             </div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </header>
   );
@@ -130,86 +158,112 @@ export const PublicNavbar = () => {
 export const PublicFooter = () => {
   const { profile } = useProfile();
   const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === 'ar';
+  const displayName = isArabic
+    ? profile.displayNameAr || profile.displayName
+    : profile.displayName;
+  const title = isArabic ? profile.titleAr || profile.title : profile.title;
+
+  const socialLinks = [
+    profile.githubUrl ? { href: profile.githubUrl, label: 'GitHub' } : null,
+    profile.linkedinUrl ? { href: profile.linkedinUrl, label: 'LinkedIn' } : null,
+    profile.websiteUrl ? { href: profile.websiteUrl, label: t('footer.website') } : null,
+  ].filter(Boolean) as { href: string; label: string }[];
 
   return (
-    <footer className="w-full mt-auto relative z-10 overflow-hidden bg-[#0A0A0B] border-t border-white/5">
-      {/* Soft Purple Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[300px] opacity-20 pointer-events-none -z-10" style={{ background: 'radial-gradient(ellipse at top, #9d4edd 0%, transparent 70%)' }}></div>
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
+    <footer className="relative z-10 mt-auto overflow-hidden border-t border-white/5 bg-[#0a0a0b]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-primary/10 to-transparent" />
 
-      {/* Terminal/Status Strip At The Top */}
-      <div className="max-w-4xl mx-auto px-6 lg:px-12 pt-0 pb-12">
-        <div className="relative border-x border-b border-white/5 bg-white/[0.02] rounded-b-xl backdrop-blur-sm px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl shadow-purple-900/5">
-          <div className="flex flex-col gap-1 w-full sm:w-auto">
-            <div className="flex items-center gap-2 text-slate-300 text-sm font-mono whitespace-nowrap" dir="ltr">
-              <span className="text-purple-400">visitor@web</span>
-              <span className="text-slate-500">:</span>
-              <span className="text-slate-500">~</span>
-              <span className="text-slate-500">$</span>
-              <span className="font-semibold text-slate-200">contact --status</span>
-              <span className="w-1.5 h-4 bg-purple-500 animate-pulse inline-block ml-1"></span>
+      <div className="mx-auto max-w-5xl px-6 pb-12">
+        <div className="rounded-b-[1.75rem] border-x border-b border-white/10 bg-white/[0.03] px-6 py-5 backdrop-blur">
+          <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+            <div>
+              <div className="flex items-center gap-2 font-mono text-sm text-slate-300" dir="ltr">
+                <span className="text-primary">visitor@web</span>
+                <span className="text-slate-500">:</span>
+                <span className="text-slate-500">~</span>
+                <span className="text-slate-500">$</span>
+                <span className="font-semibold text-slate-100">{t('footer.statusLabel')}</span>
+              </div>
+              <p className="mt-2 max-w-xl text-sm leading-7 text-slate-400">
+                {t('footer.statusDescription')}
+              </p>
             </div>
-            <p className="text-slate-400 text-sm mt-1 sm:mt-0 text-left" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-              {i18n.language === 'ar' ? 'متاح للعمل الحر وفرص العمل عن بعد.' : 'Available for freelance work and remote opportunities.'}
-            </p>
-          </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
-            <Link to="/contact" className={buttonVariants({ variant: "outline", size: "sm", className: "w-full sm:w-auto border-white/10 text-white hover:bg-white/5 hover:text-white" })}>
-              {i18n.language === 'ar' ? 'تواصل معي' : 'Contact Me'}
+            <Link
+              to="/contact"
+              className={buttonVariants({
+                variant: 'outline',
+                size: 'sm',
+                className:
+                  'border-white/10 text-white hover:bg-white/5 hover:text-white',
+              })}
+            >
+              {t('footer.cta')}
             </Link>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 pb-8">
-        {/* 3 Columns Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-8 mb-16">
-          {/* Brand Col */}
-          <div className="flex flex-col gap-4">
-            <Link to="/" className="font-heading font-bold text-2xl tracking-tight text-white hover:text-purple-400 transition-colors w-fit">
-              {i18n.language === 'ar' ? 'محمد سعيد' : 'Mohamed Saied'}
-              <span className="text-purple-500">_</span>
-            </Link>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-              {i18n.language === 'ar' 
-                ? 'مطوّر برمجيات متكامل متخصص في تطوير الويب الحديث وتطبيقات الهواتف.' 
-                : 'Full-stack software developer specializing in modern web and mobile applications.'}
-            </p>
-          </div>
-
-          {/* Quick Links Col */}
-          <div className="flex flex-col gap-4">
-             <h4 className="font-heading font-semibold text-slate-100 uppercase tracking-wider text-sm">{i18n.language === 'ar' ? 'روابط سريعة' : 'Quick Links'}</h4>
-             <ul className="flex flex-col gap-3 text-sm text-slate-400">
-               <li><Link to="/" className="hover:text-purple-400 transition-colors">{i18n.language === 'ar' ? 'الرئيسية' : 'Home'}</Link></li>
-               <li><Link to="/about" className="hover:text-purple-400 transition-colors">{i18n.language === 'ar' ? 'نبذة عني' : 'About'}</Link></li>
-               <li><Link to="/projects" className="hover:text-purple-400 transition-colors">{i18n.language === 'ar' ? 'مشاريعي' : 'Projects'}</Link></li>
-               <li><Link to="/skills" className="hover:text-purple-400 transition-colors">{i18n.language === 'ar' ? 'المهارات' : 'Skills'}</Link></li>
-               <li><Link to="/blog" className="hover:text-purple-400 transition-colors">{i18n.language === 'ar' ? 'المدونة' : 'Blog'}</Link></li>
-               <li><Link to="/contact" className="hover:text-purple-400 transition-colors">{i18n.language === 'ar' ? 'تواصل معي' : 'Contact'}</Link></li>
-             </ul>
-          </div>
-
-          {/* Connect Col */}
-          <div className="flex flex-col gap-4">
-             <h4 className="font-heading font-semibold text-slate-100 uppercase tracking-wider text-sm">{i18n.language === 'ar' ? 'تواصل' : 'Connect'}</h4>
-             <ul className="flex flex-col gap-3 text-sm text-slate-400">
-               {profile.githubUrl && <li><a href={profile.githubUrl} target="_blank" rel="noreferrer" className="hover:text-purple-400 transition-colors">GitHub</a></li>}
-               {profile.linkedinUrl && <li><a href={profile.linkedinUrl} target="_blank" rel="noreferrer" className="hover:text-purple-400 transition-colors">LinkedIn</a></li>}
-               <li><Link to="/contact" className="hover:text-purple-400 transition-colors">Email</Link></li>
-               <li><Link to="/contact" className="hover:text-purple-400 transition-colors">WhatsApp</Link></li>
-             </ul>
-          </div>
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 pb-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-12">
+        <div className="space-y-4">
+          <Link to="/" className="font-heading text-2xl font-bold tracking-tight text-white">
+            {displayName}
+            <span className="text-primary">_</span>
+          </Link>
+          <p className="max-w-md text-sm leading-7 text-slate-400">{title}</p>
+          <p className="max-w-md text-sm leading-7 text-slate-500">{t('footer.summary')}</p>
         </div>
 
-        {/* Bottom line */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row gap-4 text-xs font-mono text-slate-500 justify-between items-center text-center md:text-left">
-          <p>
-            {i18n.language === 'ar' 
-              ? '© 2026 محمد سعيد — تم البناء بتقنيات الويب الحديثة.'
-              : '© 2026 Mohamed Saied — Built with modern web technologies.'}
-          </p>
-           <Link to="/login" className="hover:text-slate-300 transition-colors">{t('nav.adminLogin', 'Admin')}</Link>
+        <div className="space-y-4">
+          <h4 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-slate-100">
+            {t('footer.quickLinks')}
+          </h4>
+          <ul className="space-y-3 text-sm text-slate-400">
+            {[
+              ['/', t('nav.home')],
+              ['/about', t('nav.about')],
+              ['/projects', t('nav.projects')],
+              ['/contact', t('nav.contact')],
+            ].map(([href, label]) => (
+              <li key={href}>
+                <Link to={href} className="transition-colors hover:text-white">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-slate-100">
+            {t('footer.connect')}
+          </h4>
+          <ul className="space-y-3 text-sm text-slate-400">
+            {socialLinks.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="transition-colors hover:text-white"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <Link to="/login" className="transition-colors hover:text-white">
+                {t('nav.adminLogin')}
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="border-t border-white/5">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-center font-mono text-xs text-slate-500 md:flex-row md:text-start lg:px-12">
+          <p>{t('footer.builtWith')}</p>
+          <p>{t('footer.rights')}</p>
         </div>
       </div>
     </footer>

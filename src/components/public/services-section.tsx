@@ -8,18 +8,18 @@ export const ServicesSection = () => {
   const services = [
     {
       icon: <Code2 className="h-10 w-10 text-primary" />,
-      title: t('services.frontend', { defaultValue: 'Clean Architecture' }),
-      description: t('services.frontendDesc', { defaultValue: 'Producing scalable, maintainable, and well-documented code following modern best practices and design patterns.' })
+      title: t('services.frontend'),
+      description: t('services.frontendDesc')
     },
     {
       icon: <Rocket className="h-10 w-10 text-primary" />,
-      title: t('services.mobile', { defaultValue: 'High Performance' }),
-      description: t('services.mobileDesc', { defaultValue: 'Optimizing for speed and seamless UX. Fast load times, smooth animations, and solid SEO fundamentals.' })
+      title: t('services.mobile'),
+      description: t('services.mobileDesc')
     },
     {
       icon: <Layers className="h-10 w-10 text-primary" />,
-      title: t('services.consulting', { defaultValue: 'End-to-End Solutions' }),
-      description: t('services.consultingDesc', { defaultValue: 'Taking ideas from zero to production. Covering concept, database design, API integration, and deployment.' })
+      title: t('services.consulting'),
+      description: t('services.consultingDesc')
     }
   ];
 
@@ -28,10 +28,10 @@ export const ServicesSection = () => {
       <div className="flex flex-col md:flex-row gap-12 items-center mb-16">
         <div className="flex-1 md:pr-12 rtl:md:pr-0 rtl:md:pl-12">
           <h2 className="text-3xl md:text-5xl font-bold font-heading tracking-tight mb-4 text-foreground">
-            {t('services.title', { defaultValue: 'Why choose me?' })}
+            {t('services.title')}
           </h2>
           <p className="text-lg text-muted-foreground w-full max-w-md">
-            {t('services.description', { defaultValue: 'I prioritize building highly performant applications that offer great user experiences and maintainable codebases.' })}
+            {t('services.description')}
           </p>
         </div>
       </div>
