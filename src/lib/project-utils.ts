@@ -1,3 +1,5 @@
+import { getLocalizedValue } from './content-hub';
+
 export type ProjectType = "web" | "mobile" | "dashboard" | "backend" | "other";
 export type ProjectSortMode = "featured" | "newest" | "alphabetical";
 
@@ -9,16 +11,23 @@ type FirestoreTimestampLike =
 export type ProjectRecord = {
   id: string;
   title: string;
+  titleAr?: string;
   slug: string;
   description: string;
+  descriptionAr?: string;
   category: string;
-  image: string;
+  image?: string;
+  imageAssetId?: string;
+  galleryImages?: string[];
+  galleryAssetIds?: string[];
   tags?: string[];
   demoUrl?: string;
   githubUrl?: string;
   type?: string;
   featured?: boolean;
   featuredOrder?: number;
+  highlightLabel?: string;
+  highlightLabelAr?: string;
   problem?: string;
   problemAr?: string;
   solution?: string;
@@ -27,6 +36,14 @@ export type ProjectRecord = {
   projectRoleAr?: string;
   result?: string;
   resultAr?: string;
+  seo?: {
+    title?: string;
+    titleAr?: string;
+    description?: string;
+    descriptionAr?: string;
+    image?: string;
+    imageAssetId?: string;
+  };
   createdAt?: FirestoreTimestampLike;
 };
 
@@ -137,9 +154,5 @@ export function getLocalizedCaseStudyValue(
   arabicValue?: string | null,
   isArabic: boolean = false,
 ): string {
-  if (isArabic && arabicValue?.trim()) {
-    return arabicValue.trim();
-  }
-
-  return englishValue?.trim() ?? "";
+  return getLocalizedValue(englishValue, arabicValue, isArabic);
 }

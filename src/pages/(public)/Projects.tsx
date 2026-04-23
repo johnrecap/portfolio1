@@ -6,7 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
-import { useCollection } from '@/hooks/useFirestore';
+import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
+import { usePageConfig } from '@/hooks/usePageConfig';
+import { readComposerText } from '@/lib/admin/page-content';
+import { getLocalizedValue, resolveMediaField } from '@/lib/content-hub';
 import {
   filterProjects,
   normalizeProjectType,
@@ -25,7 +28,9 @@ const projectTypeKeyMap = {
 } as const;
 
 export const Projects = () => {
-  const { data: projects, loading } = useCollection<ProjectRecord>('projects');
+  const { data: projects, loading } = usePublicCollection<ProjectRecord>('projects');
+  const { assets } = usePublicMediaLibrary();
+  const { pageConfig } = usePageConfig('projects');
   const { t, i18n } = useTranslation();
   const [search, setSearch] = useState('');
   const [activeType, setActiveType] = useState<'all' | 'web' | 'mobile' | 'dashboard' | 'backend' | 'other'>('all');
@@ -38,21 +43,44 @@ export const Projects = () => {
     left.localeCompare(right),
   );
   const isArabic = i18n.language === 'ar';
+  const heroSection = pageConfig.sections.find((section) => section.type === 'projectsHero');
+  const listingSection = pageConfig.sections.find((section) => section.type === 'projectsListing');
+  const seoTitle = isArabic
+    ? pageConfig.seo.titleAr || pageConfig.titleAr || t('nav.projects')
+    : pageConfig.seo.title || pageConfig.title || t('nav.projects');
+  const seoDescription = isArabic
+    ? pageConfig.seo.descriptionAr || t('projects.subtitle')
+    : pageConfig.seo.description || t('projects.subtitle');
+  const eyebrow = heroSection
+    ? readComposerText(heroSection.content, 'eyebrow', t('projects.portfolio'), isArabic)
+    : t('projects.portfolio');
+  const title = heroSection
+    ? readComposerText(heroSection.content, 'title', `${t('projects.title')} ${t('projects.works')}`, isArabic)
+    : `${t('projects.title')} ${t('projects.works')}`;
+  const subtitle = heroSection
+    ? readComposerText(heroSection.content, 'subtitle', t('projects.subtitle'), isArabic)
+    : t('projects.subtitle');
+  const listingTitle = listingSection
+    ? readComposerText(listingSection.content, 'title', '', isArabic)
+    : '';
+  const listingSubtitle = listingSection
+    ? readComposerText(listingSection.content, 'subtitle', '', isArabic)
+    : '';
 
   return (
     <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 pt-10 pb-20">
-      <PageSeo title={t('nav.projects')} description={t('projects.subtitle')} />
+      <PageSeo title={seoTitle} description={seoDescription} image={pageConfig.seo.image} />
 
       <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
-            {t('projects.portfolio')}
+            {eyebrow}
           </p>
           <h1 className="mt-4 font-heading text-4xl font-black tracking-tight text-foreground md:text-6xl">
-            {t('projects.title')} {t('projects.works')}
+            {title}
           </h1>
           <p className="mt-4 text-base leading-8 text-muted-foreground md:text-lg">
-            {t('projects.subtitle')}
+            {subtitle}
           </p>
         </div>
 
@@ -68,6 +96,12 @@ export const Projects = () => {
       </header>
 
       <div className="flex flex-col gap-5">
+        {listingTitle || listingSubtitle ? (
+          <div className="max-w-3xl space-y-3">
+            {listingTitle ? <h2 className="font-heading text-2xl font-bold text-foreground">{listingTitle}</h2> : null}
+            {listingSubtitle ? <p className="text-sm leading-7 text-muted-foreground">{listingSubtitle}</p> : null}
+          </div>
+        ) : null}
         <div className="flex flex-wrap gap-2">
           {Object.keys(projectTypeKeyMap).map((key) => (
             <button
@@ -144,6 +178,11 @@ export const Projects = () => {
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {sortedProjects.map((project, index) => {
             const projectType = normalizeProjectType(project.type ?? project.category);
+            const titleText = getLocalizedValue(project.title, project.titleAr, isArabic) || project.title;
+            const descriptionText =
+              getLocalizedValue(project.description, project.descriptionAr, isArabic) || project.description;
+            const highlightLabel = getLocalizedValue(project.highlightLabel, project.highlightLabelAr, isArabic);
+            const previewImage = resolveMediaField({ url: project.image, assetId: project.imageAssetId }, assets);
 
             return (
               <motion.article
@@ -154,10 +193,10 @@ export const Projects = () => {
                 className="group overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/70 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
               >
                 <Link to={`/projects/${project.slug}`} className="block aspect-[16/10] overflow-hidden bg-muted">
-                  {project.image ? (
+                  {previewImage.url ? (
                     <img
-                      src={project.image}
-                      alt={project.title}
+                      src={previewImage.url}
+                      alt={titleText}
                       referrerPolicy="no-referrer"
                       className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                     />
@@ -183,13 +222,18 @@ export const Projects = () => {
                   <div>
                     <Link to={`/projects/${project.slug}`}>
                       <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
-                        {project.title}
+                        {titleText}
                       </h2>
                     </Link>
                     <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                      {project.description}
+                      {descriptionText}
                     </p>
                   </div>
+                  {highlightLabel ? (
+                    <div className="rounded-[1rem] border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+                      {highlightLabel}
+                    </div>
+                  ) : null}
 
                   <div className="flex flex-wrap gap-2" dir="ltr">
                     {(project.tags ?? []).map((tag) => (

@@ -2,14 +2,24 @@
   "name": "react-example",
   "private": true,
   "version": "0.0.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build",
-    "preview": "vite preview",
-    "clean": "rm -rf dist",
+    "build:client": "vite build",
+    "build:server": "tsc -p tsconfig.server.json",
+    "build": "npm run clean && npm run build:client && npm run build:server",
+    "preview": "npm run build && npm run start",
+    "clean": "node -e \"const fs=require('node:fs'); fs.rmSync('dist', { recursive: true, force: true });\"",
     "lint": "tsc --noEmit",
-    "start": "node dist/server/server.cjs",
+    "test:content": "tsx --test src/lib/content-utils.test.ts src/lib/project-utils.test.ts src/lib/content-hub.test.ts src/lib/media.test.ts",
+    "test:admin": "tsx --test src/lib/admin/auth.test.ts src/lib/admin/defaults.test.ts src/lib/admin/page-config.test.ts src/lib/admin/page-content.test.ts src/lib/admin/platform-settings.test.ts src/lib/admin/section-registry.test.ts src/lib/admin/settings.test.ts",
+    "test:firestore": "tsx --test src/hooks/useFirestore.test.ts src/hooks/public-firestore.test.ts",
+    "test:locales": "tsx --test src/locales/dashboard-locales.test.ts",
+    "test": "npm run test:content && npm run test:admin && npm run test:firestore && npm run test:locales",
+    "start": "node -e \"process.env.NODE_ENV='production'; import('./dist/server/server.js')\"",
     "i18n:check": "node scripts/i18n/locale-tools.mjs check",
     "i18n:fix:ar": "node scripts/i18n/locale-tools.mjs fix-ar"
   },

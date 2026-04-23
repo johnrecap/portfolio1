@@ -9,18 +9,35 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
 import { PageSeo } from '@/components/shared/PageSeo';
+import { usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { useProfile } from '@/hooks/useProfile';
 import { db } from '@/lib/firebase';
+import { getLocalizedValue, resolveEntitySeo, resolveMediaField } from '@/lib/content-hub';
 
 type BlogPostRecord = {
   id: string;
   slug: string;
   title: string;
+  titleAr?: string;
   excerpt?: string;
+  excerptAr?: string;
   content?: string;
+  contentAr?: string;
   category?: string;
   image?: string;
+  imageAssetId?: string;
   coverImage?: string;
+  coverImageAssetId?: string;
+  readTime?: string;
+  featured?: boolean;
+  seo?: {
+    title?: string;
+    titleAr?: string;
+    description?: string;
+    descriptionAr?: string;
+    image?: string;
+    imageAssetId?: string;
+  };
   createdAt?: { seconds?: number };
 };
 
@@ -30,6 +47,7 @@ export const BlogPost = () => {
   const [related, setRelated] = useState<BlogPostRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [readingProgress, setReadingProgress] = useState(0);
+  const { assets } = usePublicMediaLibrary();
   const { profile } = useProfile();
   const { i18n, t } = useTranslation();
 
@@ -135,12 +153,31 @@ export const BlogPost = () => {
     );
   }
 
-  const description = post.excerpt || post.content?.slice(0, 160) || t('blog.subtitle');
-  const heroImage = post.image || post.coverImage;
+  const localizedTitle = getLocalizedValue(post.title, post.titleAr, i18n.language === 'ar') || post.title;
+  const localizedExcerpt = getLocalizedValue(post.excerpt, post.excerptAr, i18n.language === 'ar') || post.excerpt;
+  const localizedContent = getLocalizedValue(post.content, post.contentAr, i18n.language === 'ar') || post.content;
+  const seo = resolveEntitySeo(
+    {
+      title: post.title,
+      titleAr: post.titleAr,
+      description: post.excerpt || post.content?.slice(0, 160),
+      descriptionAr: post.excerptAr || post.contentAr?.slice(0, 160),
+      seo: post.seo,
+    },
+    assets,
+    i18n.language === 'ar',
+  );
+  const heroImage = resolveMediaField(
+    {
+      url: post.coverImage || post.image,
+      assetId: post.coverImageAssetId || post.imageAssetId,
+    },
+    assets,
+  );
 
   return (
     <div className="relative flex w-full flex-col gap-12 pb-20 pt-12 lg:pt-20">
-      <PageSeo title={post.title} description={description} image={heroImage} />
+      <PageSeo title={seo.title || localizedTitle} description={seo.description || localizedExcerpt || t('blog.subtitle')} image={seo.image || heroImage.url} />
 
       <div className="fixed top-0 left-0 z-[60] h-1 w-full shrink-0 bg-transparent">
         <div className="h-full bg-primary" style={{ width: `${readingProgress * 100}%` }} />
@@ -155,12 +192,12 @@ export const BlogPost = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground md:text-5xl lg:text-6xl"
         >
-          {post.title}
+          {localizedTitle}
         </motion.h1>
         <div className="flex items-center justify-center gap-6 text-sm font-medium text-muted-foreground">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
-            {t('blogPost.readTime')}
+            {post.readTime || t('blogPost.readTime')}
           </div>
           <div className="h-1 w-1 rounded-full bg-border" />
           <div className="flex items-center gap-2">
@@ -192,7 +229,7 @@ export const BlogPost = () => {
         </button>
       </div>
 
-      {heroImage ? (
+      {heroImage.url ? (
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -200,14 +237,14 @@ export const BlogPost = () => {
         >
           <div className="relative h-[400px] overflow-hidden rounded-[2rem] border border-border bg-muted shadow-2xl md:h-[520px]">
             <img
-              src={heroImage}
-              alt={post.title}
+              src={heroImage.url}
+              alt={localizedTitle}
               referrerPolicy="no-referrer"
               className="h-full w-full object-cover"
             />
             <div className="absolute top-6 rtl:right-6 ltr:left-6">
               <span className="rounded-full bg-primary/90 px-5 py-2 text-sm font-bold tracking-wide text-primary-foreground shadow-lg backdrop-blur-md">
-                {t('blogPost.featured')}
+                {post.featured ? t('blogPost.featured') : t('blogPost.article')}
               </span>
             </div>
           </div>
@@ -217,9 +254,9 @@ export const BlogPost = () => {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 lg:flex-row lg:gap-16">
         <article className="prose prose-slate max-w-none flex-1 md:prose-lg prose-headings:font-heading prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-2xl dark:prose-invert">
           <p className="!mt-0 mb-12 text-xl font-medium leading-relaxed text-muted-foreground md:text-2xl">
-            {post.excerpt}
+            {localizedExcerpt}
           </p>
-          {post.content ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown> : null}
+          {localizedContent ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{localizedContent}</ReactMarkdown> : null}
         </article>
 
         <aside className="w-full shrink-0 lg:w-72">
@@ -306,15 +343,22 @@ export const BlogPost = () => {
           </div>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {related.map((article) => {
-              const relatedImage = article.image || article.coverImage;
+              const relatedTitle = getLocalizedValue(article.title, article.titleAr, i18n.language === 'ar') || article.title;
+              const relatedImage = resolveMediaField(
+                {
+                  url: article.coverImage || article.image,
+                  assetId: article.coverImageAssetId || article.imageAssetId,
+                },
+                assets,
+              );
 
               return (
                 <Link key={article.id} to={`/blog/${article.slug}`} className="group relative flex h-full flex-col outline-none">
                   <div className="mb-6 aspect-video overflow-hidden rounded-2xl border border-border bg-muted">
-                    {relatedImage ? (
+                    {relatedImage.url ? (
                       <img
-                        src={relatedImage}
-                        alt={article.title}
+                        src={relatedImage.url}
+                        alt={relatedTitle}
                         referrerPolicy="no-referrer"
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
@@ -328,7 +372,7 @@ export const BlogPost = () => {
                     {article.category || t('blogPost.article')}
                   </span>
                   <h3 className="font-heading text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary line-clamp-2">
-                    {article.title}
+                    {relatedTitle}
                   </h3>
                 </Link>
               );

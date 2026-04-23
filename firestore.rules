@@ -1,24 +1,25 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // ===============================================================
     // Helper Functions
     // ===============================================================
-    
+
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function isAdmin() {
       return isAuthenticated() &&
-        (request.auth.token.email == "mohamedsaied.m20@gmail.com" && request.auth.token.email_verified == true);
+        (request.auth.token.email == "mohamedsaied.m20@gmail.com" &&
+        request.auth.token.email_verified == true);
     }
-    
+
     function hasRequiredFields(fields) {
       return request.resource.data.keys().hasAll(fields);
     }
-    
+
     function hasOnlyAllowedFields(fields) {
       return request.resource.data.keys().hasOnly(fields);
     }
@@ -33,15 +34,225 @@ service cloud.firestore {
       return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
+    function optionalString(field) {
+      return !(field in request.resource.data) || request.resource.data[field] is string;
+    }
+
+    function optionalBool(field) {
+      return !(field in request.resource.data) || request.resource.data[field] is bool;
+    }
+
+    function optionalList(field) {
+      return !(field in request.resource.data) || request.resource.data[field] is list;
+    }
+
+    function optionalMap(field) {
+      return !(field in request.resource.data) || request.resource.data[field] is map;
+    }
+
+    function optionalNumber(field) {
+      return !(field in request.resource.data) || request.resource.data[field] is number;
+    }
+
+    function isPublishStatus(field) {
+      return request.resource.data[field] in ['draft', 'published'];
+    }
+
     // ===============================================================
     // Domain Validators
     // ===============================================================
 
     function isValidUser() {
-      return hasOnlyAllowedFields(['email', 'role', 'createdAt']) &&
+      return hasOnlyAllowedFields(['email', 'role', 'displayName', 'createdAt', 'updatedAt']) &&
         hasRequiredFields(['email', 'role']) &&
         isValidEmail(request.resource.data.email) &&
-        request.resource.data.role in ['admin', 'user'];
+        request.resource.data.role in ['super_admin'] &&
+        optionalString('displayName');
+    }
+
+    function isValidProfileSettings() {
+      return hasOnlyAllowedFields([
+          'displayName', 'displayNameAr', 'title', 'titleAr', 'bio', 'bioAr', 'isAvailable',
+          'githubUrl', 'linkedinUrl', 'websiteUrl', 'metaTitle', 'metaTitleAr',
+          'metaDescription', 'metaDescriptionAr', 'profileImage', 'heroImage', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['displayName', 'title']) &&
+        validStringLength('displayName', 1, 100) &&
+        validStringLength('title', 1, 150) &&
+        optionalString('displayNameAr') &&
+        optionalString('titleAr') &&
+        optionalString('bio') &&
+        optionalString('bioAr') &&
+        optionalBool('isAvailable') &&
+        optionalString('githubUrl') &&
+        optionalString('linkedinUrl') &&
+        optionalString('websiteUrl') &&
+        optionalString('metaTitle') &&
+        optionalString('metaTitleAr') &&
+        optionalString('metaDescription') &&
+        optionalString('metaDescriptionAr') &&
+        optionalString('profileImage') &&
+        optionalString('heroImage');
+    }
+
+    function isValidSiteSettings() {
+      return hasOnlyAllowedFields([
+          'siteName', 'siteNameAr', 'siteTagline', 'siteTaglineAr', 'logoUrl',
+          'primaryCtaEnabled', 'primaryCtaLabel', 'primaryCtaLabelAr', 'primaryCtaHref',
+          'status', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['siteName', 'siteNameAr', 'primaryCtaEnabled', 'status']) &&
+        validStringLength('siteName', 1, 100) &&
+        validStringLength('siteNameAr', 1, 100) &&
+        request.resource.data.primaryCtaEnabled is bool &&
+        isPublishStatus('status') &&
+        optionalString('siteTagline') &&
+        optionalString('siteTaglineAr') &&
+        optionalString('logoUrl') &&
+        optionalString('primaryCtaLabel') &&
+        optionalString('primaryCtaLabelAr') &&
+        optionalString('primaryCtaHref');
+    }
+
+    function isValidThemeSettings() {
+      return hasOnlyAllowedFields([
+          'mode', 'accent', 'surfaceStyle', 'radiusScale', 'shadowDensity', 'backgroundPreset',
+          'dashboardAccent', 'dashboardSurfaceStyle', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields([
+          'mode', 'accent', 'surfaceStyle', 'radiusScale', 'shadowDensity', 'backgroundPreset',
+          'dashboardAccent', 'dashboardSurfaceStyle'
+        ]) &&
+        request.resource.data.mode in ['light', 'dark', 'system'] &&
+        request.resource.data.accent in ['teal', 'cyan', 'blue', 'indigo', 'rose', 'amber'] &&
+        request.resource.data.surfaceStyle in ['glass', 'solid', 'outline'] &&
+        request.resource.data.radiusScale in ['sharp', 'rounded', 'pill'] &&
+        request.resource.data.shadowDensity in ['subtle', 'medium', 'bold'] &&
+        request.resource.data.backgroundPreset in ['grid', 'gradient', 'noise'] &&
+        request.resource.data.dashboardAccent in ['teal', 'cyan', 'blue', 'indigo', 'rose', 'amber'] &&
+        request.resource.data.dashboardSurfaceStyle in ['glass', 'solid', 'outline'];
+    }
+
+    function isValidNavigationSettings() {
+      return hasOnlyAllowedFields([
+          'items', 'primaryCtaLabel', 'primaryCtaLabelAr', 'primaryCtaHref',
+          'showLanguageToggle', 'showThemeToggle', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['items', 'status']) &&
+        request.resource.data.items is list &&
+        isPublishStatus('status') &&
+        optionalString('primaryCtaLabel') &&
+        optionalString('primaryCtaLabelAr') &&
+        optionalString('primaryCtaHref') &&
+        optionalBool('showLanguageToggle') &&
+        optionalBool('showThemeToggle');
+    }
+
+    function isValidFooterSettings() {
+      return hasOnlyAllowedFields([
+          'tagline', 'taglineAr', 'ctaLabel', 'ctaLabelAr', 'ctaHref',
+          'statusStrip', 'statusStripAr', 'links', 'socialLinks', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['tagline', 'taglineAr', 'status']) &&
+        validStringLength('tagline', 1, 500) &&
+        validStringLength('taglineAr', 1, 500) &&
+        isPublishStatus('status') &&
+        optionalString('ctaLabel') &&
+        optionalString('ctaLabelAr') &&
+        optionalString('ctaHref') &&
+        optionalString('statusStrip') &&
+        optionalString('statusStripAr') &&
+        optionalList('links') &&
+        optionalList('socialLinks');
+    }
+
+    function isValidSeoSettings() {
+      return hasOnlyAllowedFields([
+          'defaultTitle', 'defaultTitleAr', 'defaultDescription', 'defaultDescriptionAr',
+          'ogImage', 'siteUrl', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['defaultTitle', 'defaultTitleAr', 'defaultDescription', 'defaultDescriptionAr', 'status']) &&
+        validStringLength('defaultTitle', 1, 200) &&
+        validStringLength('defaultTitleAr', 1, 200) &&
+        validStringLength('defaultDescription', 1, 1000) &&
+        validStringLength('defaultDescriptionAr', 1, 1000) &&
+        isPublishStatus('status') &&
+        optionalString('ogImage') &&
+        optionalString('siteUrl');
+    }
+
+    function isValidDashboardSettings() {
+      return hasOnlyAllowedFields([
+          'dashboardName', 'dashboardNameAr', 'subtitle', 'subtitleAr', 'introTitle', 'introTitleAr',
+          'introBody', 'introBodyAr', 'iconUrl', 'iconAssetId', 'avatarUrl', 'avatarAssetId',
+          'sidebarModules', 'overviewWidgets', 'quickActions', 'accent', 'surfaceStyle',
+          'status', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields([
+          'dashboardName', 'dashboardNameAr', 'sidebarModules', 'overviewWidgets',
+          'quickActions', 'accent', 'surfaceStyle', 'status'
+        ]) &&
+        validStringLength('dashboardName', 1, 100) &&
+        validStringLength('dashboardNameAr', 1, 100) &&
+        request.resource.data.sidebarModules is list &&
+        request.resource.data.overviewWidgets is list &&
+        request.resource.data.quickActions is list &&
+        request.resource.data.accent in ['teal', 'cyan', 'blue', 'indigo', 'rose', 'amber'] &&
+        request.resource.data.surfaceStyle in ['glass', 'solid', 'outline'] &&
+        isPublishStatus('status') &&
+        optionalString('subtitle') &&
+        optionalString('subtitleAr') &&
+        optionalString('introTitle') &&
+        optionalString('introTitleAr') &&
+        optionalString('introBody') &&
+        optionalString('introBodyAr') &&
+        optionalString('iconUrl') &&
+        optionalString('iconAssetId') &&
+        optionalString('avatarUrl') &&
+        optionalString('avatarAssetId');
+    }
+
+    function isValidContactSettings() {
+      return hasOnlyAllowedFields([
+          'email', 'whatsapp', 'location', 'locationAr', 'availabilityLabel',
+          'availabilityLabelAr', 'responseTime', 'responseTimeAr', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['availabilityLabel', 'availabilityLabelAr', 'responseTime', 'responseTimeAr', 'status']) &&
+        validStringLength('availabilityLabel', 1, 300) &&
+        validStringLength('availabilityLabelAr', 1, 300) &&
+        validStringLength('responseTime', 1, 300) &&
+        validStringLength('responseTimeAr', 1, 300) &&
+        isPublishStatus('status') &&
+        optionalString('email') &&
+        optionalString('whatsapp') &&
+        optionalString('location') &&
+        optionalString('locationAr');
+    }
+
+    function isValidSettingsDoc(docId) {
+      return (docId == 'profile' && isValidProfileSettings()) ||
+        (docId == 'site' && isValidSiteSettings()) ||
+        (docId == 'theme' && isValidThemeSettings()) ||
+        (docId == 'navigation' && isValidNavigationSettings()) ||
+        (docId == 'footer' && isValidFooterSettings()) ||
+        (docId == 'seo' && isValidSeoSettings()) ||
+        (docId == 'dashboard' && isValidDashboardSettings()) ||
+        (docId == 'contact' && isValidContactSettings());
+    }
+
+    function isValidPage(pageId) {
+      return hasOnlyAllowedFields([
+          'pageId', 'title', 'titleAr', 'slug', 'status', 'seo', 'sections', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['pageId', 'status', 'sections']) &&
+        request.resource.data.pageId == pageId &&
+        pageId in ['home', 'about', 'projects', 'blog', 'contact'] &&
+        request.resource.data.sections is list &&
+        isPublishStatus('status') &&
+        optionalString('title') &&
+        optionalString('titleAr') &&
+        optionalString('slug') &&
+        optionalMap('seo');
     }
 
     function isValidProject() {
@@ -50,22 +261,22 @@ service cloud.firestore {
         validStringLength('slug', 1, 100) &&
         validStringLength('description', 1, 5000) &&
         validStringLength('category', 1, 50) &&
-        validStringLength('image', 1, 2000000) && // Allowed base64 images
-        (!('demoUrl' in request.resource.data) || request.resource.data.demoUrl is string) &&
-        (!('githubUrl' in request.resource.data) || request.resource.data.githubUrl is string) &&
-        (!('color' in request.resource.data) || request.resource.data.color is string) &&
-        (!('tags' in request.resource.data) || request.resource.data.tags is list) &&
-        (!('type' in request.resource.data) || request.resource.data.type in ['web', 'mobile', 'dashboard', 'backend', 'other']) &&
-        (!('featured' in request.resource.data) || request.resource.data.featured is bool) &&
-        (!('featuredOrder' in request.resource.data) || request.resource.data.featuredOrder is number) &&
-        (!('problem' in request.resource.data) || request.resource.data.problem is string) &&
-        (!('problemAr' in request.resource.data) || request.resource.data.problemAr is string) &&
-        (!('solution' in request.resource.data) || request.resource.data.solution is string) &&
-        (!('solutionAr' in request.resource.data) || request.resource.data.solutionAr is string) &&
-        (!('projectRole' in request.resource.data) || request.resource.data.projectRole is string) &&
-        (!('projectRoleAr' in request.resource.data) || request.resource.data.projectRoleAr is string) &&
-        (!('result' in request.resource.data) || request.resource.data.result is string) &&
-        (!('resultAr' in request.resource.data) || request.resource.data.resultAr is string);
+        validStringLength('image', 1, 2000000) &&
+        optionalString('demoUrl') &&
+        optionalString('githubUrl') &&
+        optionalString('color') &&
+        optionalList('tags') &&
+        (!( 'type' in request.resource.data) || request.resource.data.type in ['web', 'mobile', 'dashboard', 'backend', 'other']) &&
+        optionalBool('featured') &&
+        optionalNumber('featuredOrder') &&
+        optionalString('problem') &&
+        optionalString('problemAr') &&
+        optionalString('solution') &&
+        optionalString('solutionAr') &&
+        optionalString('projectRole') &&
+        optionalString('projectRoleAr') &&
+        optionalString('result') &&
+        optionalString('resultAr');
     }
 
     function isValidBlog() {
@@ -86,23 +297,55 @@ service cloud.firestore {
         request.resource.data.proficiency <= 100;
     }
 
+    function isValidTestimonial() {
+      return hasOnlyAllowedFields([
+          'name', 'nameAr', 'role', 'roleAr', 'company', 'companyAr', 'quote', 'quoteAr',
+          'outcome', 'outcomeAr', 'avatarUrl', 'avatarAssetId', 'logoUrl', 'logoAssetId',
+          'visible', 'featured', 'order', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['name', 'quote', 'order']) &&
+        validStringLength('name', 1, 150) &&
+        validStringLength('quote', 1, 5000) &&
+        request.resource.data.order is number &&
+        optionalString('nameAr') &&
+        optionalString('role') &&
+        optionalString('roleAr') &&
+        optionalString('company') &&
+        optionalString('companyAr') &&
+        optionalString('quoteAr') &&
+        optionalString('outcome') &&
+        optionalString('outcomeAr') &&
+        optionalString('avatarUrl') &&
+        optionalString('avatarAssetId') &&
+        optionalString('logoUrl') &&
+        optionalString('logoAssetId') &&
+        optionalBool('visible') &&
+        optionalBool('featured');
+    }
+
+    function isValidMediaAsset() {
+      return hasOnlyAllowedFields([
+          'title', 'titleAr', 'alt', 'altAr', 'url', 'kind', 'group', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['title', 'url', 'kind', 'group']) &&
+        validStringLength('title', 1, 200) &&
+        validStringLength('url', 1, 2000000) &&
+        validStringLength('group', 1, 100) &&
+        request.resource.data.kind in ['image', 'video'] &&
+        optionalString('titleAr') &&
+        optionalString('alt') &&
+        optionalString('altAr');
+    }
+
     function isValidMessage() {
-      // Allow optional budget and optional whatsapp if authenticated
       return hasRequiredFields(['name', 'email', 'message', 'createdAt']) &&
         validStringLength('name', 1, 100) &&
         isValidEmail(request.resource.data.email) &&
         validStringLength('message', 1, 5000) &&
-        (!('userId' in request.resource.data) || request.resource.data.userId is string) &&
-        (!('whatsapp' in request.resource.data) || request.resource.data.whatsapp is string) &&
-        (!('budget' in request.resource.data) || request.resource.data.budget is string) &&
-        (!('read' in request.resource.data) || request.resource.data.read is bool);
-    }
-
-    function isValidSettings() {
-      // Basic validation for settings map
-      return request.resource.data is map &&
-        validStringLength('displayName', 1, 100) &&
-        validStringLength('title', 1, 150);
+        optionalString('userId') &&
+        optionalString('whatsapp') &&
+        optionalString('budget') &&
+        optionalBool('read');
     }
 
     // ===============================================================
@@ -111,7 +354,16 @@ service cloud.firestore {
 
     match /settings/{docId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow create: if isAdmin() && isValidSettingsDoc(docId);
+      allow update: if isAdmin() && isValidSettingsDoc(docId);
+      allow delete: if isAdmin();
+    }
+
+    match /pages/{pageId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidPage(pageId);
+      allow update: if isAdmin() && isValidPage(pageId);
+      allow delete: if isAdmin();
     }
 
     match /users/{userId} {
@@ -139,6 +391,20 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isAdmin() && isValidSkill();
       allow update: if isAdmin() && isValidSkill();
+      allow delete: if isAdmin();
+    }
+
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidTestimonial();
+      allow update: if isAdmin() && isValidTestimonial();
+      allow delete: if isAdmin();
+    }
+
+    match /mediaAssets/{assetId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidMediaAsset();
+      allow update: if isAdmin() && isValidMediaAsset();
       allow delete: if isAdmin();
     }
 

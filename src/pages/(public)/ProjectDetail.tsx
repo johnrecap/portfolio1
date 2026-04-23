@@ -5,12 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
-import { useCollection } from '@/hooks/useFirestore';
+import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
+import { getLocalizedValue, resolveEntitySeo, resolveMediaField } from '@/lib/content-hub';
+import { normalizeMediaUrl } from '@/lib/media';
 import { getLocalizedCaseStudyValue, type ProjectRecord } from '@/lib/project-utils';
 
 export const ProjectDetail = () => {
   const { slug } = useParams();
-  const { data: projects, loading } = useCollection<ProjectRecord>('projects');
+  const { data: projects, loading } = usePublicCollection<ProjectRecord>('projects');
+  const { assets } = usePublicMediaLibrary();
   const { t, i18n } = useTranslation();
 
   const isArabic = i18n.language === 'ar';
@@ -36,6 +39,15 @@ export const ProjectDetail = () => {
     );
   }
 
+  const title = getLocalizedValue(project.title, project.titleAr, isArabic) || project.title;
+  const description = getLocalizedValue(project.description, project.descriptionAr, isArabic) || project.description;
+  const seo = resolveEntitySeo(project, assets, isArabic);
+  const heroImage = resolveMediaField({ url: project.image, assetId: project.imageAssetId }, assets);
+  const galleryImages = [
+    ...new Set(
+      (project.galleryImages ?? []).map((imageUrl) => normalizeMediaUrl(imageUrl)).filter(Boolean),
+    ),
+  ];
   const caseStudyBlocks = [
     {
       key: 'problem',
@@ -61,7 +73,7 @@ export const ProjectDetail = () => {
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 pt-10 pb-20">
-      <PageSeo title={project.title} description={project.description} image={project.image} />
+      <PageSeo title={seo.title || title} description={seo.description || description} image={seo.image || heroImage.url} />
 
       <div className="flex flex-wrap items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
         <Link to="/" className="transition-colors hover:text-primary">
@@ -82,10 +94,10 @@ export const ProjectDetail = () => {
           </span>
           <div className="space-y-4">
             <h1 className="font-heading text-4xl font-black tracking-tight text-foreground md:text-6xl">
-              {project.title}
+              {title}
             </h1>
             <p className="max-w-3xl text-base leading-8 text-muted-foreground md:text-lg">
-              {project.description}
+              {description}
             </p>
           </div>
 
@@ -123,10 +135,10 @@ export const ProjectDetail = () => {
             <Monitor className="h-4 w-4" />
           </div>
           <div className="aspect-video bg-slate-950">
-            {project.image ? (
+            {heroImage.url ? (
               <img
-                src={project.image}
-                alt={project.title}
+                src={heroImage.url}
+                alt={title}
                 referrerPolicy="no-referrer"
                 className="h-full w-full object-cover object-top"
               />
@@ -141,6 +153,15 @@ export const ProjectDetail = () => {
 
       <section className="grid gap-8 lg:grid-cols-[1fr_320px] lg:items-start">
         <div className="space-y-6">
+          {galleryImages.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {galleryImages.map((imageUrl) => (
+                <div key={imageUrl} className="overflow-hidden rounded-[1.25rem] border border-border/60 bg-card/60 shadow-sm">
+                  <img src={imageUrl} alt={title} referrerPolicy="no-referrer" className="aspect-video w-full object-cover" />
+                </div>
+              ))}
+            </div>
+          ) : null}
           {caseStudyBlocks.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2">
               {caseStudyBlocks.map((item) => (

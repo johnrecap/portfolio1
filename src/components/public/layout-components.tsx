@@ -6,20 +6,22 @@ import { useTranslation } from 'react-i18next';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { useTheme } from '@/components/shared/theme-provider';
 import { useProfile } from '@/hooks/useProfile';
+import { useContactSettings, useFooterSettings, useNavigationSettings, useSiteSettings, useThemeSettings } from '@/hooks/usePlatformSettings';
+import { resolveLocalizedSiteBrand } from '@/lib/admin/brand';
 
 const ThemeToggle = () => {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const { t } = useTranslation();
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       aria-label={t('nav.toggleTheme')}
       className="shrink-0 rounded-full"
     >
-      {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      {resolvedTheme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </Button>
   );
 };
@@ -44,35 +46,60 @@ export const PublicNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { profile } = useProfile();
+  const { navigationSettings } = useNavigationSettings();
+  const { siteSettings } = useSiteSettings();
+  const { themeSettings } = useThemeSettings();
   const { t, i18n } = useTranslation();
 
-  const navLinks = [
-    { href: '/', label: t('nav.home') },
-    { href: '/about', label: t('nav.about') },
-    { href: '/projects', label: t('nav.projects') },
-    { href: '/skills', label: t('nav.skills') },
-    { href: '/blog', label: t('nav.blog') },
-    { href: '/contact', label: t('nav.contact') },
+  const fallbackNavLinks = [
+    { id: 'home', href: '/', label: t('nav.home'), labelAr: t('nav.home') },
+    { id: 'about', href: '/about', label: t('nav.about'), labelAr: t('nav.about') },
+    { id: 'projects', href: '/projects', label: t('nav.projects'), labelAr: t('nav.projects') },
+    { id: 'skills', href: '/skills', label: t('nav.skills'), labelAr: t('nav.skills') },
+    { id: 'blog', href: '/blog', label: t('nav.blog'), labelAr: t('nav.blog') },
+    { id: 'contact', href: '/contact', label: t('nav.contact'), labelAr: t('nav.contact') },
   ];
 
   const isArabic = i18n.language === 'ar';
-  const brandMark = isArabic
-    ? profile.displayNameAr || profile.displayName
-    : `${profile.displayName
-        .split(' ')
-        .map((segment: string) => segment.charAt(0))
-        .join('')}.`;
+  const navLinks =
+    navigationSettings.items.length > 0
+      ? navigationSettings.items.filter((item) => item.enabled).map((item) => ({
+          id: item.id,
+          href: item.href,
+          label: isArabic ? item.labelAr || item.label : item.label,
+        }))
+      : fallbackNavLinks.map((item) => ({ id: item.id, href: item.href, label: item.label }));
+  const brandMark = resolveLocalizedSiteBrand(siteSettings, profile, isArabic);
+  const showThemeToggle = navigationSettings.showThemeToggle && themeSettings.mode === 'system';
+  const showPrimaryCta = siteSettings.primaryCtaEnabled && Boolean(navigationSettings.primaryCtaHref || siteSettings.primaryCtaHref);
+  const primaryCtaHref = navigationSettings.primaryCtaHref || siteSettings.primaryCtaHref || '/contact';
+  const primaryCtaLabel = isArabic
+    ? navigationSettings.primaryCtaLabelAr || siteSettings.primaryCtaLabelAr || t('hero.secondaryCta')
+    : navigationSettings.primaryCtaLabel || siteSettings.primaryCtaLabel || './contact.sh';
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/85 backdrop-blur-lg supports-[backdrop-filter]:bg-background/70">
+    <header
+      className="sticky top-0 z-50 w-full border-b bg-background/85 backdrop-blur-lg supports-[backdrop-filter]:bg-background/70"
+      style={{ boxShadow: 'var(--site-shell-shadow, none)' }}
+    >
       <div className="mx-auto flex h-16 max-w-[1344px] items-center justify-between px-4 sm:px-8">
-        <Link to="/" className="font-heading text-xl font-bold tracking-tight text-primary">
-          {brandMark}
+        <Link to="/" className="flex items-center gap-3 font-heading text-xl font-bold tracking-tight text-primary">
+          {siteSettings.logoUrl ? (
+            <img
+              src={siteSettings.logoUrl}
+              alt={brandMark}
+              className="h-9 w-9 rounded-full border border-border/60 bg-card object-cover"
+            />
+          ) : null}
+          <span>{brandMark}</span>
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-4 md:flex lg:gap-6">
           {navLinks.map((link) => {
-            const active = location.pathname === link.href;
+            const active =
+              link.href === '/'
+                ? location.pathname === link.href
+                : location.pathname === link.href || location.pathname.startsWith(`${link.href}/`);
             return (
               <Link
                 key={link.href}
@@ -88,21 +115,25 @@ export const PublicNavbar = () => {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <LanguageToggle />
-          <div className="mx-1 h-4 w-px bg-border" />
-          <ThemeToggle />
-          <Link
-            to="/contact"
-            dir="ltr"
-            className="ml-2 inline-flex items-center rounded-full bg-primary px-4 py-2 font-mono text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
-          >
-            ./contact.sh
-          </Link>
+          {navigationSettings.showLanguageToggle ? <LanguageToggle /> : null}
+          {navigationSettings.showLanguageToggle && showThemeToggle ? (
+            <div className="mx-1 h-4 w-px bg-border" />
+          ) : null}
+          {showThemeToggle ? <ThemeToggle /> : null}
+          {showPrimaryCta ? (
+            <Link
+              to={primaryCtaHref}
+              dir="ltr"
+              className="ml-2 inline-flex items-center rounded-full bg-primary px-4 py-2 font-mono text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
+            >
+              {primaryCtaLabel}
+            </Link>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-1 md:hidden">
-          <LanguageToggle />
-          <ThemeToggle />
+          {navigationSettings.showLanguageToggle ? <LanguageToggle /> : null}
+          {showThemeToggle ? <ThemeToggle /> : null}
           <Button
             variant="ghost"
             size="icon"
@@ -124,10 +155,13 @@ export const PublicNavbar = () => {
           >
             <div className="space-y-3 px-4 py-4">
               {navLinks.map((link) => {
-                const active = location.pathname === link.href;
+                const active =
+                  link.href === '/'
+                    ? location.pathname === link.href
+                    : location.pathname === link.href || location.pathname.startsWith(`${link.href}/`);
                 return (
                   <Link
-                    key={link.href}
+                    key={link.id}
                     to={link.href}
                     onClick={() => setIsOpen(false)}
                     className={`block rounded-xl px-3 py-2 text-sm font-medium ${
@@ -140,13 +174,17 @@ export const PublicNavbar = () => {
                   </Link>
                 );
               })}
-              <Link
-                to="/contact"
-                onClick={() => setIsOpen(false)}
-                className={buttonVariants({ className: 'mt-2 w-full rounded-full' })}
-              >
-                {t('hero.secondaryCta')}
-              </Link>
+              {showPrimaryCta ? (
+                <Link
+                  to={primaryCtaHref}
+                  onClick={() => setIsOpen(false)}
+                  className={buttonVariants({ className: 'mt-2 w-full rounded-full' })}
+                >
+                  {isArabic
+                    ? navigationSettings.primaryCtaLabelAr || siteSettings.primaryCtaLabelAr || t('hero.secondaryCta')
+                    : navigationSettings.primaryCtaLabel || siteSettings.primaryCtaLabel || t('hero.secondaryCta')}
+                </Link>
+              ) : null}
             </div>
           </motion.div>
         ) : null}
@@ -157,48 +195,72 @@ export const PublicNavbar = () => {
 
 export const PublicFooter = () => {
   const { profile } = useProfile();
+  const { footerSettings } = useFooterSettings();
+  const { siteSettings } = useSiteSettings();
+  const { contactSettings } = useContactSettings();
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
-  const displayName = isArabic
-    ? profile.displayNameAr || profile.displayName
-    : profile.displayName;
+  const brandName = resolveLocalizedSiteBrand(siteSettings, profile, isArabic);
   const title = isArabic ? profile.titleAr || profile.title : profile.title;
+  const footerSummary = isArabic
+    ? footerSettings.taglineAr || siteSettings.siteTaglineAr || t('footer.summary')
+    : footerSettings.tagline || siteSettings.siteTagline || t('footer.summary');
 
-  const socialLinks = [
+  const fallbackSocialLinks = [
+    contactSettings.email ? { href: `mailto:${contactSettings.email}`, label: contactSettings.email } : null,
+    contactSettings.whatsapp ? { href: `https://wa.me/${contactSettings.whatsapp.replace(/[^\d]/g, '')}`, label: contactSettings.whatsapp } : null,
     profile.githubUrl ? { href: profile.githubUrl, label: 'GitHub' } : null,
     profile.linkedinUrl ? { href: profile.linkedinUrl, label: 'LinkedIn' } : null,
     profile.websiteUrl ? { href: profile.websiteUrl, label: t('footer.website') } : null,
   ].filter(Boolean) as { href: string; label: string }[];
+  const footerLinks =
+    footerSettings.links.length > 0
+      ? footerSettings.links.map((item) => ({
+          href: item.href,
+          label: isArabic ? item.labelAr || item.label : item.label,
+        }))
+      : [
+          { href: '/', label: t('nav.home') },
+          { href: '/about', label: t('nav.about') },
+          { href: '/projects', label: t('nav.projects') },
+          { href: '/contact', label: t('nav.contact') },
+        ];
+  const socialLinks = footerSettings.socialLinks.length > 0 ? footerSettings.socialLinks : fallbackSocialLinks;
 
   return (
-    <footer className="relative z-10 mt-auto overflow-hidden border-t border-white/5 bg-[#0a0a0b]">
+    <footer
+      className="relative z-10 mt-auto overflow-hidden border-t border-border/70 bg-background dark:border-white/5 dark:bg-[#0a0a0b]"
+      style={{ boxShadow: 'var(--site-shell-shadow, none)' }}
+    >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-primary/10 to-transparent" />
 
       <div className="mx-auto max-w-5xl px-6 pb-12">
-        <div className="rounded-b-[1.75rem] border-x border-b border-white/10 bg-white/[0.03] px-6 py-5 backdrop-blur">
+        <div className="rounded-b-[1.75rem] border-x border-b border-border/70 bg-card/85 px-6 py-5 backdrop-blur dark:border-white/10 dark:bg-white/[0.03]">
           <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
             <div>
-              <div className="flex items-center gap-2 font-mono text-sm text-slate-300" dir="ltr">
+              <div className="flex items-center gap-2 font-mono text-sm text-muted-foreground dark:text-slate-300" dir="ltr">
                 <span className="text-primary">visitor@web</span>
-                <span className="text-slate-500">:</span>
-                <span className="text-slate-500">~</span>
-                <span className="text-slate-500">$</span>
-                <span className="font-semibold text-slate-100">{t('footer.statusLabel')}</span>
+                <span className="text-muted-foreground/70 dark:text-slate-500">:</span>
+                <span className="text-muted-foreground/70 dark:text-slate-500">~</span>
+                <span className="text-muted-foreground/70 dark:text-slate-500">$</span>
+                <span className="font-semibold text-foreground dark:text-slate-100">
+                  {isArabic ? footerSettings.statusStripAr || t('footer.statusLabel') : footerSettings.statusStrip || t('footer.statusLabel')}
+                </span>
               </div>
-              <p className="mt-2 max-w-xl text-sm leading-7 text-slate-400">
-                {t('footer.statusDescription')}
+              <p className="mt-2 max-w-xl text-sm leading-7 text-muted-foreground dark:text-slate-400">
+                {isArabic ? footerSettings.taglineAr || t('footer.statusDescription') : footerSettings.tagline || t('footer.statusDescription')}
               </p>
             </div>
             <Link
-              to="/contact"
+              to={footerSettings.ctaHref || '/contact'}
               className={buttonVariants({
                 variant: 'outline',
                 size: 'sm',
                 className:
-                  'border-white/10 text-white hover:bg-white/5 hover:text-white',
+                  'border-border/70 bg-background/80 text-foreground hover:bg-muted hover:text-foreground dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:hover:text-white',
               })}
             >
-              {t('footer.cta')}
+              {isArabic ? footerSettings.ctaLabelAr || t('footer.cta') : footerSettings.ctaLabel || t('footer.cta')}
             </Link>
           </div>
         </div>
@@ -206,27 +268,22 @@ export const PublicFooter = () => {
 
       <div className="mx-auto grid max-w-7xl gap-10 px-6 pb-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-12">
         <div className="space-y-4">
-          <Link to="/" className="font-heading text-2xl font-bold tracking-tight text-white">
-            {displayName}
+          <Link to="/" className="font-heading text-2xl font-bold tracking-tight text-foreground dark:text-white">
+            {brandName}
             <span className="text-primary">_</span>
           </Link>
-          <p className="max-w-md text-sm leading-7 text-slate-400">{title}</p>
-          <p className="max-w-md text-sm leading-7 text-slate-500">{t('footer.summary')}</p>
+          <p className="max-w-md text-sm leading-7 text-muted-foreground dark:text-slate-400">{title}</p>
+          <p className="max-w-md text-sm leading-7 text-muted-foreground/80 dark:text-slate-500">{footerSummary}</p>
         </div>
 
         <div className="space-y-4">
-          <h4 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-slate-100">
+          <h4 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-foreground dark:text-slate-100">
             {t('footer.quickLinks')}
           </h4>
-          <ul className="space-y-3 text-sm text-slate-400">
-            {[
-              ['/', t('nav.home')],
-              ['/about', t('nav.about')],
-              ['/projects', t('nav.projects')],
-              ['/contact', t('nav.contact')],
-            ].map(([href, label]) => (
+          <ul className="space-y-3 text-sm text-muted-foreground dark:text-slate-400">
+            {footerLinks.map(({ href, label }) => (
               <li key={href}>
-                <Link to={href} className="transition-colors hover:text-white">
+                <Link to={href} className="transition-colors hover:text-foreground dark:hover:text-white">
                   {label}
                 </Link>
               </li>
@@ -235,24 +292,24 @@ export const PublicFooter = () => {
         </div>
 
         <div className="space-y-4">
-          <h4 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-slate-100">
+          <h4 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-foreground dark:text-slate-100">
             {t('footer.connect')}
           </h4>
-          <ul className="space-y-3 text-sm text-slate-400">
+          <ul className="space-y-3 text-sm text-muted-foreground dark:text-slate-400">
             {socialLinks.map((item) => (
               <li key={item.href}>
                 <a
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="transition-colors hover:text-white"
+                  className="transition-colors hover:text-foreground dark:hover:text-white"
                 >
                   {item.label}
                 </a>
               </li>
             ))}
             <li>
-              <Link to="/login" className="transition-colors hover:text-white">
+              <Link to="/login" className="transition-colors hover:text-foreground dark:hover:text-white">
                 {t('nav.adminLogin')}
               </Link>
             </li>
@@ -260,8 +317,8 @@ export const PublicFooter = () => {
         </div>
       </div>
 
-      <div className="border-t border-white/5">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-center font-mono text-xs text-slate-500 md:flex-row md:text-start lg:px-12">
+      <div className="border-t border-border/70 dark:border-white/5">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-center font-mono text-xs text-muted-foreground/80 dark:text-slate-500 md:flex-row md:text-start lg:px-12">
           <p>{t('footer.builtWith')}</p>
           <p>{t('footer.rights')}</p>
         </div>

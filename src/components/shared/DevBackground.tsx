@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-
 export const DevBackground = () => {
   return (
     <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden bg-background opacity-40 dark:opacity-[0.85]">
@@ -9,7 +7,7 @@ export const DevBackground = () => {
         style={{ 
           backgroundImage: `linear-gradient(to right, var(--color-border) 1px, transparent 1px), linear-gradient(to bottom, var(--color-border) 1px, transparent 1px)`, 
           backgroundSize: '40px 40px',
-          opacity: 0.1 
+          opacity: 'var(--site-pattern-opacity, 0.1)' 
         }} 
       ></div>
 
@@ -26,12 +24,18 @@ export const DevBackground = () => {
         ()
       </div>
 
-      <div className="absolute top-[15%] right-[20%] text-primary/10 text-[100px] font-mono leading-none transform rotate-45 blur-md">
+      <div
+        className="absolute top-[15%] right-[20%] text-[100px] font-mono leading-none text-primary transform rotate-45 blur-md"
+        style={{ opacity: 'var(--site-accent-opacity, 0.1)' }}
+      >
         ;
       </div>
       
       {/* Faded Code Snippet BG */}
-      <div className="absolute bottom-10 left-10 text-muted-foreground/10 font-mono text-xs whitespace-pre select-none blur-[1px]">
+      <div
+        className="absolute bottom-10 left-10 font-mono text-xs text-muted-foreground whitespace-pre select-none blur-[1px]"
+        style={{ opacity: 'var(--site-code-opacity, 0.1)' }}
+      >
         {`function resolveConfig(config) {
   return {
     ...defaultConfig,

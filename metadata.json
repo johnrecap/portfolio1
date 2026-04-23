@@ -1,6 +1,11 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Mohamed Studio",
+  "description": "Bilingual portfolio and admin workspace for Mohamed Saied, showcasing product engineering work, projects, and Firestore-managed site content.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": [
+    "portfolio",
+    "admin-dashboard",
+    "bilingual-content",
+    "firestore-managed-content"
+  ]
 }

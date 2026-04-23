@@ -1,0 +1,361 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Internal admin profile record. The current platform supports one super admin only.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["super_admin"] },
+        "displayName": { "type": "string" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
+      },
+      "required": ["email", "role"]
+    },
+    "ProfileSettings": {
+      "title": "ProfileSettings",
+      "description": "Legacy-compatible profile document still used by the current public shell.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "displayNameAr": { "type": "string" },
+        "title": { "type": "string" },
+        "titleAr": { "type": "string" },
+        "bio": { "type": "string" },
+        "bioAr": { "type": "string" },
+        "isAvailable": { "type": "boolean" },
+        "githubUrl": { "type": "string" },
+        "linkedinUrl": { "type": "string" },
+        "websiteUrl": { "type": "string" },
+        "metaTitle": { "type": "string" },
+        "metaTitleAr": { "type": "string" },
+        "metaDescription": { "type": "string" },
+        "metaDescriptionAr": { "type": "string" },
+        "profileImage": { "type": "string" },
+        "heroImage": { "type": "string" }
+      },
+      "required": ["displayName", "title"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global branding and primary CTA configuration for the public site.",
+      "type": "object",
+      "properties": {
+        "siteName": { "type": "string" },
+        "siteNameAr": { "type": "string" },
+        "siteTagline": { "type": "string" },
+        "siteTaglineAr": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "primaryCtaEnabled": { "type": "boolean" },
+        "primaryCtaLabel": { "type": "string" },
+        "primaryCtaLabelAr": { "type": "string" },
+        "primaryCtaHref": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "published"] }
+      },
+      "required": ["siteName", "siteNameAr", "primaryCtaEnabled", "status"]
+    },
+    "ThemeSettings": {
+      "title": "ThemeSettings",
+      "description": "Token-based public and dashboard visual presets.",
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string", "enum": ["light", "dark", "system"] },
+        "accent": { "type": "string", "enum": ["teal", "cyan", "blue", "indigo", "rose", "amber"] },
+        "surfaceStyle": { "type": "string", "enum": ["glass", "solid", "outline"] },
+        "radiusScale": { "type": "string", "enum": ["sharp", "rounded", "pill"] },
+        "shadowDensity": { "type": "string", "enum": ["subtle", "medium", "bold"] },
+        "backgroundPreset": { "type": "string", "enum": ["grid", "gradient", "noise"] },
+        "dashboardAccent": { "type": "string", "enum": ["teal", "cyan", "blue", "indigo", "rose", "amber"] },
+        "dashboardSurfaceStyle": { "type": "string", "enum": ["glass", "solid", "outline"] }
+      },
+      "required": ["mode", "accent", "surfaceStyle", "radiusScale", "shadowDensity", "backgroundPreset", "dashboardAccent", "dashboardSurfaceStyle"]
+    },
+    "NavigationSettings": {
+      "title": "NavigationSettings",
+      "description": "Public navbar items and CTA behavior.",
+      "type": "object",
+      "properties": {
+        "items": { "type": "array" },
+        "primaryCtaLabel": { "type": "string" },
+        "primaryCtaLabelAr": { "type": "string" },
+        "primaryCtaHref": { "type": "string" },
+        "showLanguageToggle": { "type": "boolean" },
+        "showThemeToggle": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["draft", "published"] }
+      },
+      "required": ["items", "status"]
+    },
+    "FooterSettings": {
+      "title": "FooterSettings",
+      "description": "Footer copy, links, status strip, and CTA configuration.",
+      "type": "object",
+      "properties": {
+        "tagline": { "type": "string" },
+        "taglineAr": { "type": "string" },
+        "ctaLabel": { "type": "string" },
+        "ctaLabelAr": { "type": "string" },
+        "ctaHref": { "type": "string" },
+        "statusStrip": { "type": "string" },
+        "statusStripAr": { "type": "string" },
+        "links": { "type": "array" },
+        "socialLinks": { "type": "array" },
+        "status": { "type": "string", "enum": ["draft", "published"] }
+      },
+      "required": ["tagline", "taglineAr", "status"]
+    },
+    "SeoSettings": {
+      "title": "SeoSettings",
+      "description": "Global SEO defaults and Open Graph defaults.",
+      "type": "object",
+      "properties": {
+        "defaultTitle": { "type": "string" },
+        "defaultTitleAr": { "type": "string" },
+        "defaultDescription": { "type": "string" },
+        "defaultDescriptionAr": { "type": "string" },
+        "ogImage": { "type": "string" },
+        "siteUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "published"] }
+      },
+      "required": ["defaultTitle", "defaultTitleAr", "defaultDescription", "defaultDescriptionAr", "status"]
+    },
+    "DashboardSettings": {
+      "title": "DashboardSettings",
+      "description": "Branding and structural settings for the internal dashboard.",
+      "type": "object",
+      "properties": {
+        "dashboardName": { "type": "string" },
+        "dashboardNameAr": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "subtitleAr": { "type": "string" },
+        "introTitle": { "type": "string" },
+        "introTitleAr": { "type": "string" },
+        "introBody": { "type": "string" },
+        "introBodyAr": { "type": "string" },
+        "iconUrl": { "type": "string" },
+        "iconAssetId": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "avatarAssetId": { "type": "string" },
+        "sidebarModules": { "type": "array" },
+        "overviewWidgets": { "type": "array" },
+        "quickActions": { "type": "array" },
+        "accent": { "type": "string", "enum": ["teal", "cyan", "blue", "indigo", "rose", "amber"] },
+        "surfaceStyle": { "type": "string", "enum": ["glass", "solid", "outline"] },
+        "status": { "type": "string", "enum": ["draft", "published"] }
+      },
+      "required": ["dashboardName", "dashboardNameAr", "sidebarModules", "overviewWidgets", "quickActions", "accent", "surfaceStyle", "status"]
+    },
+    "ContactSettings": {
+      "title": "ContactSettings",
+      "description": "Global contact and availability messaging.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "location": { "type": "string" },
+        "locationAr": { "type": "string" },
+        "availabilityLabel": { "type": "string" },
+        "availabilityLabelAr": { "type": "string" },
+        "responseTime": { "type": "string" },
+        "responseTimeAr": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "published"] }
+      },
+      "required": ["availabilityLabel", "availabilityLabelAr", "responseTime", "responseTimeAr", "status"]
+    },
+    "PageConfig": {
+      "title": "PageConfig",
+      "description": "Composable public page document with ordered safe sections.",
+      "type": "object",
+      "properties": {
+        "pageId": { "type": "string", "enum": ["home", "about", "projects", "blog", "contact"] },
+        "title": { "type": "string" },
+        "titleAr": { "type": "string" },
+        "slug": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "published"] },
+        "seo": { "type": "object" },
+        "sections": { "type": "array" }
+      },
+      "required": ["pageId", "status", "sections"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Portfolio projects displayed on the public site.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "type": { "type": "string", "enum": ["web", "mobile", "dashboard", "backend", "other"] },
+        "color": { "type": "string" },
+        "image": { "type": "string" },
+        "tags": { "type": "array" },
+        "demoUrl": { "type": "string" },
+        "githubUrl": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "featuredOrder": { "type": "number" },
+        "problem": { "type": "string" },
+        "problemAr": { "type": "string" },
+        "solution": { "type": "string" },
+        "solutionAr": { "type": "string" },
+        "projectRole": { "type": "string" },
+        "projectRoleAr": { "type": "string" },
+        "result": { "type": "string" },
+        "resultAr": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["title", "slug", "description", "category", "image"]
+    },
+    "Blog": {
+      "title": "Blog",
+      "description": "Blog articles published on the site.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["title", "slug", "excerpt", "content", "category", "createdAt"]
+    },
+    "Skill": {
+      "title": "Skill",
+      "description": "Development skills and proficiency.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "proficiency": { "type": "number" },
+        "icon": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["name", "category", "proficiency"]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Reusable social proof content for public sections.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "nameAr": { "type": "string" },
+        "role": { "type": "string" },
+        "roleAr": { "type": "string" },
+        "company": { "type": "string" },
+        "companyAr": { "type": "string" },
+        "quote": { "type": "string" },
+        "quoteAr": { "type": "string" },
+        "outcome": { "type": "string" },
+        "outcomeAr": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "avatarAssetId": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "logoAssetId": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "featured": { "type": "boolean" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["name", "quote", "order"]
+    },
+    "MediaAsset": {
+      "title": "MediaAsset",
+      "description": "Reusable media record for admin-managed images and videos.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "titleAr": { "type": "string" },
+        "alt": { "type": "string" },
+        "altAr": { "type": "string" },
+        "url": { "type": "string" },
+        "kind": { "type": "string", "enum": ["image", "video"] },
+        "group": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["title", "url", "kind", "group"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Contact form submissions.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "userId": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "budget": { "type": "string" },
+        "read": { "type": "boolean" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores the single super admin profile record."
+    },
+    "/settings/profile": {
+      "schema": { "$ref": "#/entities/ProfileSettings" },
+      "description": "Legacy-compatible profile settings used by the current public shell."
+    },
+    "/settings/site": {
+      "schema": { "$ref": "#/entities/SiteSettings" },
+      "description": "Stores public branding and primary CTA settings."
+    },
+    "/settings/theme": {
+      "schema": { "$ref": "#/entities/ThemeSettings" },
+      "description": "Stores token-based theme configuration for public and dashboard surfaces."
+    },
+    "/settings/navigation": {
+      "schema": { "$ref": "#/entities/NavigationSettings" },
+      "description": "Stores public navbar items and CTA settings."
+    },
+    "/settings/footer": {
+      "schema": { "$ref": "#/entities/FooterSettings" },
+      "description": "Stores footer content, links, and status strip settings."
+    },
+    "/settings/seo": {
+      "schema": { "$ref": "#/entities/SeoSettings" },
+      "description": "Stores global SEO defaults."
+    },
+    "/settings/dashboard": {
+      "schema": { "$ref": "#/entities/DashboardSettings" },
+      "description": "Stores dashboard-specific branding and module configuration."
+    },
+    "/settings/contact": {
+      "schema": { "$ref": "#/entities/ContactSettings" },
+      "description": "Stores contact and availability messaging defaults."
+    },
+    "/pages/{pageId}": {
+      "schema": { "$ref": "#/entities/PageConfig" },
+      "description": "Stores composable public page configuration."
+    },
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Stores portfolio projects."
+    },
+    "/blogs/{blogId}": {
+      "schema": { "$ref": "#/entities/Blog" },
+      "description": "Stores blog posts."
+    },
+    "/skills/{skillId}": {
+      "schema": { "$ref": "#/entities/Skill" },
+      "description": "Stores developer skills."
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": { "$ref": "#/entities/Testimonial" },
+      "description": "Stores reusable testimonial content."
+    },
+    "/mediaAssets/{assetId}": {
+      "schema": { "$ref": "#/entities/MediaAsset" },
+      "description": "Stores reusable media asset records."
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Stores contact messages."
+    }
+  }
+}

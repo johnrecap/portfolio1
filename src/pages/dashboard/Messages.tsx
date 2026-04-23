@@ -2,6 +2,8 @@ import { useState, type MouseEvent } from 'react';
 import { Mail, Maximize2, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -24,6 +26,9 @@ type MessageRecord = {
   whatsapp?: string;
   message: string;
   read?: boolean;
+  status?: 'new' | 'reviewed' | 'archived';
+  priority?: 'normal' | 'high';
+  adminNotes?: string;
 };
 
 export const DashboardMessages = () => {
@@ -48,11 +53,30 @@ export const DashboardMessages = () => {
   };
 
   const handleOpenMessage = async (message: MessageRecord) => {
-    setSelectedMessage({ ...message, read: true });
+    setSelectedMessage({
+      ...message,
+      read: true,
+      status: message.status ?? 'reviewed',
+      priority: message.priority ?? 'normal',
+      adminNotes: message.adminNotes ?? '',
+    });
 
     if (isUnreadMessage(message)) {
-      await updateDocument(message.id, { read: true });
+      await updateDocument(message.id, { read: true, status: message.status ?? 'reviewed' });
     }
+  };
+
+  const handleSaveMeta = async () => {
+    if (!selectedMessage) {
+      return;
+    }
+
+    await updateDocument(selectedMessage.id, {
+      read: selectedMessage.read ?? true,
+      status: selectedMessage.status ?? 'reviewed',
+      priority: selectedMessage.priority ?? 'normal',
+      adminNotes: selectedMessage.adminNotes ?? '',
+    });
   };
 
   return (
@@ -100,6 +124,12 @@ export const DashboardMessages = () => {
                           </h3>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2">
+                          <span className="inline-block rounded bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+                            {t(`dashboardMessages.statusOptions.${message.status ?? (unread ? 'new' : 'reviewed')}`)}
+                          </span>
+                          <span className="inline-block rounded bg-amber-500/10 px-2 py-1 text-xs font-semibold text-amber-500">
+                            {t(`dashboardMessages.priorityOptions.${message.priority ?? 'normal'}`)}
+                          </span>
                           {message.budget ? (
                             <span className="inline-block rounded bg-teal-500/10 px-2 py-1 text-xs font-semibold text-teal-500">
                               {t('dashboardMessages.budget')}: {message.budget}
@@ -201,8 +231,57 @@ export const DashboardMessages = () => {
                     {selectedMessage.message}
                   </div>
                 </div>
+                <div className="grid gap-4 rounded-lg bg-muted/30 p-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="message-status">{t('dashboardMessages.status')}</Label>
+                    <select
+                      id="message-status"
+                      className="flex h-10 w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-ring focus:ring-3 focus:ring-ring/50"
+                      value={selectedMessage.status ?? 'reviewed'}
+                      onChange={(event) =>
+                        setSelectedMessage((current) =>
+                          current ? { ...current, status: event.target.value as MessageRecord['status'] } : current,
+                        )
+                      }
+                    >
+                      <option value="new">{t('dashboardMessages.statusOptions.new')}</option>
+                      <option value="reviewed">{t('dashboardMessages.statusOptions.reviewed')}</option>
+                      <option value="archived">{t('dashboardMessages.statusOptions.archived')}</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="message-priority">{t('dashboardMessages.priority')}</Label>
+                    <select
+                      id="message-priority"
+                      className="flex h-10 w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-ring focus:ring-3 focus:ring-ring/50"
+                      value={selectedMessage.priority ?? 'normal'}
+                      onChange={(event) =>
+                        setSelectedMessage((current) =>
+                          current ? { ...current, priority: event.target.value as MessageRecord['priority'] } : current,
+                        )
+                      }
+                    >
+                      <option value="normal">{t('dashboardMessages.priorityOptions.normal')}</option>
+                      <option value="high">{t('dashboardMessages.priorityOptions.high')}</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="message-admin-notes">{t('dashboardMessages.adminNotes')}</Label>
+                    <Textarea
+                      id="message-admin-notes"
+                      value={selectedMessage.adminNotes ?? ''}
+                      onChange={(event) =>
+                        setSelectedMessage((current) =>
+                          current ? { ...current, adminNotes: event.target.value } : current,
+                        )
+                      }
+                      className="min-h-[120px]"
+                    />
+                  </div>
+                </div>
               </div>
               <DialogFooter>
+                <Button onClick={() => void handleSaveMeta()}>{t('dashboardMessages.saveMeta')}</Button>
                 <Button variant="destructive" onClick={() => handleDeleteClick(selectedMessage.id)}>
                   {t('dashboardMessages.deleteMessage')}
                 </Button>

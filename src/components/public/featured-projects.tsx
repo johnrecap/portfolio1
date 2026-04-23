@@ -5,8 +5,10 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { buttonVariants } from '@/components/ui/button';
 import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
-import { useCollection } from '@/hooks/useFirestore';
+import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
+import { getLocalizedValue, resolveMediaField } from '@/lib/content-hub';
 import { getFeaturedProjects, normalizeProjectType, type ProjectRecord } from '@/lib/project-utils';
+import { readComposerText } from '@/lib/admin/page-content';
 
 const projectTypeKeyMap = {
   web: 'projects.types.web',
@@ -16,8 +18,14 @@ const projectTypeKeyMap = {
   other: 'projects.types.other',
 } as const;
 
-export const FeaturedProjectsGrid = () => {
-  const { data, loading } = useCollection<ProjectRecord>('projects');
+type FeaturedProjectsGridProps = {
+  variant?: 'spotlight' | 'grid' | 'carousel';
+  content?: Record<string, unknown>;
+};
+
+export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: FeaturedProjectsGridProps) => {
+  const { data, loading } = usePublicCollection<ProjectRecord>('projects');
+  const { assets } = usePublicMediaLibrary();
   const { t, i18n } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -25,6 +33,10 @@ export const FeaturedProjectsGrid = () => {
   const activeProject = featuredProjects[Math.min(activeIndex, Math.max(featuredProjects.length - 1, 0))];
   const isArabic = i18n.language === 'ar';
   const ArrowIcon = isArabic ? ArrowLeft : ArrowRight;
+  const eyebrow = readComposerText(content, 'eyebrow', t('featuredProjects.eyebrow'), isArabic);
+  const title = readComposerText(content, 'title', t('featuredProjects.title'), isArabic);
+  const subtitle = readComposerText(content, 'subtitle', t('featuredProjects.subtitle'), isArabic);
+  const viewAllLabel = readComposerText(content, 'viewAllLabel', t('featuredProjects.viewAll'), isArabic);
 
   if (loading) {
     return (
@@ -50,23 +62,31 @@ export const FeaturedProjectsGrid = () => {
   }
 
   const normalizedType = normalizeProjectType(activeProject.type ?? activeProject.category);
+  const activeProjectTitle = getLocalizedValue(activeProject.title, activeProject.titleAr, isArabic) || activeProject.title;
+  const activeProjectDescription =
+    getLocalizedValue(activeProject.description, activeProject.descriptionAr, isArabic) || activeProject.description;
+  const highlightLabel = getLocalizedValue(activeProject.highlightLabel, activeProject.highlightLabelAr, isArabic);
+  const previewImage = resolveMediaField(
+    { url: activeProject.image, assetId: activeProject.imageAssetId },
+    assets,
+  );
 
   return (
     <section className="py-8 md:py-12">
       <div className="mx-auto max-w-6xl">
         <div className="mb-10 max-w-3xl">
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
-            {t('featuredProjects.eyebrow')}
+            {eyebrow}
           </p>
           <h2 className="mt-4 font-heading text-3xl font-black tracking-tight text-foreground md:text-5xl">
-            {t('featuredProjects.title')}
+            {title}
           </h2>
           <p className="mt-4 text-base leading-8 text-muted-foreground md:text-lg">
-            {t('featuredProjects.subtitle')}
+            {subtitle}
           </p>
         </div>
 
-        <div className="mb-5 flex flex-wrap gap-2" dir="ltr">
+        <div className={`mb-5 flex flex-wrap gap-2 ${variant === 'grid' ? 'justify-start' : ''}`} dir="ltr">
           {featuredProjects.map((project, index) => (
             <button
               key={project.id}
@@ -93,7 +113,7 @@ export const FeaturedProjectsGrid = () => {
             <div className="w-12" />
           </div>
 
-          <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
+          <div className={`grid ${variant === 'grid' ? 'xl:grid-cols-[1fr_1fr]' : 'lg:grid-cols-[0.95fr_1.05fr]'}`}>
             <div className="border-b border-slate-800 p-6 lg:border-b-0 lg:border-e">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -115,7 +135,7 @@ export const FeaturedProjectsGrid = () => {
                       <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
                         {t('featuredProjects.name')}
                       </p>
-                      <p className="mt-2 text-lg font-semibold text-white">{activeProject.title}</p>
+                      <p className="mt-2 text-lg font-semibold text-white">{activeProjectTitle}</p>
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
@@ -137,8 +157,16 @@ export const FeaturedProjectsGrid = () => {
                       <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
                         {t('featuredProjects.summary')}
                       </p>
-                      <p className="mt-2 leading-7 text-slate-300">{activeProject.description}</p>
+                      <p className="mt-2 leading-7 text-slate-300">{activeProjectDescription}</p>
                     </div>
+                    {highlightLabel ? (
+                      <div>
+                        <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                          {t('featuredProjects.highlightLabel')}
+                        </p>
+                        <p className="mt-2 text-sm text-primary">{highlightLabel}</p>
+                      </div>
+                    ) : null}
                     <div>
                       <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
                         {t('featuredProjects.stack')}
@@ -220,10 +248,10 @@ export const FeaturedProjectsGrid = () => {
                     </span>
                   </div>
                   <div className="aspect-video overflow-hidden bg-slate-950">
-                    {activeProject.image ? (
+                    {previewImage.url ? (
                       <img
-                        src={activeProject.image}
-                        alt={activeProject.title}
+                        src={previewImage.url}
+                        alt={activeProjectTitle}
                         referrerPolicy="no-referrer"
                         className="h-full w-full object-cover object-top"
                       />
@@ -239,7 +267,7 @@ export const FeaturedProjectsGrid = () => {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center">
+        <div className={`mt-6 flex ${variant === 'grid' ? 'justify-start' : 'justify-center'}`}>
           <Link
             to="/projects"
             className={buttonVariants({
@@ -247,7 +275,7 @@ export const FeaturedProjectsGrid = () => {
               className: 'gap-2 font-mono text-sm hover:bg-muted',
             })}
           >
-            {t('featuredProjects.viewAll')}
+            {viewAllLabel}
             <ArrowIcon className="h-4 w-4" />
           </Link>
         </div>

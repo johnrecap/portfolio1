@@ -115,3 +115,14 @@ test("getLocalizedCaseStudyValue returns the Arabic value when requested and ava
     "English",
   );
 });
+
+test("getLocalizedCaseStudyValue recovers swapped bilingual fields using script detection", () => {
+  assert.equal(
+    getLocalizedCaseStudyValue("متجر إلكتروني للملابس", "Online clothing store", false),
+    "Online clothing store",
+  );
+  assert.equal(
+    getLocalizedCaseStudyValue("متجر إلكتروني للملابس", "Online clothing store", true),
+    "متجر إلكتروني للملابس",
+  );
+});

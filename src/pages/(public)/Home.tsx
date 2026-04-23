@@ -1,22 +1,23 @@
-import { CTASection } from '@/components/public/cta-section';
-import { FeaturedProjectsGrid } from '@/components/public/featured-projects';
-import { HeroSection } from '@/components/public/hero-section';
-import { ShowcaseSection } from '@/components/public/showcase-section';
-import { TestimonialsSection } from '@/components/public/testimonials-section';
 import { PageSeo } from '@/components/shared/PageSeo';
+import { PublicPageComposer } from '@/components/public/page-composer';
+import { usePageConfig } from '@/hooks/usePageConfig';
 import { useTranslation } from 'react-i18next';
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { pageConfig } = usePageConfig('home');
+  const { i18n, t } = useTranslation();
+  const isArabic = i18n.language === 'ar';
+  const seoTitle = isArabic
+    ? pageConfig.seo.titleAr || pageConfig.titleAr || t('nav.home')
+    : pageConfig.seo.title || pageConfig.title || t('nav.home');
+  const seoDescription = isArabic
+    ? pageConfig.seo.descriptionAr || t('hero.subheadline')
+    : pageConfig.seo.description || t('hero.subheadline');
 
   return (
-    <div className="flex w-full flex-col gap-10 overflow-hidden lg:gap-16">
-      <PageSeo title={t('nav.home')} description={t('hero.subheadline')} />
-      <HeroSection />
-      <ShowcaseSection />
-      <FeaturedProjectsGrid />
-      <TestimonialsSection />
-      <CTASection />
-    </div>
+    <>
+      <PageSeo title={seoTitle} description={seoDescription} image={pageConfig.seo.image} />
+      <PublicPageComposer pageId="home" pageConfig={pageConfig} />
+    </>
   );
 }

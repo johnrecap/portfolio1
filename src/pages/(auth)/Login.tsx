@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { auth } from '@/lib/firebase';
 import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
+import { isSuperAdminUser } from '@/lib/admin/auth';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Login() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
-        if (user.email === 'mohamedsaied.m20@gmail.com') {
+        if (isSuperAdminUser(user)) {
           setCurrentUser(user);
         } else {
           auth.signOut();
@@ -50,7 +51,7 @@ export default function Login() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       
-      if (result.user.email !== 'mohamedsaied.m20@gmail.com') {
+      if (!isSuperAdminUser(result.user)) {
         await auth.signOut();
         toast.error(t('login.unauthorized'), { duration: 5000 });
         return;
