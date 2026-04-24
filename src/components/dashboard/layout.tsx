@@ -283,6 +283,19 @@ export const DashboardLayout = () => {
             </button>
 
             <Link
+              to="/"
+              className="inline-flex h-10 items-center gap-2 rounded-full border px-3 text-xs font-medium whitespace-nowrap transition-colors sm:px-4 sm:text-sm"
+              style={{
+                backgroundColor: 'var(--dashboard-surface)',
+                borderColor: 'var(--dashboard-border)',
+                color: 'var(--dashboard-muted-foreground)',
+              }}
+            >
+              <Globe className="h-4 w-4 shrink-0" />
+              <span>{t('dashboardLayout.viewSite')}</span>
+            </Link>
+
+            <Link
               to="/dashboard/dashboard-settings"
               className="hidden h-10 w-10 items-center justify-center rounded-full border transition-colors sm:flex"
               style={{

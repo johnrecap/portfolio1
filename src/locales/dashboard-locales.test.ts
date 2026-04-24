@@ -4,7 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 const REQUIRED_DASHBOARD_KEYS = {
-  dashboardLayout: ['testimonials', 'media'],
+  dashboardLayout: ['testimonials', 'media', 'viewSite'],
   dashboardSkills: [
     'confirmDeleteTitle',
     'skillNameAr',
