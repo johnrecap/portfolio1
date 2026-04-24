@@ -5,6 +5,7 @@
 /build/
 /dist/
 /output/
+/output-*.png
 /coverage/
 /.vite/
 /.parcel-cache/
