@@ -10,9 +10,11 @@ Audit artifact: `specs/012-site-copy-refresh/source-audit.md`
 
 ## Editorial Direction
 
-- [ ] T004 Write a compact tone guide for both languages: personal, simple, direct, professional, and clients-first.
-- [ ] T005 Record banned copy patterns to remove during implementation: inflated claims, vague product-speak, generic AI-sounding phrasing, filler, and over-friendly slang.
-- [ ] T006 Define Arabic/English parity rules so meaning stays aligned without literal translation.
+Editorial artifact: `specs/012-site-copy-refresh/editorial-direction.md`
+
+- [x] T004 Write a compact tone guide for both languages: personal, simple, direct, professional, and clients-first.
+- [x] T005 Record banned copy patterns to remove during implementation: inflated claims, vague product-speak, generic AI-sounding phrasing, filler, and over-friendly slang.
+- [x] T006 Define Arabic/English parity rules so meaning stays aligned without literal translation.
 
 ## High-Impact Public Copy
 
