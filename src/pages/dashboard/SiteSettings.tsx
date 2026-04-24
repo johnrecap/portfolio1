@@ -9,16 +9,20 @@ import { SettingsShell } from '@/components/dashboard/forms/settings-shell';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useDocument } from '@/hooks/useFirestore';
 import { useMediaLibrary } from '@/hooks/useMediaLibrary';
 import { isSiteBrandMirroringProfile } from '@/lib/admin/brand';
 import { createDefaultProfileSettings, createDefaultSiteSettings } from '@/lib/admin/defaults';
+import type { ProfileSettings } from '@/lib/admin/types';
 import { normalizeSiteSettings } from '@/lib/admin/settings';
 import { resolveMediaField } from '@/lib/content-hub';
+import { buildProfileImageStyle } from '@/lib/profile-image';
 
 type ProfileSettingsForm = ReturnType<typeof createDefaultProfileSettings>;
 type SiteSettingsForm = ReturnType<typeof createDefaultSiteSettings>;
+type ProfileImageFit = ProfileSettings['profileImageFit'];
 
 export const DashboardSiteSettings = () => {
   const { t, i18n } = useTranslation();
@@ -71,6 +75,7 @@ export const DashboardSiteSettings = () => {
     },
     assets,
   );
+  const profileImageStyle = buildProfileImageStyle(profileForm);
 
   const handleProfileChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -80,6 +85,13 @@ export const DashboardSiteSettings = () => {
   const handleSiteChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setSiteForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const updateProfileImageNumber = (
+    field: 'profileImagePositionX' | 'profileImagePositionY' | 'profileImageZoom',
+    value: string,
+  ) => {
+    setProfileForm((current) => ({ ...current, [field]: Number(value) }));
   };
 
   const handleCtaToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -241,6 +253,113 @@ export const DashboardSiteSettings = () => {
               onUrlChange={(value) => setProfileForm((current) => ({ ...current, profileImage: value }))}
               onAssetIdChange={(value) => setProfileForm((current) => ({ ...current, profileImageAssetId: value }))}
             />
+            <div className="space-y-5 rounded-[1.5rem] border border-border/60 bg-background/70 p-5">
+              <div>
+                <p className="font-semibold text-foreground">{t('dashboardSite.profileImageCropControls')}</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  {t('dashboardSite.profileImageCropHint')}
+                </p>
+              </div>
+
+              <div className="grid gap-5 lg:grid-cols-[180px_1fr]">
+                <div className="overflow-hidden rounded-[1.25rem] border border-border/60 bg-muted">
+                  {resolvedProfileImage.url ? (
+                    <img
+                      src={resolvedProfileImage.url}
+                      alt={profileForm.displayName}
+                      className="aspect-[4/5] w-full bg-muted"
+                      style={profileImageStyle}
+                    />
+                  ) : (
+                    <div className="aspect-[4/5] w-full" />
+                  )}
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>{t('dashboardSite.profileImageFit')}</Label>
+                    <Select
+                      value={profileForm.profileImageFit}
+                      onValueChange={(value) =>
+                        setProfileForm((current) => ({ ...current, profileImageFit: value as ProfileImageFit }))
+                      }
+                    >
+                      <SelectTrigger className="h-10 w-full rounded-xl border-border/70 bg-background/70">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent align="start">
+                        <SelectItem value="cover">{t('dashboardSite.profileImageFitCover')}</SelectItem>
+                        <SelectItem value="contain">{t('dashboardSite.profileImageFitContain')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label htmlFor="profileImagePositionX">{t('dashboardSite.profileImagePositionX')}</Label>
+                      <span className="font-mono text-xs text-muted-foreground">{profileForm.profileImagePositionX}%</span>
+                    </div>
+                    <input
+                      id="profileImagePositionX"
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={profileForm.profileImagePositionX}
+                      onChange={(event) => updateProfileImageNumber('profileImagePositionX', event.target.value)}
+                      className="w-full accent-primary"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label htmlFor="profileImagePositionY">{t('dashboardSite.profileImagePositionY')}</Label>
+                      <span className="font-mono text-xs text-muted-foreground">{profileForm.profileImagePositionY}%</span>
+                    </div>
+                    <input
+                      id="profileImagePositionY"
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={profileForm.profileImagePositionY}
+                      onChange={(event) => updateProfileImageNumber('profileImagePositionY', event.target.value)}
+                      className="w-full accent-primary"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label htmlFor="profileImageZoom">{t('dashboardSite.profileImageZoom')}</Label>
+                      <span className="font-mono text-xs text-muted-foreground">{profileForm.profileImageZoom}%</span>
+                    </div>
+                    <input
+                      id="profileImageZoom"
+                      type="range"
+                      min="100"
+                      max="160"
+                      value={profileForm.profileImageZoom}
+                      onChange={(event) => updateProfileImageNumber('profileImageZoom', event.target.value)}
+                      className="w-full accent-primary"
+                    />
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      setProfileForm((current) => ({
+                        ...current,
+                        profileImageFit: 'cover',
+                        profileImagePositionX: 50,
+                        profileImagePositionY: 50,
+                        profileImageZoom: 100,
+                      }))
+                    }
+                  >
+                    {t('dashboardSite.profileImageResetCrop')}
+                  </Button>
+                </div>
+              </div>
+            </div>
             <MediaPicker
               label={t('dashboardSite.heroImageMedia')}
               urlLabel={t('dashboardSite.heroImageUrl')}
@@ -296,7 +415,12 @@ export const DashboardSiteSettings = () => {
                     <div className="flex items-center gap-3">
                       <div className="h-14 w-14 overflow-hidden rounded-full border border-border/60 bg-muted">
                         {resolvedProfileImage.url ? (
-                          <img src={resolvedProfileImage.url} alt={profileForm.displayName} className="h-full w-full object-cover" />
+                          <img
+                            src={resolvedProfileImage.url}
+                            alt={profileForm.displayName}
+                            className="h-full w-full"
+                            style={profileImageStyle}
+                          />
                         ) : null}
                       </div>
                       <div>

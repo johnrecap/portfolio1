@@ -133,6 +133,10 @@ export interface ProfileSettings {
   metaDescriptionAr: string;
   profileImage: string;
   profileImageAssetId: string;
+  profileImageFit: 'cover' | 'contain';
+  profileImagePositionX: number;
+  profileImagePositionY: number;
+  profileImageZoom: number;
   heroImage: string;
   heroImageAssetId: string;
 }

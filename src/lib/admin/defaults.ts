@@ -158,6 +158,10 @@ export function createDefaultProfileSettings(): ProfileSettings {
       'يبني محمد سعيد مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق صغيرة وأصحاب مشاريع يحتاجون إلى هيكل واضح، وتنفيذ عملي، ودعم ثنائي اللغة.',
     profileImage: '',
     profileImageAssetId: '',
+    profileImageFit: 'cover',
+    profileImagePositionX: 50,
+    profileImagePositionY: 50,
+    profileImageZoom: 100,
     heroImage: '',
     heroImageAssetId: '',
   };

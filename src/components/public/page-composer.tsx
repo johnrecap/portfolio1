@@ -39,6 +39,7 @@ import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-fires
 import { auth, db, handleFirestoreError, OperationType } from '@/lib/firebase';
 import { readComposerText } from '@/lib/admin/page-content';
 import { resolveMediaField } from '@/lib/content-hub';
+import { buildProfileImageStyle } from '@/lib/profile-image';
 import type { AdminPageConfig, AdminPageSection, PlatformPageId, StylePreset } from '@/lib/admin/types';
 
 function getSurfaceTone(stylePreset: StylePreset) {
@@ -87,6 +88,7 @@ function AboutIntroSection({ section }: { section: AdminPageSection }) {
         },
         assets,
       );
+  const profileImageStyle = buildProfileImageStyle(profile);
 
   return (
     <section className="py-6 md:py-8">
@@ -129,7 +131,8 @@ function AboutIntroSection({ section }: { section: AdminPageSection }) {
                 src={profileImage.url}
                 alt={profileImage.alt || displayName}
                 referrerPolicy="no-referrer"
-                className="aspect-[4/5] w-full bg-muted object-contain"
+                className="aspect-[4/5] w-full bg-muted"
+                style={profileImageStyle}
               />
             </div>
           ) : null}

@@ -16,6 +16,10 @@ test('createDefaultProfileSettings returns media asset ID placeholders', () => {
   const result = createDefaultProfileSettings();
 
   assert.equal(result.profileImageAssetId, '');
+  assert.equal(result.profileImageFit, 'cover');
+  assert.equal(result.profileImagePositionX, 50);
+  assert.equal(result.profileImagePositionY, 50);
+  assert.equal(result.profileImageZoom, 100);
   assert.equal(result.heroImageAssetId, '');
   assert.equal(result.title, 'Product Engineer');
   assert.equal(result.metaDescription.length > 0, true);

@@ -83,6 +83,7 @@ service cloud.firestore {
           'displayName', 'displayNameAr', 'title', 'titleAr', 'bio', 'bioAr', 'isAvailable',
           'githubUrl', 'linkedinUrl', 'websiteUrl', 'metaTitle', 'metaTitleAr',
           'metaDescription', 'metaDescriptionAr', 'profileImage', 'profileImageAssetId',
+          'profileImageFit', 'profileImagePositionX', 'profileImagePositionY', 'profileImageZoom',
           'heroImage', 'heroImageAssetId', 'createdAt', 'updatedAt'
         ]) &&
         hasRequiredFields(['displayName', 'title']) &&
@@ -102,6 +103,10 @@ service cloud.firestore {
         optionalString('metaDescriptionAr') &&
         optionalString('profileImage') &&
         optionalString('profileImageAssetId') &&
+        (!('profileImageFit' in request.resource.data) || request.resource.data.profileImageFit in ['cover', 'contain']) &&
+        optionalNumber('profileImagePositionX') &&
+        optionalNumber('profileImagePositionY') &&
+        optionalNumber('profileImageZoom') &&
         optionalString('heroImage') &&
         optionalString('heroImageAssetId');
     }

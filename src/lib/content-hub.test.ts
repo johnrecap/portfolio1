@@ -9,6 +9,7 @@ import {
   resolveMediaField,
   type MediaAssetRecord,
 } from './content-hub';
+import { buildProfileImageStyle } from './profile-image';
 
 const mediaAssets = [
   {
@@ -82,6 +83,34 @@ test('resolveMediaField falls back to the manual URL when no asset is selected',
 
   assert.equal(result.url, 'https://fallback.example.com/manual.webp');
   assert.equal(result.asset, undefined);
+});
+
+test('buildProfileImageStyle maps crop controls into stable CSS', () => {
+  const result = buildProfileImageStyle({
+    profileImageFit: 'cover',
+    profileImagePositionX: 35,
+    profileImagePositionY: 20,
+    profileImageZoom: 125,
+  });
+
+  assert.equal(result.objectFit, 'cover');
+  assert.equal(result.objectPosition, '35% 20%');
+  assert.equal(result.transform, 'scale(1.25)');
+  assert.equal(result.transformOrigin, '35% 20%');
+});
+
+test('buildProfileImageStyle clamps unsafe crop control values', () => {
+  const result = buildProfileImageStyle({
+    profileImageFit: 'stretch',
+    profileImagePositionX: -20,
+    profileImagePositionY: 140,
+    profileImageZoom: 300,
+  });
+
+  assert.equal(result.objectFit, 'cover');
+  assert.equal(result.objectPosition, '0% 100%');
+  assert.equal(result.transform, 'scale(1.6)');
+  assert.equal(result.transformOrigin, '0% 100%');
 });
 
 test('getFeaturedTestimonials prioritizes featured items using explicit order', () => {
