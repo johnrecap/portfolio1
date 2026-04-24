@@ -1,11 +1,9 @@
 import { useMemo } from 'react';
 
-import { useCollection } from './useFirestore';
+import { useCollection, type UseFirestoreOptions } from './useFirestore';
 import type { MediaAssetRecord } from '@/lib/content-hub';
 
-type UseMediaLibraryOptions = {
-  suppressPermissionDenied?: boolean;
-};
+type UseMediaLibraryOptions = UseFirestoreOptions;
 
 export function useMediaLibrary(options?: UseMediaLibraryOptions) {
   const collectionState = useCollection<MediaAssetRecord>('mediaAssets', options);

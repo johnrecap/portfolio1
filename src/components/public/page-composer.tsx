@@ -584,7 +584,7 @@ function ContactFormSection({ section }: { section: AdminPageSection }) {
 }
 
 function AvailabilitySection({ section }: { section: AdminPageSection }) {
-  const { contactSettings, loading: contactLoading } = useContactSettings();
+  const { contactSettings, loading: contactLoading } = useContactSettings({ publicRead: true });
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const title = readSectionText(section, 'title', t('contact.availableForWork'), isArabic);
@@ -652,7 +652,7 @@ function AvailabilitySection({ section }: { section: AdminPageSection }) {
 
 function ContactMethodsSection({ section }: { section: AdminPageSection }) {
   const { profile, loading: profileLoading } = useProfile();
-  const { contactSettings, loading: contactLoading } = useContactSettings();
+  const { contactSettings, loading: contactLoading } = useContactSettings({ publicRead: true });
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const directTitle = readSectionText(section, 'directTitle', t('contact.directChannelsTitle'), isArabic);

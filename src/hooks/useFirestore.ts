@@ -5,6 +5,10 @@ import { collection, onSnapshot, query, addDoc, updateDoc, deleteDoc, doc, serve
 export type UseFirestoreOptions = {
   suppressPermissionDenied?: boolean;
   orderByCreatedAt?: boolean;
+  initialData?: unknown;
+  hasInitialData?: boolean;
+  keepDataOnSuppressedError?: boolean;
+  onData?: (data: unknown) => void;
 };
 
 const reportedReadErrors = new Set<string>();
@@ -87,22 +91,30 @@ export function cleanupFirestoreSubscription(
 }
 
 export function useDocument<T>(path: string, docId: string, options?: UseFirestoreOptions) {
-  const [data, setData] = useState<(T & { id: string }) | null>(null);
-  const [loading, setLoading] = useState(true);
+  const hasInitialData = options?.hasInitialData === true;
+  const [data, setData] = useState<(T & { id: string }) | null>(
+    hasInitialData ? (options?.initialData as (T & { id: string }) | null) : null,
+  );
+  const [loading, setLoading] = useState(!hasInitialData);
   const [error, setError] = useState<FirestoreErrorInfo | null>(null);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, path, docId), (snapshot) => {
+      let nextData: (T & { id: string }) | null;
       if (snapshot.exists()) {
-        setData({ id: snapshot.id, ...snapshot.data() } as any);
+        nextData = { id: snapshot.id, ...snapshot.data() } as T & { id: string };
       } else {
-        setData(null);
+        nextData = null;
       }
+      setData(nextData);
+      options?.onData?.(nextData);
       setError(null);
       setLoading(false);
     }, (error) => {
       if (shouldSuppressDocumentError(error, options)) {
-        setData(null);
+        if (options?.keepDataOnSuppressedError !== true) {
+          setData(null);
+        }
         setError(null);
         setLoading(false);
         return;
@@ -116,7 +128,7 @@ export function useDocument<T>(path: string, docId: string, options?: UseFiresto
     });
 
     return () => cleanupFirestoreSubscription(unsubscribe, OperationType.GET, `${path}/${docId}`);
-  }, [path, docId, options?.suppressPermissionDenied]);
+  }, [path, docId, options?.suppressPermissionDenied, options?.keepDataOnSuppressedError]);
 
   const setDocument = async (docData: any, merge: boolean = true) => {
     try {
@@ -130,8 +142,11 @@ export function useDocument<T>(path: string, docId: string, options?: UseFiresto
 }
 
 export function useCollection<T>(path: string, options?: UseFirestoreOptions) {
-  const [data, setData] = useState<(T & { id: string })[]>([]);
-  const [loading, setLoading] = useState(true);
+  const hasInitialData = options?.hasInitialData === true;
+  const [data, setData] = useState<(T & { id: string })[]>(
+    hasInitialData ? (options?.initialData as (T & { id: string })[]) : [],
+  );
+  const [loading, setLoading] = useState(!hasInitialData);
   const [error, setError] = useState<FirestoreErrorInfo | null>(null);
 
   useEffect(() => {
@@ -144,12 +159,16 @@ export function useCollection<T>(path: string, options?: UseFirestoreOptions) {
       snapshot.forEach(doc => {
         result.push({ id: doc.id, ...doc.data() });
       });
-      setData(sortByCreatedAtDesc(result));
+      const nextData = sortByCreatedAtDesc(result) as (T & { id: string })[];
+      setData(nextData);
+      options?.onData?.(nextData);
       setError(null);
       setLoading(false);
     }, (error) => {
       if (shouldSuppressCollectionError(error, options)) {
-        setData([]);
+        if (options?.keepDataOnSuppressedError !== true) {
+          setData([]);
+        }
         setError(null);
         setLoading(false);
         return;
@@ -163,7 +182,7 @@ export function useCollection<T>(path: string, options?: UseFirestoreOptions) {
     });
 
     return () => cleanupFirestoreSubscription(unsubscribe, OperationType.LIST, path);
-  }, [path, options?.suppressPermissionDenied, options?.orderByCreatedAt]);
+  }, [path, options?.suppressPermissionDenied, options?.orderByCreatedAt, options?.keepDataOnSuppressedError]);
 
   const addDocument = async (docData: any) => {
     try {

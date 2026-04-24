@@ -1,4 +1,4 @@
-import { useDocument } from './useFirestore';
+import { usePublicDocument } from './public-firestore';
 import { createDefaultProfileSettings } from '@/lib/admin/defaults';
 
 const DEFAULT_PROFILE = {
@@ -18,7 +18,7 @@ const LOADING_PROFILE = {
 };
 
 export function useProfile() {
-  const { data, loading } = useDocument('settings', 'profile');
+  const { data, loading } = usePublicDocument('settings', 'profile');
 
   if (loading) {
     return { profile: LOADING_PROFILE, loading };

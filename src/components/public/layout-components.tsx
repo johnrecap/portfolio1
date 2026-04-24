@@ -47,9 +47,9 @@ export const PublicNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { profile, loading: profileLoading } = useProfile();
-  const { navigationSettings, loading: navigationLoading } = useNavigationSettings();
-  const { siteSettings, loading: siteLoading } = useSiteSettings();
-  const { themeSettings, loading: themeLoading } = useThemeSettings();
+  const { navigationSettings, loading: navigationLoading } = useNavigationSettings({ publicRead: true });
+  const { siteSettings, loading: siteLoading } = useSiteSettings({ publicRead: true });
+  const { themeSettings, loading: themeLoading } = useThemeSettings({ publicRead: true });
   const { t, i18n } = useTranslation();
 
   const fallbackNavLinks = [
@@ -201,9 +201,9 @@ export const PublicNavbar = () => {
 
 export const PublicFooter = () => {
   const { profile, loading: profileLoading } = useProfile();
-  const { footerSettings, loading: footerLoading } = useFooterSettings();
-  const { siteSettings, loading: siteLoading } = useSiteSettings();
-  const { contactSettings, loading: contactLoading } = useContactSettings();
+  const { footerSettings, loading: footerLoading } = useFooterSettings({ publicRead: true });
+  const { siteSettings, loading: siteLoading } = useSiteSettings({ publicRead: true });
+  const { contactSettings, loading: contactLoading } = useContactSettings({ publicRead: true });
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const brandName = resolveLocalizedSiteBrand(siteSettings, profile, isArabic);

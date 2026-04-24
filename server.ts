@@ -1,7 +1,11 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { buildPublicBootstrapPacket } from './src/server/public-bootstrap.js';
+import { escapePublicBootstrapJson } from './src/lib/public-bootstrap.js';
 
 const DEFAULT_HOST = '0.0.0.0';
 const DEFAULT_PORT = 3000;
@@ -79,12 +83,30 @@ async function createApp() {
   }
 
   const distPath = path.join(projectRoot, 'dist');
-  app.use(express.static(distPath));
+  app.use(express.static(distPath, { index: false }));
+  app.get('/api/public/bootstrap', async (_req, res) => {
+    const packet = await buildPublicBootstrapPacket();
+    res.json(packet);
+  });
   app.get('/api/*', (_req, res) => {
     res.status(404).json({ error: 'Not found' });
   });
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
+  app.get('*', async (_req, res, next) => {
+    try {
+      const indexPath = path.join(distPath, 'index.html');
+      const [indexHtml, packet] = await Promise.all([
+        fs.readFile(indexPath, 'utf8'),
+        buildPublicBootstrapPacket(),
+      ]);
+      const bootstrapScript = `<script>window.__PUBLIC_BOOTSTRAP__=${escapePublicBootstrapJson(packet)};</script>`;
+      const html = indexHtml.includes('</head>')
+        ? indexHtml.replace('</head>', `${bootstrapScript}</head>`)
+        : `${bootstrapScript}${indexHtml}`;
+
+      res.type('html').send(html);
+    } catch (error) {
+      next(error);
+    }
   });
 
   return app;

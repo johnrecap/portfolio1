@@ -12,7 +12,7 @@ type PageSeoProps = {
 
 export function PageSeo({ title, description, image }: PageSeoProps) {
   const { profile, loading: profileLoading } = useProfile();
-  const { seoSettings, loading: seoLoading } = useSeoSettings();
+  const { seoSettings, loading: seoLoading } = useSeoSettings({ publicRead: true });
   const { i18n } = useTranslation();
 
   const localizedSiteTitle = resolveLocalizedSeoTitle(seoSettings, profile, i18n.language === "ar");
