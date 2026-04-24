@@ -129,7 +129,7 @@ function AboutIntroSection({ section }: { section: AdminPageSection }) {
                 src={profileImage.url}
                 alt={profileImage.alt || displayName}
                 referrerPolicy="no-referrer"
-                className="aspect-[4/5] w-full object-cover"
+                className="aspect-[4/5] w-full bg-muted object-contain"
               />
             </div>
           ) : null}
