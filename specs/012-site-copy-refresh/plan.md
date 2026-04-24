@@ -10,6 +10,7 @@ Turn the approved copy direction into an executable Speckit packet that guides a
 - `specs/012-site-copy-refresh/spec.md`
 - `specs/012-site-copy-refresh/plan.md`
 - `specs/012-site-copy-refresh/tasks.md`
+- `specs/012-site-copy-refresh/source-audit.md`
 - Expected implementation targets:
   - `src/locales/en.json`
   - `src/locales/ar.json`

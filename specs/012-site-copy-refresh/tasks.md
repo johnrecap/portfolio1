@@ -2,9 +2,11 @@
 
 ## Source Audit
 
-- [ ] T001 Map every public copy source across `src/locales/en.json`, `src/locales/ar.json`, `src/lib/admin/defaults.ts`, public component fallbacks, and Firestore-backed public content overrides.
-- [ ] T002 Mark the exact in-scope public sections: `hero`, `about`, `projects`, `skills`, `blog`, `services`, `contact`, `footer`, and supporting public labels/empty states.
-- [ ] T003 Record the explicitly out-of-scope areas so admin/dashboard wording is not changed by accident.
+Audit artifact: `specs/012-site-copy-refresh/source-audit.md`
+
+- [x] T001 Map every public copy source across `src/locales/en.json`, `src/locales/ar.json`, `src/lib/admin/defaults.ts`, public component fallbacks, and Firestore-backed public content overrides.
+- [x] T002 Mark the exact in-scope public sections: `hero`, `about`, `projects`, `skills`, `blog`, `services`, `contact`, `footer`, and supporting public labels/empty states.
+- [x] T003 Record the explicitly out-of-scope areas so admin/dashboard wording is not changed by accident.
 
 ## Editorial Direction
 
