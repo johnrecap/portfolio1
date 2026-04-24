@@ -12,10 +12,13 @@ Turn the approved copy direction into an executable Speckit packet that guides a
 - `specs/012-site-copy-refresh/tasks.md`
 - `specs/012-site-copy-refresh/source-audit.md`
 - `specs/012-site-copy-refresh/editorial-direction.md`
+- `specs/012-site-copy-refresh/bilingual-quality-pass.md`
+- `specs/012-site-copy-refresh/settings-follow-up.md`
 - Expected implementation targets:
   - `src/locales/en.json`
   - `src/locales/ar.json`
   - `src/lib/admin/defaults.ts`
+  - `src/hooks/useProfile.ts`
   - public copy fallbacks in `src/components/public/*`
   - public page shells in `src/pages/(public)/*`
   - any maintainer notes needed if Firestore-backed content overrides refreshed fallback copy
@@ -29,7 +32,7 @@ Use one packet to audit all public copy sources, define one editorial standard f
 **Language/Version**: TypeScript 5.x, JSON, Markdown  
 **Primary Dependencies**: React 19, Vite 6, react-i18next, Firebase-backed settings/page-composer hooks  
 **Storage**: Public copy is split across locale JSON, repo fallbacks in code, admin defaults, and Firestore-backed page/settings content  
-**Testing**: `npm run test:locales`, `npm run build`, manual public-page review in Arabic and English  
+**Testing**: `npm run test:admin`, `npm run test:locales`, `npm run i18n:check`, `npm run build`, manual public-page review in Arabic and English  
 **Target Platform**: Web / public portfolio site  
 **Project Type**: React/Vite bilingual portfolio with admin-managed content layers
 
@@ -57,7 +60,8 @@ Use one packet to audit all public copy sources, define one editorial standard f
 4. Refresh supporting public sections next so the whole site shares one voice: skills, blog, services, showcase-style sections, featured-project copy, and empty states.
 5. Review Arabic and English as paired writing passes that preserve meaning and tone without literal translation.
 6. Check where live Firestore content may still override refreshed repository fallbacks and record those follow-up actions explicitly.
-7. Verify with locale tests, production build, and manual page review in both languages.
+7. Verify with admin/defaults tests, locale parity checks, production build, and manual page review in both languages.
+8. Track the repo-controlled copy pass separately from runtime-managed dashboard cleanup so completion status stays honest.
 
 ## Risks
 
@@ -73,4 +77,5 @@ Use one packet to audit all public copy sources, define one editorial standard f
 - The packet distinguishes clearly between repo-controlled copy and Firestore-managed overrides.
 - Arabic and English tone guidance is explicit and usable.
 - Verification steps cover both correctness and presentation risk.
+- The packet status distinguishes completed repo-controlled work from pending dashboard-managed content cleanup.
 - The packet is detailed enough that implementation can proceed without relying on memory.

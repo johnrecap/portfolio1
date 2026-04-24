@@ -193,8 +193,8 @@ export const PublicFooter = () => {
   const brandName = resolveLocalizedSiteBrand(siteSettings, profile, isArabic);
   const title = isArabic ? profile.titleAr || profile.title : profile.title;
   const footerSummary = isArabic
-    ? footerSettings.taglineAr || siteSettings.siteTaglineAr || t('footer.summary')
-    : footerSettings.tagline || siteSettings.siteTagline || t('footer.summary');
+    ? siteSettings.siteTaglineAr || footerSettings.taglineAr || t('footer.summary')
+    : siteSettings.siteTagline || footerSettings.tagline || t('footer.summary');
 
   const fallbackSocialLinks = [
     contactSettings.email ? { href: `mailto:${contactSettings.email}`, label: contactSettings.email } : null,

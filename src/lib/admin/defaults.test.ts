@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   createDefaultDashboardSettings,
+  createDefaultFooterSettings,
   createDefaultProfileSettings,
   createDefaultPageConfig,
   createDefaultSeoSettings,
@@ -16,6 +17,8 @@ test('createDefaultProfileSettings returns media asset ID placeholders', () => {
 
   assert.equal(result.profileImageAssetId, '');
   assert.equal(result.heroImageAssetId, '');
+  assert.equal(result.title, 'Product Engineer');
+  assert.equal(result.metaDescription.length > 0, true);
 });
 
 test('createDefaultSiteSettings returns a neutral site settings baseline', () => {
@@ -25,6 +28,8 @@ test('createDefaultSiteSettings returns a neutral site settings baseline', () =>
   assert.equal(result.siteNameAr, 'محمد ستوديو');
   assert.equal(result.logoAssetId, '');
   assert.equal(result.primaryCtaEnabled, true);
+  assert.equal(result.primaryCtaHref, '/contact');
+  assert.equal(result.siteTagline.length > 0, true);
   assert.equal(result.status, 'published');
 });
 
@@ -33,6 +38,15 @@ test('createDefaultSeoSettings returns an Open Graph asset placeholder', () => {
 
   assert.equal(result.defaultTitle, 'Mohamed Studio | Mohamed Saied');
   assert.equal(result.ogImageAssetId, '');
+});
+
+test('createDefaultFooterSettings keeps the status strip and summary layers distinct by default', () => {
+  const result = createDefaultFooterSettings();
+
+  assert.equal(result.tagline, '');
+  assert.equal(result.taglineAr, '');
+  assert.equal(result.statusStrip, 'Open to a small number of client projects');
+  assert.equal(result.ctaHref, '/contact');
 });
 
 test('createDefaultDashboardSettings returns branded dashboard defaults', () => {
@@ -55,7 +69,11 @@ test('createDefaultPageConfig returns the correct page scaffold', () => {
   const result = createDefaultPageConfig('home');
 
   assert.equal(result.pageId, 'home');
+  assert.equal(result.title, 'Websites and Dashboards');
+  assert.equal(result.titleAr, 'مواقع ولوحات تحكم');
   assert.equal(result.status, 'draft');
+  assert.equal(result.seo.description?.length > 0, true);
+  assert.equal(result.seo.descriptionAr?.length > 0, true);
   assert.equal(result.sections.length > 0, true);
   assert.deepEqual(
     result.sections.map((section) => section.type),

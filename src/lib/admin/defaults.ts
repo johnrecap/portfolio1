@@ -59,6 +59,50 @@ const DEFAULT_PAGE_SECTIONS: Record<PlatformPageId, AdminPageSection[]> = {
   ],
 };
 
+const DEFAULT_PAGE_METADATA: Record<
+  PlatformPageId,
+  { title: string; titleAr: string; description: string; descriptionAr: string }
+> = {
+  home: {
+    title: 'Websites and Dashboards',
+    titleAr: 'مواقع ولوحات تحكم',
+    description:
+      'Public websites, dashboards, and internal tools for small teams and founders who need clear structure and practical delivery.',
+    descriptionAr:
+      'مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق صغيرة وأصحاب مشاريع يحتاجون إلى هيكل واضح وتنفيذ عملي.',
+  },
+  about: {
+    title: 'About',
+    titleAr: 'نبذة',
+    description:
+      'How Mohamed Saied approaches public websites, dashboards, and the internal systems behind them.',
+    descriptionAr:
+      'كيف يتعامل محمد سعيد مع المواقع العامة، ولوحات الإدارة، والأنظمة الداخلية التي تدعمها.',
+  },
+  projects: {
+    title: 'Selected Work',
+    titleAr: 'أعمال مختارة',
+    description: 'Selected client work across public websites, dashboards, and practical product workflows.',
+    descriptionAr: 'أعمال مختارة عبر مواقع عامة، ولوحات إدارة، وتدفقات منتج عملية.',
+  },
+  blog: {
+    title: 'Notes',
+    titleAr: 'ملاحظات',
+    description:
+      'Notes on product work, web systems, and the decisions behind public websites and internal tools.',
+    descriptionAr:
+      'ملاحظات عن العمل على المنتجات، وأنظمة الويب، والقرارات خلف المواقع العامة والأدوات الداخلية.',
+  },
+  contact: {
+    title: 'Contact',
+    titleAr: 'تواصل',
+    description:
+      'Share the project context, the current stage, and where you need help to start a practical conversation.',
+    descriptionAr:
+      'شارك سياق المشروع، والمرحلة الحالية، والجزء الذي تحتاج فيه إلى المساعدة لبدء محادثة عملية.',
+  },
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -98,10 +142,10 @@ export function createDefaultProfileSettings(): ProfileSettings {
   return {
     displayName: 'Mohamed Saied',
     displayNameAr: 'محمد سعيد',
-    title: 'Full-Stack Product Engineer',
-    titleAr: 'مهندس منتجات وبرمجيات متكامل',
-    bio: '',
-    bioAr: '',
+    title: 'Product Engineer',
+    titleAr: 'مهندس منتجات رقمية',
+    bio: 'I build public websites, dashboards, and internal tools for teams that need clear structure and practical day-to-day use.',
+    bioAr: 'أبني مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق تحتاج إلى هيكل واضح واستخدام عملي يمكن الاعتماد عليه يوميًا.',
     isAvailable: true,
     githubUrl: '',
     linkedinUrl: '',
@@ -109,9 +153,9 @@ export function createDefaultProfileSettings(): ProfileSettings {
     metaTitle: 'Mohamed Studio | Mohamed Saied',
     metaTitleAr: 'محمد ستوديو | محمد سعيد',
     metaDescription:
-      'Mohamed Studio is the bilingual portfolio and digital workspace of Mohamed Saied, focused on product engineering, modern frontend systems, backend architecture, and admin-managed site experiences.',
+      'Mohamed Saied builds public websites, dashboards, and internal tools for small teams and founders who need clear structure, practical delivery, and bilingual support.',
     metaDescriptionAr:
-      'محمد ستوديو هو المساحة الرقمية ثنائية اللغة لمحمد سعيد، ويركز على هندسة المنتجات، والواجهات الحديثة، والبنية الخلفية، وتجارب الموقع المُدارة من مساحة عمل واحدة.',
+      'يبني محمد سعيد مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق صغيرة وأصحاب مشاريع يحتاجون إلى هيكل واضح، وتنفيذ عملي، ودعم ثنائي اللغة.',
     profileImage: '',
     profileImageAssetId: '',
     heroImage: '',
@@ -123,14 +167,14 @@ export function createDefaultSiteSettings(): SiteSettings {
   return {
     siteName: 'Mohamed Studio',
     siteNameAr: 'محمد ستوديو',
-    siteTagline: 'Product engineering, portfolio storytelling, and admin control in one workspace.',
-    siteTaglineAr: 'هندسة منتجات، وسرد أعمال، وإدارة الموقع من مساحة عمل واحدة.',
+    siteTagline: 'I build public-facing websites, dashboards, and internal tools with the same focus on clarity and day-to-day usability.',
+    siteTaglineAr: 'أبني مواقع عامة، ولوحات إدارة، وأدوات داخلية مع اهتمام واضح بسهولة الاستخدام وسهولة التطوير لاحقًا.',
     logoUrl: '',
     logoAssetId: '',
     primaryCtaEnabled: true,
-    primaryCtaLabel: 'View Projects',
-    primaryCtaLabelAr: 'شاهد المشروعات',
-    primaryCtaHref: '/projects',
+    primaryCtaLabel: 'Start a Conversation',
+    primaryCtaLabelAr: 'ابدأ محادثة',
+    primaryCtaHref: '/contact',
     status: 'published',
   };
 }
@@ -168,13 +212,13 @@ export function createDefaultNavigationSettings(): NavigationSettings {
 
 export function createDefaultFooterSettings(): FooterSettings {
   return {
-    tagline: 'Designed to feel like a polished product, not a static portfolio.',
-    taglineAr: 'تجربة مصممة لتبدو كمنتج متكامل لا كصفحة تعريفية ثابتة.',
-    ctaLabel: 'Start a Project',
-    ctaLabelAr: 'ابدأ مشروعًا',
+    tagline: '',
+    taglineAr: '',
+    ctaLabel: 'Start a Conversation',
+    ctaLabelAr: 'ابدأ محادثة',
     ctaHref: '/contact',
-    statusStrip: 'Available for focused product and engineering work',
-    statusStripAr: 'متاح حاليًا لمشروعات رقمية تحتاج تنفيذًا مركزًا',
+    statusStrip: 'Open to a small number of client projects',
+    statusStripAr: 'متاح لعدد محدود من مشاريع العملاء',
     links: [],
     socialLinks: [],
     status: 'published',
@@ -186,9 +230,9 @@ export function createDefaultSeoSettings(): SeoSettings {
     defaultTitle: 'Mohamed Studio | Mohamed Saied',
     defaultTitleAr: 'محمد ستوديو | محمد سعيد',
     defaultDescription:
-      'Mohamed Studio is a bilingual portfolio and digital workspace for product-minded engineering, case studies, and admin-managed content.',
+      'Public websites, dashboards, and internal tools built by Mohamed Saied with a focus on clarity, practical delivery, and bilingual support.',
     defaultDescriptionAr:
-      'محمد ستوديو مساحة ثنائية اللغة لعرض هندسة المنتجات، ودراسات الحالات، والمحتوى المُدار إداريًا.',
+      'مواقع عامة، ولوحات إدارة، وأدوات داخلية يبنيها محمد سعيد مع تركيز على الوضوح، والتنفيذ العملي، ودعم العربية والإنجليزية.',
     ogImage: '',
     ogImageAssetId: '',
     siteUrl: '',
@@ -237,22 +281,27 @@ export function createDefaultContactSettings(): ContactSettings {
     whatsapp: '',
     location: '',
     locationAr: '',
-    availabilityLabel: 'Open to new product and engineering work',
-    availabilityLabelAr: 'منفتح على مشروعات جديدة في المنتجات والهندسة البرمجية',
-    responseTime: 'Replies within 1-2 business days',
-    responseTimeAr: 'الرد عادة خلال يوم إلى يومي عمل',
+    availabilityLabel: 'I am most useful on projects that need a clear public experience and the systems behind it to work well too.',
+    availabilityLabelAr: 'أكون الأنسب للمشاريع التي تحتاج واجهة عامة واضحة، مع نظام خلفي يسهل العمل عليه أيضًا.',
+    responseTime: 'Usually 1-2 business days',
+    responseTimeAr: 'غالبًا خلال يوم إلى يومي عمل',
     status: 'published',
   };
 }
 
 export function createDefaultPageConfig(pageId: PlatformPageId): AdminPageConfig {
+  const metadata = DEFAULT_PAGE_METADATA[pageId];
+
   return {
     pageId,
-    title: pageId,
-    titleAr: pageId,
+    title: metadata.title,
+    titleAr: metadata.titleAr,
     slug: pageId === 'home' ? '/' : `/${pageId}`,
     status: 'draft',
-    seo: {},
+    seo: {
+      description: metadata.description,
+      descriptionAr: metadata.descriptionAr,
+    },
     sections: cloneSections(pageId),
   };
 }
