@@ -38,6 +38,5 @@ Thumbs.db
 /.memsearch/
 /.specify/
 /docs/agent-playbooks/
-/specs/
 /setup-agent-skills.ps1
 /skills-lock.json
