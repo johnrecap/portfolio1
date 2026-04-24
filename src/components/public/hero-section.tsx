@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { buttonVariants } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { readComposerText } from '@/lib/admin/page-content';
+import { SkeletonLine } from '@/components/shared/PageState';
 
 type HeroSectionProps = {
   variant?: 'split' | 'centered' | 'minimal';
@@ -13,7 +14,7 @@ type HeroSectionProps = {
 };
 
 export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProps) => {
-  const { profile } = useProfile();
+  const { profile, loading: profileLoading } = useProfile();
   const { t, i18n } = useTranslation();
   const [copied, setCopied] = useState(false);
 
@@ -22,7 +23,7 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
     ? profile.displayNameAr || profile.displayName
     : profile.displayName;
   const title = isArabic ? profile.titleAr || profile.title : profile.title;
-  const installCommand = `npm i @${profile.displayName.toLowerCase().replace(/\s+/g, '')}/portfolio-kit`;
+  const installCommand = `npm i @${profile.displayName.toLowerCase().replace(/\s+/g, '') || 'portfolio'}/portfolio-kit`;
   const sectionTitle = readComposerText(content, 'title', t('hero.headline'), isArabic);
   const sectionHighlight = readComposerText(content, 'highlight', t('hero.highlight'), isArabic);
   const sectionSubtitle = readComposerText(content, 'subtitle', t('hero.subheadline'), isArabic);
@@ -72,7 +73,7 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
 
           <div className="space-y-4">
             <p className="font-mono text-sm uppercase tracking-[0.22em] text-muted-foreground">
-              {eyebrow}
+              {profileLoading ? <SkeletonLine className="h-4 w-64" /> : eyebrow}
             </p>
             <h1
               className={`font-heading text-4xl font-black leading-[1.02] tracking-tight text-foreground sm:text-5xl lg:text-7xl ${
@@ -193,7 +194,7 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
                   )}
                 </div>
                 <code className="block overflow-x-auto font-mono text-sm text-slate-100">
-                  {installCommand}
+                  {profileLoading ? <SkeletonLine className="my-1 h-4 w-72 bg-slate-700/70" /> : installCommand}
                 </code>
               </div>
 

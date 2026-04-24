@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { useTheme } from '@/components/shared/theme-provider';
+import { SkeletonLine } from '@/components/shared/PageState';
 import { useProfile } from '@/hooks/useProfile';
 import { useContactSettings, useFooterSettings, useNavigationSettings, useSiteSettings, useThemeSettings } from '@/hooks/usePlatformSettings';
 import { resolveLocalizedSiteBrand } from '@/lib/admin/brand';
@@ -45,10 +46,10 @@ const LanguageToggle = () => {
 export const PublicNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { profile } = useProfile();
-  const { navigationSettings } = useNavigationSettings();
-  const { siteSettings } = useSiteSettings();
-  const { themeSettings } = useThemeSettings();
+  const { profile, loading: profileLoading } = useProfile();
+  const { navigationSettings, loading: navigationLoading } = useNavigationSettings();
+  const { siteSettings, loading: siteLoading } = useSiteSettings();
+  const { themeSettings, loading: themeLoading } = useThemeSettings();
   const { t, i18n } = useTranslation();
 
   const fallbackNavLinks = [
@@ -62,7 +63,7 @@ export const PublicNavbar = () => {
 
   const isArabic = i18n.language === 'ar';
   const navLinks =
-    navigationSettings.items.length > 0
+    !navigationLoading && navigationSettings.items.length > 0
       ? navigationSettings.items.filter((item) => item.enabled).map((item) => ({
           id: item.id,
           href: item.href,
@@ -70,7 +71,8 @@ export const PublicNavbar = () => {
         }))
       : fallbackNavLinks.map((item) => ({ id: item.id, href: item.href, label: item.label }));
   const brandMark = resolveLocalizedSiteBrand(siteSettings, profile, isArabic);
-  const showThemeToggle = navigationSettings.showThemeToggle && themeSettings.mode === 'system';
+  const brandLoading = siteLoading || profileLoading;
+  const showThemeToggle = !navigationLoading && !themeLoading && navigationSettings.showThemeToggle && themeSettings.mode === 'system';
   const adminCtaHref = '/login';
   const adminCtaLabel = t('nav.adminLogin');
 
@@ -81,18 +83,26 @@ export const PublicNavbar = () => {
     >
       <div className="mx-auto flex h-16 max-w-[1344px] items-center justify-between px-4 sm:px-8">
         <Link to="/" className="flex items-center gap-3 font-heading text-xl font-bold tracking-tight text-primary">
-          {siteSettings.logoUrl ? (
+          {!siteLoading && siteSettings.logoUrl ? (
             <img
               src={siteSettings.logoUrl}
               alt={brandMark}
               className="h-9 w-9 rounded-full border border-border/60 bg-card object-cover"
             />
           ) : null}
-          <span>{brandMark}</span>
+          {brandLoading ? <SkeletonLine className="h-6 w-36" /> : <span>{brandMark}</span>}
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-4 md:flex lg:gap-6">
-          {navLinks.map((link) => {
+          {navigationLoading ? (
+            <>
+              <SkeletonLine className="h-4 w-14" />
+              <SkeletonLine className="h-4 w-16" />
+              <SkeletonLine className="h-4 w-20" />
+              <SkeletonLine className="h-4 w-16" />
+              <SkeletonLine className="h-4 w-14" />
+            </>
+          ) : navLinks.map((link) => {
             const active =
               link.href === '/'
                 ? location.pathname === link.href
@@ -112,8 +122,8 @@ export const PublicNavbar = () => {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          {navigationSettings.showLanguageToggle ? <LanguageToggle /> : null}
-          {navigationSettings.showLanguageToggle && showThemeToggle ? (
+          {!navigationLoading && navigationSettings.showLanguageToggle ? <LanguageToggle /> : null}
+          {!navigationLoading && navigationSettings.showLanguageToggle && showThemeToggle ? (
             <div className="mx-1 h-4 w-px bg-border" />
           ) : null}
           {showThemeToggle ? <ThemeToggle /> : null}
@@ -126,7 +136,7 @@ export const PublicNavbar = () => {
         </div>
 
         <div className="flex items-center gap-1 md:hidden">
-          {navigationSettings.showLanguageToggle ? <LanguageToggle /> : null}
+          {!navigationLoading && navigationSettings.showLanguageToggle ? <LanguageToggle /> : null}
           {showThemeToggle ? <ThemeToggle /> : null}
           <Button
             variant="ghost"
@@ -148,7 +158,13 @@ export const PublicNavbar = () => {
             className="border-t bg-background md:hidden"
           >
             <div className="space-y-3 px-4 py-4">
-              {navLinks.map((link) => {
+              {navigationLoading ? (
+                <div className="space-y-3" aria-hidden="true">
+                  <SkeletonLine className="h-9 w-full rounded-xl" />
+                  <SkeletonLine className="h-9 w-full rounded-xl" />
+                  <SkeletonLine className="h-9 w-full rounded-xl" />
+                </div>
+              ) : navLinks.map((link) => {
                 const active =
                   link.href === '/'
                     ? location.pathname === link.href
@@ -184,10 +200,10 @@ export const PublicNavbar = () => {
 };
 
 export const PublicFooter = () => {
-  const { profile } = useProfile();
-  const { footerSettings } = useFooterSettings();
-  const { siteSettings } = useSiteSettings();
-  const { contactSettings } = useContactSettings();
+  const { profile, loading: profileLoading } = useProfile();
+  const { footerSettings, loading: footerLoading } = useFooterSettings();
+  const { siteSettings, loading: siteLoading } = useSiteSettings();
+  const { contactSettings, loading: contactLoading } = useContactSettings();
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const brandName = resolveLocalizedSiteBrand(siteSettings, profile, isArabic);
@@ -216,6 +232,7 @@ export const PublicFooter = () => {
           { href: '/contact', label: t('nav.contact') },
         ];
   const socialLinks = footerSettings.socialLinks.length > 0 ? footerSettings.socialLinks : fallbackSocialLinks;
+  const footerContentLoading = profileLoading || footerLoading || siteLoading || contactLoading;
 
   return (
     <footer
@@ -234,12 +251,23 @@ export const PublicFooter = () => {
                 <span className="text-muted-foreground/70 dark:text-slate-500">~</span>
                 <span className="text-muted-foreground/70 dark:text-slate-500">$</span>
                 <span className="font-semibold text-foreground dark:text-slate-100">
-                  {isArabic ? footerSettings.statusStripAr || t('footer.statusLabel') : footerSettings.statusStrip || t('footer.statusLabel')}
+                  {footerLoading ? (
+                    <SkeletonLine className="h-4 w-40" />
+                  ) : (
+                    isArabic ? footerSettings.statusStripAr || t('footer.statusLabel') : footerSettings.statusStrip || t('footer.statusLabel')
+                  )}
                 </span>
               </div>
-              <p className="mt-2 max-w-xl text-sm leading-7 text-muted-foreground dark:text-slate-400">
-                {isArabic ? footerSettings.taglineAr || t('footer.statusDescription') : footerSettings.tagline || t('footer.statusDescription')}
-              </p>
+              {footerLoading ? (
+                <div className="mt-3 space-y-2" aria-hidden="true">
+                  <SkeletonLine className="h-4 w-full max-w-xl" />
+                  <SkeletonLine className="h-4 w-4/5 max-w-xl" />
+                </div>
+              ) : (
+                <p className="mt-2 max-w-xl text-sm leading-7 text-muted-foreground dark:text-slate-400">
+                  {isArabic ? footerSettings.taglineAr || t('footer.statusDescription') : footerSettings.tagline || t('footer.statusDescription')}
+                </p>
+              )}
             </div>
             <Link
               to={footerSettings.ctaHref || '/contact'}
@@ -250,7 +278,7 @@ export const PublicFooter = () => {
                   'border-border/70 bg-background/80 text-foreground hover:bg-muted hover:text-foreground dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:hover:text-white',
               })}
             >
-              {isArabic ? footerSettings.ctaLabelAr || t('footer.cta') : footerSettings.ctaLabel || t('footer.cta')}
+            {footerLoading ? <SkeletonLine className="h-4 w-20" /> : isArabic ? footerSettings.ctaLabelAr || t('footer.cta') : footerSettings.ctaLabel || t('footer.cta')}
             </Link>
           </div>
         </div>
@@ -259,11 +287,20 @@ export const PublicFooter = () => {
       <div className="mx-auto grid max-w-7xl gap-10 px-6 pb-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-12">
         <div className="space-y-4">
           <Link to="/" className="font-heading text-2xl font-bold tracking-tight text-foreground dark:text-white">
-            {brandName}
-            <span className="text-primary">_</span>
+            {siteLoading || profileLoading ? <SkeletonLine className="h-7 w-44" /> : <>{brandName}<span className="text-primary">_</span></>}
           </Link>
-          <p className="max-w-md text-sm leading-7 text-muted-foreground dark:text-slate-400">{title}</p>
-          <p className="max-w-md text-sm leading-7 text-muted-foreground/80 dark:text-slate-500">{footerSummary}</p>
+          {footerContentLoading ? (
+            <div className="space-y-3" aria-hidden="true">
+              <SkeletonLine className="h-4 w-56" />
+              <SkeletonLine className="h-4 w-full max-w-md" />
+              <SkeletonLine className="h-4 w-4/5 max-w-md" />
+            </div>
+          ) : (
+            <>
+              <p className="max-w-md text-sm leading-7 text-muted-foreground dark:text-slate-400">{title}</p>
+              <p className="max-w-md text-sm leading-7 text-muted-foreground/80 dark:text-slate-500">{footerSummary}</p>
+            </>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -271,7 +308,13 @@ export const PublicFooter = () => {
             {t('footer.quickLinks')}
           </h4>
           <ul className="space-y-3 text-sm text-muted-foreground dark:text-slate-400">
-            {footerLinks.map(({ href, label }) => (
+            {footerLoading ? (
+              <>
+                <li><SkeletonLine className="h-4 w-20" /></li>
+                <li><SkeletonLine className="h-4 w-24" /></li>
+                <li><SkeletonLine className="h-4 w-16" /></li>
+              </>
+            ) : footerLinks.map(({ href, label }) => (
               <li key={href}>
                 <Link to={href} className="transition-colors hover:text-foreground dark:hover:text-white">
                   {label}
@@ -286,7 +329,13 @@ export const PublicFooter = () => {
             {t('footer.connect')}
           </h4>
           <ul className="space-y-3 text-sm text-muted-foreground dark:text-slate-400">
-            {socialLinks.map((item) => (
+            {footerContentLoading ? (
+              <>
+                <li><SkeletonLine className="h-4 w-32" /></li>
+                <li><SkeletonLine className="h-4 w-24" /></li>
+                <li><SkeletonLine className="h-4 w-28" /></li>
+              </>
+            ) : socialLinks.map((item) => (
               <li key={item.href}>
                 <a
                   href={item.href}

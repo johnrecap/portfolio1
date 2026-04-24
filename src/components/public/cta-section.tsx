@@ -13,12 +13,12 @@ type CTASectionProps = {
 
 export const CTASection = ({ variant = 'card', content = {} }: CTASectionProps) => {
   const { t, i18n } = useTranslation();
-  const { profile } = useProfile();
+  const { profile, loading: profileLoading } = useProfile();
   const isArabic = i18n.language === 'ar';
   const primaryLabel = readComposerText(content, 'primaryLabel', t('ctaSection.primaryAction'), isArabic);
   const primaryHref = readComposerText(content, 'primaryHref', '/contact', false);
   const secondaryLabel = readComposerText(content, 'secondaryLabel', 'GitHub', isArabic);
-  const secondaryHref = readComposerText(content, 'secondaryHref', profile.githubUrl || '', false);
+  const secondaryHref = readComposerText(content, 'secondaryHref', profileLoading ? '' : profile.githubUrl || '', false);
   const eyebrow = readComposerText(content, 'eyebrow', t('ctaSection.eyebrow'), isArabic);
   const title = readComposerText(content, 'title', t('ctaSection.title'), isArabic);
   const description = readComposerText(content, 'subtitle', t('ctaSection.description'), isArabic);
@@ -38,7 +38,7 @@ export const CTASection = ({ variant = 'card', content = {} }: CTASectionProps) 
           icon: Github,
         }
       : null,
-    profile.linkedinUrl
+    !profileLoading && profile.linkedinUrl
       ? {
           href: profile.linkedinUrl,
           label: 'LinkedIn',

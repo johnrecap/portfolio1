@@ -9,11 +9,19 @@ const DEFAULT_PROFILE = {
     'https://lh3.googleusercontent.com/aida-public/AB6AXuCEpMS7bpnt68tnkqp2_cxoeyhdbNW2Lw1xH-CJeYb54crTGf7O5C62aNhBOGRSTadCUJpH-pn3dXLnPmifpdQz-MYuOXQ1MQr2L_9mwz182oeztwNSS551GOzV4BwQ8Wo45Ipps2kpfiBu-UwhegVRWsQdjKu7nf0s_lxwoJnISIWW5ApFuzIiXi2D2KwlfHJjfUt9DSqWklyXgRtdiAo-71h1gp8V-g6wigCUbt0PV90cv_1eEO51D_xHeEwL953DpHW1Q0GI8Rk2',
 };
 
+const LOADING_PROFILE = {
+  ...DEFAULT_PROFILE,
+  profileImage: '',
+  profileImageAssetId: '',
+  heroImage: '',
+  heroImageAssetId: '',
+};
+
 export function useProfile() {
   const { data, loading } = useDocument('settings', 'profile');
 
   if (loading) {
-    return { profile: DEFAULT_PROFILE, loading };
+    return { profile: LOADING_PROFILE, loading };
   }
 
   const mergedProfile = { ...DEFAULT_PROFILE };

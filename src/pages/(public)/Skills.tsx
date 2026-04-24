@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { Blocks, Cloud, Code, Layers, Wrench } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
+import { EmptyState, SkeletonBlocks, SkeletonLine } from '@/components/shared/PageState';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import {
@@ -14,7 +14,7 @@ import {
 
 export const Skills = () => {
   const { data: skills, loading } = usePublicCollection<SkillRecord>('skills');
-  const { assets } = usePublicMediaLibrary();
+  const { assets, loading: mediaLoading } = usePublicMediaLibrary();
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
 
@@ -119,7 +119,9 @@ export const Skills = () => {
                       <div key={skill.id} className="w-full">
                         <div className="mb-1.5 flex items-center justify-between gap-3 text-sm font-medium">
                           <span className="flex min-w-0 items-center gap-2">
-                            {icon.url ? (
+                            {mediaLoading ? (
+                              <SkeletonLine className="h-5 w-5 shrink-0 rounded" />
+                            ) : icon.url ? (
                               <img src={icon.url} alt={name} className="h-5 w-5 rounded object-cover" />
                             ) : null}
                             <span dir="ltr" className="truncate">

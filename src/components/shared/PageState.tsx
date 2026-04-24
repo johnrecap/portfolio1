@@ -46,3 +46,25 @@ export function SkeletonBlocks({
     </div>
   );
 }
+
+type SkeletonLineProps = {
+  className?: string;
+};
+
+export function SkeletonLine({ className }: SkeletonLineProps) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("block h-4 animate-pulse rounded-full bg-muted/60", className)}
+    />
+  );
+}
+
+export function SkeletonMedia({ className }: SkeletonLineProps) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn("animate-pulse rounded-[1.5rem] bg-muted/60", className)}
+    />
+  );
+}

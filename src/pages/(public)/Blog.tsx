@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
+import { EmptyState, SkeletonBlocks, SkeletonLine, SkeletonMedia } from '@/components/shared/PageState';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { useProfile } from '@/hooks/useProfile';
@@ -17,12 +17,12 @@ import { getLocalizedValue, resolveMediaField, type BlogRecord } from '@/lib/con
 
 export const Blog = () => {
   const { data: articles, loading } = usePublicCollection<BlogRecord>('blogs');
-  const { assets } = usePublicMediaLibrary();
-  const { pageConfig } = usePageConfig('blog');
+  const { assets, loading: mediaLoading } = usePublicMediaLibrary();
+  const { pageConfig, loading: pageLoading } = usePageConfig('blog');
   const [activeCategory, setActiveCategory] = useState(ALL_BLOG_CATEGORY);
   const [visibleCount, setVisibleCount] = useState(6);
   const [searchQuery, setSearchQuery] = useState('');
-  const { profile } = useProfile();
+  const { profile, loading: profileLoading } = useProfile();
   const { i18n, t } = useTranslation();
 
   const displayName = i18n.language === 'ar' ? profile.displayNameAr || profile.displayName : profile.displayName;
@@ -101,7 +101,9 @@ export const Blog = () => {
       <header className="relative z-10 flex max-w-4xl flex-col gap-8 border-b border-border pb-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2">
           <FileText className="h-5 w-5 text-primary" />
-          <span className="font-label text-sm uppercase tracking-wider text-primary">{eyebrow}</span>
+          <span className="font-label text-sm uppercase tracking-wider text-primary">
+            {pageLoading ? <SkeletonLine className="h-4 w-44" /> : eyebrow}
+          </span>
         </motion.div>
 
         <motion.h1
@@ -110,7 +112,14 @@ export const Blog = () => {
           transition={{ delay: 0.1 }}
           className="font-heading text-4xl font-black leading-[1.1] tracking-tight md:text-5xl"
         >
-          {title}
+          {pageLoading ? (
+            <span className="block space-y-3" aria-hidden="true">
+              <SkeletonLine className="h-11 w-full" />
+              <SkeletonLine className="h-11 w-3/4" />
+            </span>
+          ) : (
+            title
+          )}
         </motion.h1>
 
         <motion.p
@@ -119,7 +128,14 @@ export const Blog = () => {
           transition={{ delay: 0.2 }}
           className="text-xl leading-relaxed text-muted-foreground"
         >
-          {subtitle}
+          {pageLoading ? (
+            <span className="block space-y-3" aria-hidden="true">
+              <SkeletonLine className="h-5 w-full" />
+              <SkeletonLine className="h-5 w-5/6" />
+            </span>
+          ) : (
+            subtitle
+          )}
         </motion.p>
       </header>
 
@@ -175,8 +191,8 @@ export const Blog = () => {
         <div className="order-1 flex flex-col gap-10 lg:order-2 lg:col-span-3">
           {listingTitle || listingSubtitle ? (
             <div className="max-w-3xl space-y-3">
-              {listingTitle ? <h2 className="font-heading text-2xl font-bold text-foreground">{listingTitle}</h2> : null}
-              {listingSubtitle ? <p className="text-sm leading-7 text-muted-foreground">{listingSubtitle}</p> : null}
+              {!pageLoading && listingTitle ? <h2 className="font-heading text-2xl font-bold text-foreground">{listingTitle}</h2> : null}
+              {!pageLoading && listingSubtitle ? <p className="text-sm leading-7 text-muted-foreground">{listingSubtitle}</p> : null}
             </div>
           ) : null}
           {loading ? (
@@ -210,7 +226,11 @@ export const Blog = () => {
                         <article className="relative isolate flex w-full flex-col items-start gap-6 overflow-hidden rounded-[2rem] border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-primary/50 hover:shadow-xl md:p-10">
                           <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-                          {cover.url ? (
+                          {mediaLoading ? (
+                            <div className="-mx-8 -mt-8 mb-2 aspect-[16/9] w-[calc(100%+4rem)] overflow-hidden border-b border-border md:-mx-10 md:-mt-10 md:w-[calc(100%+5rem)]">
+                              <SkeletonMedia className="h-full w-full rounded-none" />
+                            </div>
+                          ) : cover.url ? (
                             <div className="-mx-8 -mt-8 mb-2 aspect-[16/9] w-[calc(100%+4rem)] overflow-hidden border-b border-border md:-mx-10 md:-mt-10 md:w-[calc(100%+5rem)]">
                               <img src={cover.url} alt={articleTitle} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                             </div>
@@ -250,12 +270,23 @@ export const Blog = () => {
 
                           <div className="mt-auto flex w-full items-center justify-between border-t border-border/50 pt-6">
                             <div className="flex items-center gap-3">
-                              <img
-                                src={profile.profileImage || undefined}
-                                alt={displayName}
-                                className="h-8 w-8 rounded-full border border-border/50 object-cover"
-                              />
-                              <span className="text-sm font-semibold text-foreground">{displayName}</span>
+                              {profileLoading ? (
+                                <>
+                                  <SkeletonLine className="h-8 w-8 rounded-full" />
+                                  <SkeletonLine className="h-4 w-28" />
+                                </>
+                              ) : (
+                                <>
+                                  {profile.profileImage ? (
+                                    <img
+                                      src={profile.profileImage}
+                                      alt={displayName}
+                                      className="h-8 w-8 rounded-full border border-border/50 object-cover"
+                                    />
+                                  ) : null}
+                                  <span className="text-sm font-semibold text-foreground">{displayName}</span>
+                                </>
+                              )}
                             </div>
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
                               <ArrowRight className="h-5 w-5 transition-transform duration-300 rtl:rotate-[135deg] rtl:group-hover:rotate-180 ltr:-rotate-45 ltr:group-hover:rotate-0" />

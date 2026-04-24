@@ -5,7 +5,7 @@ import { PageSeo } from '@/components/shared/PageSeo';
 import { usePageConfig } from '@/hooks/usePageConfig';
 
 export const ContactForm = () => {
-  const { pageConfig } = usePageConfig('contact');
+  const { pageConfig, loading: pageLoading } = usePageConfig('contact');
   const { i18n, t } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const seoTitle = isArabic
@@ -18,7 +18,7 @@ export const ContactForm = () => {
   return (
     <>
       <PageSeo title={seoTitle} description={seoDescription} image={pageConfig.seo.image} />
-      <PublicPageComposer pageId="contact" pageConfig={pageConfig} />
+      <PublicPageComposer pageId="contact" pageConfig={pageConfig} loading={pageLoading} />
     </>
   );
 };

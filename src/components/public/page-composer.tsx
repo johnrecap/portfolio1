@@ -27,6 +27,7 @@ import { FeaturedProjectsGrid } from '@/components/public/featured-projects';
 import { HeroSection } from '@/components/public/hero-section';
 import { ShowcaseSection } from '@/components/public/showcase-section';
 import { TestimonialsSection } from '@/components/public/testimonials-section';
+import { SkeletonBlocks, SkeletonLine, SkeletonMedia } from '@/components/shared/PageState';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -64,8 +65,8 @@ function readSectionText(
 }
 
 function AboutIntroSection({ section }: { section: AdminPageSection }) {
-  const { profile } = useProfile();
-  const { assets } = usePublicMediaLibrary();
+  const { profile, loading: profileLoading } = useProfile();
+  const { assets, loading: mediaLoading } = usePublicMediaLibrary();
   const { data: projects } = usePublicCollection<any>('projects');
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -76,20 +77,23 @@ function AboutIntroSection({ section }: { section: AdminPageSection }) {
   const centered = section.variant === 'centered';
   const minimal = section.variant === 'minimal';
   const displayName = isArabic ? profile.displayNameAr || profile.displayName : profile.displayName;
-  const profileImage = resolveMediaField(
-    {
-      url: profile.profileImage,
-      assetId: profile.profileImageAssetId,
-    },
-    assets,
-  );
+  const profileMediaLoading = profileLoading || mediaLoading;
+  const profileImage = profileMediaLoading
+    ? null
+    : resolveMediaField(
+        {
+          url: profile.profileImage,
+          assetId: profile.profileImageAssetId,
+        },
+        assets,
+      );
 
   return (
     <section className="py-6 md:py-8">
       <div className={`space-y-8 ${centered ? 'mx-auto max-w-4xl text-center' : 'max-w-5xl'}`}>
         <div
           className={
-            centered || minimal || !profileImage.url
+            centered || minimal || !profileImage?.url
               ? 'space-y-6'
               : 'grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center'
           }
@@ -102,14 +106,24 @@ function AboutIntroSection({ section }: { section: AdminPageSection }) {
             <p className={`text-base leading-8 text-muted-foreground md:text-lg ${centered ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
               {intro}
             </p>
-            {bio ? (
+            {profileLoading ? (
+              <div className={`space-y-3 ${centered ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`} aria-hidden="true">
+                <SkeletonLine className="h-4 w-full" />
+                <SkeletonLine className="h-4 w-5/6" />
+                <SkeletonLine className="h-4 w-3/4" />
+              </div>
+            ) : bio ? (
               <p className={`text-base leading-8 text-muted-foreground ${centered ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
                 {bio}
               </p>
             ) : null}
           </div>
 
-          {profileImage.url ? (
+          {profileMediaLoading ? (
+            <div className={`${centered || minimal ? 'mx-auto w-full max-w-sm' : 'w-full'} overflow-hidden rounded-[1.5rem] border border-border/60 bg-muted/30 shadow-sm`}>
+              <SkeletonMedia className="aspect-[4/5] w-full rounded-none" />
+            </div>
+          ) : profileImage?.url ? (
             <div className={`${centered || minimal ? 'mx-auto w-full max-w-sm' : 'w-full'} overflow-hidden rounded-[1.5rem] border border-border/60 bg-muted shadow-sm`}>
               <img
                 src={profileImage.url}
@@ -131,11 +145,15 @@ function AboutIntroSection({ section }: { section: AdminPageSection }) {
             </div>
             <div className={`rounded-[1.5rem] border p-5 shadow-sm ${getSurfaceTone(section.stylePreset)}`}>
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                {t('about.statAvailability')}
+              {t('about.statAvailability')}
               </p>
-              <p className="mt-3 font-heading text-xl font-bold text-foreground">
-                {t(profile.isAvailable ? 'about.availableNow' : 'about.unavailableNow')}
-              </p>
+              <div className="mt-3 font-heading text-xl font-bold text-foreground">
+                {profileLoading ? (
+                  <SkeletonLine className="h-7 w-32" />
+                ) : (
+                  t(profile.isAvailable ? 'about.availableNow' : 'about.unavailableNow')
+                )}
+              </div>
             </div>
             <div className={`rounded-[1.5rem] border p-5 shadow-sm ${getSurfaceTone(section.stylePreset)}`}>
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -209,7 +227,7 @@ function StrengthsSection({ section }: { section: AdminPageSection }) {
 }
 
 function EditorCardSection({ section }: { section: AdminPageSection }) {
-  const { profile } = useProfile();
+  const { profile, loading: profileLoading } = useProfile();
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const displayName = isArabic ? profile.displayNameAr || profile.displayName : profile.displayName;
@@ -243,11 +261,30 @@ function EditorCardSection({ section }: { section: AdminPageSection }) {
           </div>
           <div className="space-y-3 px-5 py-5 font-mono text-sm text-slate-300">
             <p className="text-slate-500">/** {comment} */</p>
-            <div className="leading-7">name: "{displayName}"</div>
-            <div className="leading-7">role: "{role}"</div>
+            <div className="leading-7">
+              name:{' '}
+              {profileLoading ? (
+                <SkeletonLine className="inline-block h-4 w-36 align-middle" />
+              ) : (
+                `"${displayName}"`
+              )}
+            </div>
+            <div className="leading-7">
+              role:{' '}
+              {profileLoading ? (
+                <SkeletonLine className="inline-block h-4 w-44 align-middle" />
+              ) : (
+                `"${role}"`
+              )}
+            </div>
             <div className="leading-7">location: "{t('about.locationValue')}"</div>
             <div className="leading-7">
-              availability: "{t(profile.isAvailable ? 'about.availableNow' : 'about.unavailableNow')}"
+              availability:{' '}
+              {profileLoading ? (
+                <SkeletonLine className="inline-block h-4 w-32 align-middle" />
+              ) : (
+                `"${t(profile.isAvailable ? 'about.availableNow' : 'about.unavailableNow')}"`
+              )}
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
               {['React', 'TypeScript', 'Firebase', 'Node.js', 'Tailwind CSS', 'Express'].map((item) => (
@@ -544,7 +581,7 @@ function ContactFormSection({ section }: { section: AdminPageSection }) {
 }
 
 function AvailabilitySection({ section }: { section: AdminPageSection }) {
-  const { contactSettings } = useContactSettings();
+  const { contactSettings, loading: contactLoading } = useContactSettings();
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const title = readSectionText(section, 'title', t('contact.availableForWork'), isArabic);
@@ -571,7 +608,14 @@ function AvailabilitySection({ section }: { section: AdminPageSection }) {
             <div className="h-3 w-3 rounded-full bg-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.5)]" />
             <h2 className="font-heading text-xl font-bold text-foreground">{title}</h2>
           </div>
-          <p className="mt-4 text-sm leading-7 text-muted-foreground">{subtitle}</p>
+          {contactLoading ? (
+            <div className="mt-4 space-y-3" aria-hidden="true">
+              <SkeletonLine className="h-4 w-full" />
+              <SkeletonLine className="h-4 w-4/5" />
+            </div>
+          ) : (
+            <p className="mt-4 text-sm leading-7 text-muted-foreground">{subtitle}</p>
+          )}
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -580,14 +624,22 @@ function AvailabilitySection({ section }: { section: AdminPageSection }) {
               <Clock className="h-5 w-5" />
               <p className="font-semibold text-foreground">{t('contact.responseTitle')}</p>
             </div>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground">{responseValue}</p>
+            {contactLoading ? (
+              <SkeletonLine className="mt-4 h-4 w-40" />
+            ) : (
+              <p className="mt-3 text-sm leading-7 text-muted-foreground">{responseValue}</p>
+            )}
           </div>
           <div className={`rounded-[1.5rem] border p-5 shadow-sm ${getSurfaceTone(section.stylePreset)}`}>
             <div className="flex items-center gap-3 text-primary">
               <MapPin className="h-5 w-5" />
               <p className="font-semibold text-foreground">{t('contact.location')}</p>
             </div>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground">{locationValue}</p>
+            {contactLoading ? (
+              <SkeletonLine className="mt-4 h-4 w-32" />
+            ) : (
+              <p className="mt-3 text-sm leading-7 text-muted-foreground">{locationValue}</p>
+            )}
           </div>
         </div>
       </div>
@@ -596,8 +648,8 @@ function AvailabilitySection({ section }: { section: AdminPageSection }) {
 }
 
 function ContactMethodsSection({ section }: { section: AdminPageSection }) {
-  const { profile } = useProfile();
-  const { contactSettings } = useContactSettings();
+  const { profile, loading: profileLoading } = useProfile();
+  const { contactSettings, loading: contactLoading } = useContactSettings();
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const directTitle = readSectionText(section, 'directTitle', t('contact.directChannelsTitle'), isArabic);
@@ -631,7 +683,12 @@ function ContactMethodsSection({ section }: { section: AdminPageSection }) {
             <h2 className="font-heading text-lg font-bold text-foreground">{directTitle}</h2>
           </div>
           <div className="mt-5 space-y-3">
-            {directChannels.map((item) => (
+            {contactLoading ? (
+              <>
+                <SkeletonLine className="h-11 w-full rounded-[1.25rem]" />
+                <SkeletonLine className="h-11 w-full rounded-[1.25rem]" />
+              </>
+            ) : directChannels.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
@@ -649,7 +706,18 @@ function ContactMethodsSection({ section }: { section: AdminPageSection }) {
         </div>
 
         <div className="space-y-6">
-          {socialLinks.length > 0 ? (
+          {profileLoading ? (
+            <div className={`rounded-[1.5rem] border p-6 shadow-sm ${getSurfaceTone(section.stylePreset)}`}>
+              <div className="flex items-center gap-3 text-primary">
+                <Mail className="h-5 w-5" />
+                <h2 className="font-heading text-lg font-bold text-foreground">{socialTitle}</h2>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-3" aria-hidden="true">
+                <SkeletonLine className="h-9 w-24" />
+                <SkeletonLine className="h-9 w-20" />
+              </div>
+            </div>
+          ) : socialLinks.length > 0 ? (
             <div className={`rounded-[1.5rem] border p-6 shadow-sm ${getSurfaceTone(section.stylePreset)}`}>
               <div className="flex items-center gap-3 text-primary">
                 <Mail className="h-5 w-5" />
@@ -694,6 +762,7 @@ function ContactMethodsSection({ section }: { section: AdminPageSection }) {
 type PublicPageComposerProps = {
   pageId: PlatformPageId;
   pageConfig: AdminPageConfig;
+  loading?: boolean;
 };
 
 function renderSection(pageId: PlatformPageId, section: AdminPageSection) {
@@ -733,7 +802,7 @@ function renderSection(pageId: PlatformPageId, section: AdminPageSection) {
   }
 }
 
-export function PublicPageComposer({ pageId, pageConfig }: PublicPageComposerProps) {
+export function PublicPageComposer({ pageId, pageConfig, loading = false }: PublicPageComposerProps) {
   const enabledSections = useMemo(
     () => pageConfig.sections.filter((section) => section.enabled),
     [pageConfig.sections],
@@ -745,6 +814,14 @@ export function PublicPageComposer({ pageId, pageConfig }: PublicPageComposerPro
       : pageId === 'contact'
         ? 'relative flex w-full flex-col gap-8 py-2'
         : 'flex w-full flex-col gap-8 pt-2 pb-10';
+
+  if (loading) {
+    return (
+      <div className={pageClass}>
+        <SkeletonBlocks count={pageId === 'home' ? 4 : 3} />
+      </div>
+    );
+  }
 
   return <div className={pageClass}>{enabledSections.map((section) => renderSection(pageId, section))}</div>;
 }

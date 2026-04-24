@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { PageSeo } from '@/components/shared/PageSeo';
-import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
+import { EmptyState, SkeletonBlocks, SkeletonMedia } from '@/components/shared/PageState';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { getLocalizedValue, resolveEntitySeo, resolveMediaField } from '@/lib/content-hub';
 import { normalizeMediaUrl } from '@/lib/media';
@@ -13,7 +13,7 @@ import { getLocalizedCaseStudyValue, type ProjectRecord } from '@/lib/project-ut
 export const ProjectDetail = () => {
   const { slug } = useParams();
   const { data: projects, loading } = usePublicCollection<ProjectRecord>('projects');
-  const { assets } = usePublicMediaLibrary();
+  const { assets, loading: mediaLoading } = usePublicMediaLibrary();
   const { t, i18n } = useTranslation();
 
   const isArabic = i18n.language === 'ar';
@@ -135,7 +135,9 @@ export const ProjectDetail = () => {
             <Monitor className="h-4 w-4" />
           </div>
           <div className="aspect-video bg-slate-950">
-            {heroImage.url ? (
+            {mediaLoading ? (
+              <SkeletonMedia className="h-full w-full rounded-none bg-slate-800/70" />
+            ) : heroImage.url ? (
               <img
                 src={heroImage.url}
                 alt={title}

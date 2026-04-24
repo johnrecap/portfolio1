@@ -11,8 +11,8 @@ type PageSeoProps = {
 };
 
 export function PageSeo({ title, description, image }: PageSeoProps) {
-  const { profile } = useProfile();
-  const { seoSettings } = useSeoSettings();
+  const { profile, loading: profileLoading } = useProfile();
+  const { seoSettings, loading: seoLoading } = useSeoSettings();
   const { i18n } = useTranslation();
 
   const localizedSiteTitle = resolveLocalizedSeoTitle(seoSettings, profile, i18n.language === "ar");
@@ -22,15 +22,18 @@ export function PageSeo({ title, description, image }: PageSeoProps) {
       : seoSettings.defaultDescription || profile.metaDescription || profile.bio;
 
   const fullTitle = title ? `${title} | ${localizedSiteTitle}` : localizedSiteTitle;
-  const metaDescription = description || localizedSiteDescription;
-  const metaImage = image || seoSettings.ogImage || profile.heroImage || profile.profileImage;
+  const metaDescription = description || (profileLoading || seoLoading ? "" : localizedSiteDescription);
+  const metaImage =
+    image ||
+    (!seoLoading ? seoSettings.ogImage : "") ||
+    (!profileLoading ? profile.heroImage || profile.profileImage : "");
 
   return (
     <Helmet>
       <title>{fullTitle}</title>
-      <meta name="description" content={metaDescription} />
+      {metaDescription ? <meta name="description" content={metaDescription} /> : null}
       <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={metaDescription} />
+      {metaDescription ? <meta property="og:description" content={metaDescription} /> : null}
       {metaImage ? <meta property="og:image" content={metaImage} /> : null}
       {seoSettings.siteUrl ? <meta property="og:url" content={seoSettings.siteUrl} /> : null}
     </Helmet>

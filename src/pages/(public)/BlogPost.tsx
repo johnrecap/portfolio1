@@ -7,7 +7,7 @@ import remarkGfm from 'remark-gfm';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
+import { EmptyState, SkeletonBlocks, SkeletonLine, SkeletonMedia } from '@/components/shared/PageState';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { useProfile } from '@/hooks/useProfile';
@@ -48,8 +48,8 @@ export const BlogPost = () => {
   const [related, setRelated] = useState<BlogPostRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [readingProgress, setReadingProgress] = useState(0);
-  const { assets } = usePublicMediaLibrary();
-  const { profile } = useProfile();
+  const { assets, loading: mediaLoading } = usePublicMediaLibrary();
+  const { profile, loading: profileLoading } = useProfile();
   const { i18n, t } = useTranslation();
 
   const displayName = i18n.language === 'ar' ? profile.displayNameAr || profile.displayName : profile.displayName;
@@ -211,15 +211,29 @@ export const BlogPost = () => {
 
       <div className="mx-auto mb-8 flex w-full max-w-4xl items-center justify-between border-y border-border px-6 py-8">
         <div className="flex items-center gap-4">
-          <img
-            src={profile.profileImage || undefined}
-            alt={displayName}
-            className="h-12 w-12 rounded-full object-cover grayscale"
-          />
-          <div>
-            <p className="font-heading font-bold text-foreground">{displayName}</p>
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">{title}</p>
-          </div>
+          {profileLoading ? (
+            <>
+              <SkeletonLine className="h-12 w-12 rounded-full" />
+              <div className="space-y-2" aria-hidden="true">
+                <SkeletonLine className="h-5 w-36" />
+                <SkeletonLine className="h-3 w-28" />
+              </div>
+            </>
+          ) : (
+            <>
+              {profile.profileImage ? (
+                <img
+                  src={profile.profileImage}
+                  alt={displayName}
+                  className="h-12 w-12 rounded-full object-cover grayscale"
+                />
+              ) : null}
+              <div>
+                <p className="font-heading font-bold text-foreground">{displayName}</p>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">{title}</p>
+              </div>
+            </>
+          )}
         </div>
         <button
           type="button"
@@ -231,7 +245,11 @@ export const BlogPost = () => {
         </button>
       </div>
 
-      {heroImage.url ? (
+      {mediaLoading ? (
+        <div className="mx-auto mb-16 w-full max-w-7xl px-6">
+          <SkeletonMedia className="h-[400px] w-full rounded-[2rem] md:h-[520px]" />
+        </div>
+      ) : heroImage.url ? (
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -283,17 +301,35 @@ export const BlogPost = () => {
 
       <section className="mx-auto mt-20 mb-10 w-full max-w-4xl px-6">
         <div className="flex flex-col items-center gap-10 rounded-[2rem] border border-border bg-muted/30 p-10 text-center md:flex-row md:items-start md:text-left">
-          <img
-            src={profile.profileImage || undefined}
-            alt={displayName}
-            className="h-32 w-32 shrink-0 rounded-full border-4 border-background object-cover grayscale shadow-xl"
-          />
+          {profileLoading ? (
+            <SkeletonLine className="h-32 w-32 shrink-0 rounded-full" />
+          ) : profile.profileImage ? (
+            <img
+              src={profile.profileImage}
+              alt={displayName}
+              className="h-32 w-32 shrink-0 rounded-full border-4 border-background object-cover grayscale shadow-xl"
+            />
+          ) : null}
           <div>
             <h3 className="mb-2 font-heading text-2xl font-bold text-foreground">
-              {t('blogPost.writtenBy', { name: displayName })}
+              {profileLoading ? <SkeletonLine className="h-8 w-60" /> : t('blogPost.writtenBy', { name: displayName })}
             </h3>
-            <p className="mb-6 whitespace-pre-wrap text-lg leading-relaxed text-muted-foreground">{bio}</p>
+            {profileLoading ? (
+              <div className="mb-6 space-y-3" aria-hidden="true">
+                <SkeletonLine className="h-5 w-full" />
+                <SkeletonLine className="h-5 w-4/5" />
+              </div>
+            ) : (
+              <p className="mb-6 whitespace-pre-wrap text-lg leading-relaxed text-muted-foreground">{bio}</p>
+            )}
             <div className="flex justify-center gap-6 md:justify-start">
+              {profileLoading ? (
+                <>
+                  <SkeletonLine className="h-5 w-20" />
+                  <SkeletonLine className="h-5 w-24" />
+                </>
+              ) : (
+                <>
               {profile.websiteUrl ? (
                 <a
                   href={profile.websiteUrl}
@@ -327,6 +363,8 @@ export const BlogPost = () => {
                   {t('blogPost.github')}
                 </a>
               ) : null}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -357,7 +395,9 @@ export const BlogPost = () => {
               return (
                 <Link key={article.id} to={`/blog/${article.slug}`} className="group relative flex h-full flex-col outline-none">
                   <div className="mb-6 aspect-video overflow-hidden rounded-2xl border border-border bg-muted">
-                    {relatedImage.url ? (
+                    {mediaLoading ? (
+                      <SkeletonMedia className="h-full w-full rounded-none" />
+                    ) : relatedImage.url ? (
                       <img
                         src={relatedImage.url}
                         alt={relatedTitle}

@@ -4,7 +4,7 @@ import { usePageConfig } from '@/hooks/usePageConfig';
 import { useTranslation } from 'react-i18next';
 
 export default function Home() {
-  const { pageConfig } = usePageConfig('home');
+  const { pageConfig, loading: pageLoading } = usePageConfig('home');
   const { i18n, t } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const seoTitle = isArabic
@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <>
       <PageSeo title={seoTitle} description={seoDescription} image={pageConfig.seo.image} />
-      <PublicPageComposer pageId="home" pageConfig={pageConfig} />
+      <PublicPageComposer pageId="home" pageConfig={pageConfig} loading={pageLoading} />
     </>
   );
 }
