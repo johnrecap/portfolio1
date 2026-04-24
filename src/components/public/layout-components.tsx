@@ -71,11 +71,8 @@ export const PublicNavbar = () => {
       : fallbackNavLinks.map((item) => ({ id: item.id, href: item.href, label: item.label }));
   const brandMark = resolveLocalizedSiteBrand(siteSettings, profile, isArabic);
   const showThemeToggle = navigationSettings.showThemeToggle && themeSettings.mode === 'system';
-  const showPrimaryCta = siteSettings.primaryCtaEnabled && Boolean(navigationSettings.primaryCtaHref || siteSettings.primaryCtaHref);
-  const primaryCtaHref = navigationSettings.primaryCtaHref || siteSettings.primaryCtaHref || '/contact';
-  const primaryCtaLabel = isArabic
-    ? navigationSettings.primaryCtaLabelAr || siteSettings.primaryCtaLabelAr || t('hero.secondaryCta')
-    : navigationSettings.primaryCtaLabel || siteSettings.primaryCtaLabel || './contact.sh';
+  const adminCtaHref = '/login';
+  const adminCtaLabel = t('nav.adminLogin');
 
   return (
     <header
@@ -120,15 +117,12 @@ export const PublicNavbar = () => {
             <div className="mx-1 h-4 w-px bg-border" />
           ) : null}
           {showThemeToggle ? <ThemeToggle /> : null}
-          {showPrimaryCta ? (
-            <Link
-              to={primaryCtaHref}
-              dir="ltr"
-              className="ml-2 inline-flex items-center rounded-full bg-primary px-4 py-2 font-mono text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
-            >
-              {primaryCtaLabel}
-            </Link>
-          ) : null}
+          <Link
+            to={adminCtaHref}
+            className="ml-2 inline-flex items-center rounded-full bg-primary px-4 py-2 font-mono text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
+          >
+            {adminCtaLabel}
+          </Link>
         </div>
 
         <div className="flex items-center gap-1 md:hidden">
@@ -174,17 +168,13 @@ export const PublicNavbar = () => {
                   </Link>
                 );
               })}
-              {showPrimaryCta ? (
-                <Link
-                  to={primaryCtaHref}
-                  onClick={() => setIsOpen(false)}
-                  className={buttonVariants({ className: 'mt-2 w-full rounded-full' })}
-                >
-                  {isArabic
-                    ? navigationSettings.primaryCtaLabelAr || siteSettings.primaryCtaLabelAr || t('hero.secondaryCta')
-                    : navigationSettings.primaryCtaLabel || siteSettings.primaryCtaLabel || t('hero.secondaryCta')}
-                </Link>
-              ) : null}
+              <Link
+                to={adminCtaHref}
+                onClick={() => setIsOpen(false)}
+                className={buttonVariants({ className: 'mt-2 w-full rounded-full' })}
+              >
+                {adminCtaLabel}
+              </Link>
             </div>
           </motion.div>
         ) : null}
