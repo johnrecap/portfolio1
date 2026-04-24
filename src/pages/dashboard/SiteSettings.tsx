@@ -3,6 +3,7 @@ import { Eye, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
+import { MediaPicker } from '@/components/dashboard/media/media-picker';
 import { SettingsCard } from '@/components/dashboard/forms/settings-card';
 import { SettingsShell } from '@/components/dashboard/forms/settings-shell';
 import { Button } from '@/components/ui/button';
@@ -10,9 +11,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useDocument } from '@/hooks/useFirestore';
+import { useMediaLibrary } from '@/hooks/useMediaLibrary';
 import { isSiteBrandMirroringProfile } from '@/lib/admin/brand';
 import { createDefaultProfileSettings, createDefaultSiteSettings } from '@/lib/admin/defaults';
 import { normalizeSiteSettings } from '@/lib/admin/settings';
+import { resolveMediaField } from '@/lib/content-hub';
 
 type ProfileSettingsForm = ReturnType<typeof createDefaultProfileSettings>;
 type SiteSettingsForm = ReturnType<typeof createDefaultSiteSettings>;
@@ -27,6 +30,7 @@ export const DashboardSiteSettings = () => {
     'settings',
     'site',
   );
+  const { assets } = useMediaLibrary();
 
   const [profileForm, setProfileForm] = useState<ProfileSettingsForm>(createDefaultProfileSettings());
   const [siteForm, setSiteForm] = useState<SiteSettingsForm>(createDefaultSiteSettings());
@@ -53,6 +57,20 @@ export const DashboardSiteSettings = () => {
   const loading = profileLoading || siteLoading;
   const isArabicPreview = i18n.resolvedLanguage === 'ar';
   const siteBrandMirrorsProfile = isSiteBrandMirroringProfile(siteForm, profileForm);
+  const resolvedProfileImage = resolveMediaField(
+    {
+      url: profileForm.profileImage,
+      assetId: profileForm.profileImageAssetId,
+    },
+    assets,
+  );
+  const resolvedHeroImage = resolveMediaField(
+    {
+      url: profileForm.heroImage,
+      assetId: profileForm.heroImageAssetId,
+    },
+    assets,
+  );
 
   const handleProfileChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -211,14 +229,30 @@ export const DashboardSiteSettings = () => {
 
         <div className="space-y-6">
           <SettingsCard title={t('dashboardSite.visualAssets')}>
-            <div className="space-y-2">
-              <Label htmlFor="profileImage">{t('dashboardSettings.profileImage')}</Label>
-              <Input id="profileImage" name="profileImage" value={profileForm.profileImage} onChange={handleProfileChange} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="heroImage">{t('dashboardSettings.heroImage')}</Label>
-              <Input id="heroImage" name="heroImage" value={profileForm.heroImage} onChange={handleProfileChange} />
-            </div>
+            <MediaPicker
+              label={t('dashboardSite.profileImageMedia')}
+              urlLabel={t('dashboardSite.profileImageUrl')}
+              assetLabel={t('dashboardSite.profileImageAsset')}
+              url={profileForm.profileImage}
+              assetId={profileForm.profileImageAssetId}
+              assets={assets}
+              kind="image"
+              previewAlt={profileForm.displayName}
+              onUrlChange={(value) => setProfileForm((current) => ({ ...current, profileImage: value }))}
+              onAssetIdChange={(value) => setProfileForm((current) => ({ ...current, profileImageAssetId: value }))}
+            />
+            <MediaPicker
+              label={t('dashboardSite.heroImageMedia')}
+              urlLabel={t('dashboardSite.heroImageUrl')}
+              assetLabel={t('dashboardSite.heroImageAsset')}
+              url={profileForm.heroImage}
+              assetId={profileForm.heroImageAssetId}
+              assets={assets}
+              kind="image"
+              previewAlt={profileForm.displayName}
+              onUrlChange={(value) => setProfileForm((current) => ({ ...current, heroImage: value }))}
+              onAssetIdChange={(value) => setProfileForm((current) => ({ ...current, heroImageAssetId: value }))}
+            />
           </SettingsCard>
 
           <SettingsCard title={t('dashboardSite.livePreview')}>
@@ -230,7 +264,7 @@ export const DashboardSiteSettings = () => {
               <div className="overflow-hidden rounded-[1.5rem] border border-border/60 bg-card">
                 <div
                   className="flex h-24 items-end bg-cover bg-center px-4 pb-3"
-                  style={{ backgroundImage: profileForm.heroImage ? `url(${profileForm.heroImage})` : undefined }}
+                  style={{ backgroundImage: resolvedHeroImage.url ? `url(${resolvedHeroImage.url})` : undefined }}
                 >
                   {siteForm.logoUrl ? (
                     <img src={siteForm.logoUrl} alt={siteForm.siteName} className="h-10 w-10 rounded-full border border-border/60 bg-background object-cover" />
@@ -261,8 +295,8 @@ export const DashboardSiteSettings = () => {
                   <div className="rounded-[1.25rem] border border-border/60 bg-background/70 p-4">
                     <div className="flex items-center gap-3">
                       <div className="h-14 w-14 overflow-hidden rounded-full border border-border/60 bg-muted">
-                        {profileForm.profileImage ? (
-                          <img src={profileForm.profileImage} alt={profileForm.displayName} className="h-full w-full object-cover" />
+                        {resolvedProfileImage.url ? (
+                          <img src={resolvedProfileImage.url} alt={profileForm.displayName} className="h-full w-full object-cover" />
                         ) : null}
                       </div>
                       <div>
