@@ -20,5 +20,51 @@ export default defineConfig(({mode}) => {
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            const normalizedId = id.replaceAll('\\', '/');
+
+            if (!normalizedId.includes('/node_modules/')) {
+              return undefined;
+            }
+
+            if (
+              normalizedId.includes('/node_modules/firebase/') ||
+              normalizedId.includes('/node_modules/@firebase/')
+            ) {
+              return 'vendor-firebase';
+            }
+
+            if (
+              normalizedId.includes('/node_modules/react/') ||
+              normalizedId.includes('/node_modules/react-dom/') ||
+              normalizedId.includes('/node_modules/react-router-dom/')
+            ) {
+              return 'vendor-react';
+            }
+
+            if (
+              normalizedId.includes('/node_modules/@base-ui/') ||
+              normalizedId.includes('/node_modules/@radix-ui/') ||
+              normalizedId.includes('/node_modules/lucide-react/') ||
+              normalizedId.includes('/node_modules/sonner/')
+            ) {
+              return 'vendor-ui';
+            }
+
+            if (
+              normalizedId.includes('/node_modules/i18next') ||
+              normalizedId.includes('/node_modules/react-i18next/')
+            ) {
+              return 'vendor-i18n';
+            }
+
+            return undefined;
+          },
+        },
+      },
+    },
   };
 });

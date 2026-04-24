@@ -3,7 +3,6 @@ import { Navigate, createBrowserRouter, Outlet, RouterProvider } from 'react-rou
 import { useTranslation } from 'react-i18next';
 import { ThemeProvider } from './components/shared/theme-provider';
 import { PublicFooter, PublicNavbar } from './components/public/layout-components';
-import { DashboardLayout } from './components/dashboard/layout';
 import { Toaster } from '@/components/ui/sonner';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { ScrollToTop } from './components/shared/ScrollToTop';
@@ -33,6 +32,9 @@ const ProjectDetail = lazy(() =>
 );
 const NotFound = lazy(() =>
   import('./pages/(public)/NotFound').then((module) => ({ default: module.NotFound })),
+);
+const DashboardLayout = lazy(() =>
+  import('./components/dashboard/layout').then((module) => ({ default: module.DashboardLayout })),
 );
 const DashboardOverview = lazy(() =>
   import('./pages/dashboard/Overview').then((module) => ({ default: module.DashboardOverview })),
@@ -155,7 +157,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <DashboardLayout />,
+    element: withSuspense(<DashboardLayout />, true),
     children: [
       { index: true, element: withSuspense(<DashboardOverview />, true) },
       { path: 'site', element: withSuspense(<DashboardSiteSettings />, true) },

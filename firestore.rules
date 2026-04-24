@@ -54,6 +54,14 @@ service cloud.firestore {
       return !(field in request.resource.data) || request.resource.data[field] is number;
     }
 
+    function optionalMessageStatus(field) {
+      return !(field in request.resource.data) || request.resource.data[field] in ['new', 'reviewed', 'archived'];
+    }
+
+    function optionalMessagePriority(field) {
+      return !(field in request.resource.data) || request.resource.data[field] in ['normal', 'high'];
+    }
+
     function isPublishStatus(field) {
       return request.resource.data[field] in ['draft', 'published'];
     }
@@ -74,7 +82,8 @@ service cloud.firestore {
       return hasOnlyAllowedFields([
           'displayName', 'displayNameAr', 'title', 'titleAr', 'bio', 'bioAr', 'isAvailable',
           'githubUrl', 'linkedinUrl', 'websiteUrl', 'metaTitle', 'metaTitleAr',
-          'metaDescription', 'metaDescriptionAr', 'profileImage', 'heroImage', 'createdAt', 'updatedAt'
+          'metaDescription', 'metaDescriptionAr', 'profileImage', 'profileImageAssetId',
+          'heroImage', 'heroImageAssetId', 'createdAt', 'updatedAt'
         ]) &&
         hasRequiredFields(['displayName', 'title']) &&
         validStringLength('displayName', 1, 100) &&
@@ -92,12 +101,14 @@ service cloud.firestore {
         optionalString('metaDescription') &&
         optionalString('metaDescriptionAr') &&
         optionalString('profileImage') &&
-        optionalString('heroImage');
+        optionalString('profileImageAssetId') &&
+        optionalString('heroImage') &&
+        optionalString('heroImageAssetId');
     }
 
     function isValidSiteSettings() {
       return hasOnlyAllowedFields([
-          'siteName', 'siteNameAr', 'siteTagline', 'siteTaglineAr', 'logoUrl',
+          'siteName', 'siteNameAr', 'siteTagline', 'siteTaglineAr', 'logoUrl', 'logoAssetId',
           'primaryCtaEnabled', 'primaryCtaLabel', 'primaryCtaLabelAr', 'primaryCtaHref',
           'status', 'createdAt', 'updatedAt'
         ]) &&
@@ -109,6 +120,7 @@ service cloud.firestore {
         optionalString('siteTagline') &&
         optionalString('siteTaglineAr') &&
         optionalString('logoUrl') &&
+        optionalString('logoAssetId') &&
         optionalString('primaryCtaLabel') &&
         optionalString('primaryCtaLabelAr') &&
         optionalString('primaryCtaHref');
@@ -153,10 +165,10 @@ service cloud.firestore {
           'tagline', 'taglineAr', 'ctaLabel', 'ctaLabelAr', 'ctaHref',
           'statusStrip', 'statusStripAr', 'links', 'socialLinks', 'status', 'createdAt', 'updatedAt'
         ]) &&
-        hasRequiredFields(['tagline', 'taglineAr', 'status']) &&
-        validStringLength('tagline', 1, 500) &&
-        validStringLength('taglineAr', 1, 500) &&
+        hasRequiredFields(['status']) &&
         isPublishStatus('status') &&
+        optionalString('tagline') &&
+        optionalString('taglineAr') &&
         optionalString('ctaLabel') &&
         optionalString('ctaLabelAr') &&
         optionalString('ctaHref') &&
@@ -169,7 +181,7 @@ service cloud.firestore {
     function isValidSeoSettings() {
       return hasOnlyAllowedFields([
           'defaultTitle', 'defaultTitleAr', 'defaultDescription', 'defaultDescriptionAr',
-          'ogImage', 'siteUrl', 'status', 'createdAt', 'updatedAt'
+          'ogImage', 'ogImageAssetId', 'siteUrl', 'status', 'createdAt', 'updatedAt'
         ]) &&
         hasRequiredFields(['defaultTitle', 'defaultTitleAr', 'defaultDescription', 'defaultDescriptionAr', 'status']) &&
         validStringLength('defaultTitle', 1, 200) &&
@@ -178,6 +190,7 @@ service cloud.firestore {
         validStringLength('defaultDescriptionAr', 1, 1000) &&
         isPublishStatus('status') &&
         optionalString('ogImage') &&
+        optionalString('ogImageAssetId') &&
         optionalString('siteUrl');
     }
 
@@ -325,7 +338,7 @@ service cloud.firestore {
 
     function isValidMediaAsset() {
       return hasOnlyAllowedFields([
-          'title', 'titleAr', 'alt', 'altAr', 'url', 'kind', 'group', 'createdAt', 'updatedAt'
+          'title', 'titleAr', 'alt', 'altAr', 'url', 'kind', 'group', 'tags', 'createdAt', 'updatedAt'
         ]) &&
         hasRequiredFields(['title', 'url', 'kind', 'group']) &&
         validStringLength('title', 1, 200) &&
@@ -334,7 +347,8 @@ service cloud.firestore {
         request.resource.data.kind in ['image', 'video'] &&
         optionalString('titleAr') &&
         optionalString('alt') &&
-        optionalString('altAr');
+        optionalString('altAr') &&
+        optionalList('tags');
     }
 
     function isValidMessage() {
@@ -345,7 +359,10 @@ service cloud.firestore {
         optionalString('userId') &&
         optionalString('whatsapp') &&
         optionalString('budget') &&
-        optionalBool('read');
+        optionalBool('read') &&
+        optionalMessageStatus('status') &&
+        optionalMessagePriority('priority') &&
+        optionalString('adminNotes');
     }
 
     // ===============================================================

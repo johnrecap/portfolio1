@@ -7,6 +7,7 @@ import {
   groupSkillsByCategory,
   resolveEntitySeo,
   resolveMediaField,
+  type MediaAssetRecord,
 } from './content-hub';
 
 const mediaAssets = [
@@ -44,6 +45,19 @@ test('resolveMediaField prefers the selected media asset over a manual URL', () 
   assert.equal(result.url, 'https://cdn.example.com/hero.webp');
   assert.equal(result.alt, 'Hero alt');
   assert.equal(result.asset?.id, 'hero-image');
+});
+
+test('media asset records preserve tag metadata expected by dashboard and rules', () => {
+  const asset: MediaAssetRecord = {
+    id: 'media-with-tags',
+    title: 'Tagged media',
+    url: 'https://cdn.example.com/tagged.webp',
+    kind: 'image',
+    group: 'branding',
+    tags: ['hero', 'featured'],
+  };
+
+  assert.deepEqual(asset.tags, ['hero', 'featured']);
 });
 
 test('getLocalizedValue recovers swapped bilingual fields using script detection', () => {

@@ -5,9 +5,11 @@ import { OperationType } from '@/lib/firebase';
 import {
   buildFirestoreErrorInfo,
   cleanupFirestoreSubscription,
+  getTimestampSeconds,
   shouldSuppressCollectionError,
   shouldSuppressDocumentError,
   shouldSuppressFirestoreCleanupError,
+  sortByCreatedAtDesc,
 } from './useFirestore';
 
 test('shouldSuppressDocumentError suppresses permission-denied reads when explicitly requested', () => {
@@ -119,5 +121,25 @@ test('cleanupFirestoreSubscription rethrows non-Firestore cleanup errors', () =>
       );
     },
     /boom/,
+  );
+});
+
+test('getTimestampSeconds reads Firestore-like timestamp seconds safely', () => {
+  assert.equal(getTimestampSeconds({ seconds: 42 }), 42);
+  assert.equal(getTimestampSeconds({ seconds: null }), 0);
+  assert.equal(getTimestampSeconds({}), 0);
+  assert.equal(getTimestampSeconds(null), 0);
+});
+
+test('sortByCreatedAtDesc keeps records without createdAt visible after timestamped records', () => {
+  const result = sortByCreatedAtDesc([
+    { id: 'legacy' },
+    { id: 'newest', createdAt: { seconds: 30 } },
+    { id: 'oldest', createdAt: { seconds: 10 } },
+  ]);
+
+  assert.deepEqual(
+    result.map((item) => item.id),
+    ['newest', 'oldest', 'legacy'],
   );
 });

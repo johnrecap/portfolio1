@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { motion } from 'motion/react';
 import { ArrowRight, Calendar, Clock, Copy, Github, Link as LinkIcon, Linkedin } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -11,6 +11,7 @@ import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { useProfile } from '@/hooks/useProfile';
+import { sortByCreatedAtDesc } from '@/hooks/useFirestore';
 import { db } from '@/lib/firebase';
 import { getLocalizedValue, resolveEntitySeo, resolveMediaField } from '@/lib/content-hub';
 
@@ -84,16 +85,17 @@ export const BlogPost = () => {
         const record = { id: querySnapshot.docs[0].id, ...(querySnapshot.docs[0].data() as Omit<BlogPostRecord, 'id'>) };
         setPost(record);
 
-        const relatedQuery = query(
-          collection(db, 'blogs'),
-          where('category', '==', record.category),
-          orderBy('createdAt', 'desc'),
-          limit(4),
-        );
+        if (!record.category) {
+          setRelated([]);
+          return;
+        }
+
+        const relatedQuery = query(collection(db, 'blogs'), where('category', '==', record.category));
         const relatedSnapshot = await getDocs(relatedQuery);
 
-        const relatedArticles = relatedSnapshot.docs
-          .map((doc) => ({ id: doc.id, ...(doc.data() as Omit<BlogPostRecord, 'id'>) }))
+        const relatedArticles = sortByCreatedAtDesc(
+          relatedSnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as Omit<BlogPostRecord, 'id'>) })),
+        )
           .filter((article) => article.id !== record.id)
           .slice(0, 3);
 

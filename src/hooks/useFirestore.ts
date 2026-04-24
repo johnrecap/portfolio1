@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { buildFirestoreErrorInfo, db, handleFirestoreError, type FirestoreErrorInfo, OperationType } from '@/lib/firebase';
 import { collection, onSnapshot, query, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, orderBy, setDoc } from 'firebase/firestore';
 
-type UseDocumentOptions = {
+export type UseFirestoreOptions = {
   suppressPermissionDenied?: boolean;
+  orderByCreatedAt?: boolean;
 };
 
 const reportedReadErrors = new Set<string>();
@@ -27,15 +28,28 @@ function reportFirestoreReadError(errorInfo: FirestoreErrorInfo) {
   console.error('Firestore read error: ', payload);
 }
 
-export function shouldSuppressDocumentError(error: unknown, options?: UseDocumentOptions) {
+export function shouldSuppressDocumentError(error: unknown, options?: UseFirestoreOptions) {
   return options?.suppressPermissionDenied === true && (error as { code?: string } | null)?.code === 'permission-denied';
 }
 
-export function shouldSuppressCollectionError(error: unknown, options?: UseDocumentOptions) {
+export function shouldSuppressCollectionError(error: unknown, options?: UseFirestoreOptions) {
   return options?.suppressPermissionDenied === true && (error as { code?: string } | null)?.code === 'permission-denied';
 }
 
 export { buildFirestoreErrorInfo };
+
+export function getTimestampSeconds(value: unknown) {
+  if (typeof value === 'object' && value !== null && 'seconds' in value) {
+    const seconds = (value as { seconds?: unknown }).seconds;
+    return typeof seconds === 'number' ? seconds : 0;
+  }
+
+  return 0;
+}
+
+export function sortByCreatedAtDesc<T extends { createdAt?: unknown }>(items: T[]) {
+  return [...items].sort((left, right) => getTimestampSeconds(right.createdAt) - getTimestampSeconds(left.createdAt));
+}
 
 export function shouldSuppressFirestoreCleanupError(error: unknown) {
   const message =
@@ -72,7 +86,7 @@ export function cleanupFirestoreSubscription(
   }
 }
 
-export function useDocument<T>(path: string, docId: string, options?: UseDocumentOptions) {
+export function useDocument<T>(path: string, docId: string, options?: UseFirestoreOptions) {
   const [data, setData] = useState<(T & { id: string }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreErrorInfo | null>(null);
@@ -115,19 +129,22 @@ export function useDocument<T>(path: string, docId: string, options?: UseDocumen
   return { data, loading, error, setDocument };
 }
 
-export function useCollection<T>(path: string, options?: UseDocumentOptions) {
+export function useCollection<T>(path: string, options?: UseFirestoreOptions) {
   const [data, setData] = useState<(T & { id: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreErrorInfo | null>(null);
 
   useEffect(() => {
-    const q = query(collection(db, path), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const shouldOrderByCreatedAt = options?.orderByCreatedAt === true;
+    const collectionQuery = shouldOrderByCreatedAt
+      ? query(collection(db, path), orderBy('createdAt', 'desc'))
+      : query(collection(db, path));
+    const unsubscribe = onSnapshot(collectionQuery, (snapshot) => {
       const result: any[] = [];
       snapshot.forEach(doc => {
         result.push({ id: doc.id, ...doc.data() });
       });
-      setData(result);
+      setData(sortByCreatedAtDesc(result));
       setError(null);
       setLoading(false);
     }, (error) => {
@@ -146,7 +163,7 @@ export function useCollection<T>(path: string, options?: UseDocumentOptions) {
     });
 
     return () => cleanupFirestoreSubscription(unsubscribe, OperationType.LIST, path);
-  }, [path, options?.suppressPermissionDenied]);
+  }, [path, options?.suppressPermissionDenied, options?.orderByCreatedAt]);
 
   const addDocument = async (docData: any) => {
     try {

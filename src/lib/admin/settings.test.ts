@@ -89,6 +89,21 @@ test('normalizeFooterSettings keeps valid links and social links only', () => {
   assert.equal(result.status, 'published');
 });
 
+test('normalizeFooterSettings preserves empty fallback copy values', () => {
+  const result = normalizeFooterSettings({
+    tagline: '',
+    taglineAr: '',
+    statusStrip: '',
+    statusStripAr: '',
+  });
+
+  assert.equal(result.tagline, '');
+  assert.equal(result.taglineAr, '');
+  assert.equal(result.statusStrip, '');
+  assert.equal(result.statusStripAr, '');
+  assert.equal(result.status, 'published');
+});
+
 test('normalizeSeoSettings falls back safely for missing values', () => {
   const result = normalizeSeoSettings({
     defaultTitle: 'Portfolio',
