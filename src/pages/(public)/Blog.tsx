@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { EmptyState, SkeletonBlocks, SkeletonLine, SkeletonMedia } from '@/components/shared/PageState';
+import { EmptyState, SkeletonBlocks, SkeletonMedia } from '@/components/shared/PageState';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { useProfile } from '@/hooks/useProfile';
@@ -18,7 +18,7 @@ import { getLocalizedValue, resolveMediaField, type BlogRecord } from '@/lib/con
 export const Blog = () => {
   const { data: articles, loading } = usePublicCollection<BlogRecord>('blogs');
   const { assets, loading: mediaLoading } = usePublicMediaLibrary();
-  const { pageConfig, loading: pageLoading } = usePageConfig('blog');
+  const { pageConfig } = usePageConfig('blog');
   const [activeCategory, setActiveCategory] = useState(ALL_BLOG_CATEGORY);
   const [visibleCount, setVisibleCount] = useState(6);
   const [searchQuery, setSearchQuery] = useState('');
@@ -101,9 +101,7 @@ export const Blog = () => {
       <header className="relative z-10 flex max-w-4xl flex-col gap-8 border-b border-border pb-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2">
           <FileText className="h-5 w-5 text-primary" />
-          <span className="font-label text-sm uppercase tracking-wider text-primary">
-            {pageLoading ? <SkeletonLine className="h-4 w-44" /> : eyebrow}
-          </span>
+          <span className="font-label text-sm uppercase tracking-wider text-primary">{eyebrow}</span>
         </motion.div>
 
         <motion.h1
@@ -112,14 +110,7 @@ export const Blog = () => {
           transition={{ delay: 0.1 }}
           className="font-heading text-4xl font-black leading-[1.1] tracking-tight md:text-5xl"
         >
-          {pageLoading ? (
-            <span className="block space-y-3" aria-hidden="true">
-              <SkeletonLine className="h-11 w-full" />
-              <SkeletonLine className="h-11 w-3/4" />
-            </span>
-          ) : (
-            title
-          )}
+          {title}
         </motion.h1>
 
         <motion.p
@@ -128,14 +119,7 @@ export const Blog = () => {
           transition={{ delay: 0.2 }}
           className="text-xl leading-relaxed text-muted-foreground"
         >
-          {pageLoading ? (
-            <span className="block space-y-3" aria-hidden="true">
-              <SkeletonLine className="h-5 w-full" />
-              <SkeletonLine className="h-5 w-5/6" />
-            </span>
-          ) : (
-            subtitle
-          )}
+          {subtitle}
         </motion.p>
       </header>
 
@@ -191,8 +175,8 @@ export const Blog = () => {
         <div className="order-1 flex flex-col gap-10 lg:order-2 lg:col-span-3">
           {listingTitle || listingSubtitle ? (
             <div className="max-w-3xl space-y-3">
-              {!pageLoading && listingTitle ? <h2 className="font-heading text-2xl font-bold text-foreground">{listingTitle}</h2> : null}
-              {!pageLoading && listingSubtitle ? <p className="text-sm leading-7 text-muted-foreground">{listingSubtitle}</p> : null}
+              {listingTitle ? <h2 className="font-heading text-2xl font-bold text-foreground">{listingTitle}</h2> : null}
+              {listingSubtitle ? <p className="text-sm leading-7 text-muted-foreground">{listingSubtitle}</p> : null}
             </div>
           ) : null}
           {loading ? (

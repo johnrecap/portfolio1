@@ -8,6 +8,7 @@ import {
   PUBLIC_BOOTSTRAP_VERSION,
   PUBLIC_CACHE_KEY,
   readPublicCacheFromStorage,
+  updatePublicDocumentCache,
   validatePublicBootstrapPacket,
   writePublicCacheToStorage,
   type PublicBootstrapPacket,
@@ -74,6 +75,48 @@ test('getInitialPublicDocument prefers bootstrap data over cache data', () => {
     const result = getInitialPublicDocument('settings', 'profile');
     assert.equal(result.hasData, true);
     assert.equal(result.data?.displayName, 'Bootstrapped');
+  } finally {
+    delete (globalThis as any).window;
+  }
+});
+
+test('getInitialPublicDocument falls back to storage when bootstrap is partial', () => {
+  const storage = new MemoryStorage();
+  const cachedPacket = createEmptyPublicBootstrapPacket();
+  cachedPacket.documents['settings/profile'] = { id: 'profile', displayName: 'Cached' };
+  storage.setItem(PUBLIC_CACHE_KEY, JSON.stringify(cachedPacket));
+
+  (globalThis as any).window = {
+    __PUBLIC_BOOTSTRAP__: createEmptyPublicBootstrapPacket(),
+    localStorage: storage,
+  };
+
+  try {
+    const result = getInitialPublicDocument('settings', 'profile');
+    assert.equal(result.hasData, true);
+    assert.equal(result.data?.displayName, 'Cached');
+  } finally {
+    delete (globalThis as any).window;
+  }
+});
+
+test('updatePublicDocumentCache preserves richer storage data when bootstrap is partial', () => {
+  const storage = new MemoryStorage();
+  const cachedPacket = createEmptyPublicBootstrapPacket();
+  cachedPacket.collections.projects = [{ id: 'project-1', title: 'Cached Project' }];
+  storage.setItem(PUBLIC_CACHE_KEY, JSON.stringify(cachedPacket));
+
+  (globalThis as any).window = {
+    __PUBLIC_BOOTSTRAP__: createEmptyPublicBootstrapPacket(),
+    localStorage: storage,
+  };
+
+  try {
+    updatePublicDocumentCache('settings', 'profile', { id: 'profile', displayName: 'Fresh' });
+
+    const result = readPublicCacheFromStorage(storage);
+    assert.equal(result?.documents['settings/profile']?.displayName, 'Fresh');
+    assert.equal(result?.collections.projects?.[0]?.title, 'Cached Project');
   } finally {
     delete (globalThis as any).window;
   }

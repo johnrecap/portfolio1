@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Calendar, Clock, Copy, Github, Link as LinkIcon, Linkedin } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -9,10 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { EmptyState, SkeletonBlocks, SkeletonLine, SkeletonMedia } from '@/components/shared/PageState';
 import { PageSeo } from '@/components/shared/PageSeo';
-import { usePublicMediaLibrary } from '@/hooks/public-firestore';
+import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { useProfile } from '@/hooks/useProfile';
 import { sortByCreatedAtDesc } from '@/hooks/useFirestore';
-import { db } from '@/lib/firebase';
 import { getLocalizedValue, resolveEntitySeo, resolveMediaField } from '@/lib/content-hub';
 
 type BlogPostRecord = {
@@ -44,10 +42,8 @@ type BlogPostRecord = {
 
 export const BlogPost = () => {
   const { slug } = useParams();
-  const [post, setPost] = useState<BlogPostRecord | null>(null);
-  const [related, setRelated] = useState<BlogPostRecord[]>([]);
-  const [loading, setLoading] = useState(true);
   const [readingProgress, setReadingProgress] = useState(0);
+  const { data: articles, loading } = usePublicCollection<BlogPostRecord>('blogs');
   const { assets, loading: mediaLoading } = usePublicMediaLibrary();
   const { profile, loading: profileLoading } = useProfile();
   const { i18n, t } = useTranslation();
@@ -68,51 +64,20 @@ export const BlogPost = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      setLoading(true);
+  const post = useMemo(
+    () => articles.find((article) => article.slug === slug) ?? null,
+    [articles, slug],
+  );
 
-      try {
-        const postQuery = query(collection(db, 'blogs'), where('slug', '==', slug));
-        const querySnapshot = await getDocs(postQuery);
-
-        if (querySnapshot.empty) {
-          setPost(null);
-          setRelated([]);
-          return;
-        }
-
-        const record = { id: querySnapshot.docs[0].id, ...(querySnapshot.docs[0].data() as Omit<BlogPostRecord, 'id'>) };
-        setPost(record);
-
-        if (!record.category) {
-          setRelated([]);
-          return;
-        }
-
-        const relatedQuery = query(collection(db, 'blogs'), where('category', '==', record.category));
-        const relatedSnapshot = await getDocs(relatedQuery);
-
-        const relatedArticles = sortByCreatedAtDesc(
-          relatedSnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as Omit<BlogPostRecord, 'id'>) })),
-        )
-          .filter((article) => article.id !== record.id)
-          .slice(0, 3);
-
-        setRelated(relatedArticles);
-      } catch (error) {
-        console.error('Error fetching post:', error);
-        setPost(null);
-        setRelated([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      void fetchPost();
+  const related = useMemo(() => {
+    if (!post?.category) {
+      return [];
     }
-  }, [slug]);
+
+    return sortByCreatedAtDesc(articles)
+      .filter((article) => article.id !== post.id && article.category === post.category)
+      .slice(0, 3);
+  }, [articles, post]);
 
   const formatDate = (seconds?: number) => {
     if (!seconds) {

@@ -24,6 +24,8 @@ declare global {
   }
 }
 
+let publicBootstrapMemoryPacket: PublicBootstrapPacket | null = null;
+
 export const PUBLIC_BOOTSTRAP_DOCUMENTS = [
   ['settings', 'profile'],
   ['settings', 'site'],
@@ -126,7 +128,12 @@ export function readPublicBootstrapGlobal() {
     return null;
   }
 
-  return validatePublicBootstrapPacket(window.__PUBLIC_BOOTSTRAP__);
+  const packet = validatePublicBootstrapPacket(window.__PUBLIC_BOOTSTRAP__);
+  if (packet) {
+    publicBootstrapMemoryPacket = packet;
+  }
+
+  return packet;
 }
 
 export function readPublicCacheFromStorage(storage: StorageLike | undefined | null) {
@@ -155,12 +162,68 @@ export function readPublicCacheFromStorage(storage: StorageLike | undefined | nu
   }
 }
 
+export function readPublicMemoryCache() {
+  if (!publicBootstrapMemoryPacket) {
+    return null;
+  }
+
+  if (Date.now() - publicBootstrapMemoryPacket.generatedAt > PUBLIC_CACHE_MAX_AGE_MS) {
+    return null;
+  }
+
+  return publicBootstrapMemoryPacket;
+}
+
+function mergePublicPackets(...packets: Array<PublicBootstrapPacket | null>) {
+  return packets.reduce<PublicBootstrapPacket | null>((merged, packet) => {
+    if (!packet) {
+      return merged;
+    }
+
+    return {
+      version: PUBLIC_BOOTSTRAP_VERSION,
+      generatedAt: Math.max(merged?.generatedAt ?? 0, packet.generatedAt),
+      documents: {
+        ...(merged?.documents ?? {}),
+        ...packet.documents,
+      },
+      collections: {
+        ...(merged?.collections ?? {}),
+        ...packet.collections,
+      },
+    };
+  }, null);
+}
+
 export function readPublicCache() {
   if (typeof window === 'undefined') {
     return null;
   }
 
-  return readPublicCacheFromStorage(window.localStorage);
+  const memoryPacket = readPublicMemoryCache();
+  if (memoryPacket) {
+    return memoryPacket;
+  }
+
+  const storagePacket = readPublicCacheFromStorage(window.localStorage);
+  if (storagePacket) {
+    publicBootstrapMemoryPacket = storagePacket;
+  }
+
+  return storagePacket;
+}
+
+function readPublicStorageCache() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const storagePacket = readPublicCacheFromStorage(window.localStorage);
+  if (storagePacket) {
+    publicBootstrapMemoryPacket = storagePacket;
+  }
+
+  return storagePacket;
 }
 
 export function writePublicCacheToStorage(storage: StorageLike | undefined | null, packet: PublicBootstrapPacket) {
@@ -186,6 +249,7 @@ export function writePublicCache(packet: PublicBootstrapPacket) {
     return false;
   }
 
+  publicBootstrapMemoryPacket = packet;
   return writePublicCacheToStorage(window.localStorage, packet);
 }
 
@@ -197,7 +261,12 @@ export function getInitialPublicDocument(path: string, docId: string) {
     return { data: bootstrap.documents[key] ?? null, hasData: true };
   }
 
-  const cache = readPublicCache();
+  const memoryCache = readPublicMemoryCache();
+  if (memoryCache && Object.prototype.hasOwnProperty.call(memoryCache.documents, key)) {
+    return { data: memoryCache.documents[key] ?? null, hasData: true };
+  }
+
+  const cache = readPublicStorageCache();
   if (cache && Object.prototype.hasOwnProperty.call(cache.documents, key)) {
     return { data: cache.documents[key] ?? null, hasData: true };
   }
@@ -213,7 +282,12 @@ export function getInitialPublicCollection(path: string) {
     return { data: bootstrap.collections[key] ?? [], hasData: true };
   }
 
-  const cache = readPublicCache();
+  const memoryCache = readPublicMemoryCache();
+  if (memoryCache && Object.prototype.hasOwnProperty.call(memoryCache.collections, key)) {
+    return { data: memoryCache.collections[key] ?? [], hasData: true };
+  }
+
+  const cache = readPublicStorageCache();
   if (cache && Object.prototype.hasOwnProperty.call(cache.collections, key)) {
     return { data: cache.collections[key] ?? [], hasData: true };
   }
@@ -222,7 +296,10 @@ export function getInitialPublicCollection(path: string) {
 }
 
 function updatePublicCache(updater: (packet: PublicBootstrapPacket) => PublicBootstrapPacket) {
-  const current = readPublicCache() ?? createEmptyPublicBootstrapPacket();
+  const memory = readPublicMemoryCache();
+  const bootstrap = readPublicBootstrapGlobal();
+  const storage = readPublicStorageCache();
+  const current = mergePublicPackets(storage, memory, bootstrap) ?? createEmptyPublicBootstrapPacket();
   const next = updater({
     ...current,
     version: PUBLIC_BOOTSTRAP_VERSION,

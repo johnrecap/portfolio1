@@ -818,7 +818,7 @@ export function PublicPageComposer({ pageId, pageConfig, loading = false }: Publ
         ? 'relative flex w-full flex-col gap-8 py-2'
         : 'flex w-full flex-col gap-8 pt-2 pb-10';
 
-  if (loading) {
+  if (loading && enabledSections.length === 0) {
     return (
       <div className={pageClass}>
         <SkeletonBlocks count={pageId === 'home' ? 4 : 3} />

@@ -17,8 +17,11 @@ import {
 } from '../lib/public-bootstrap.js';
 
 const BOOTSTRAP_TIMEOUT_MS = 2500;
+const BOOTSTRAP_CACHE_MAX_AGE_MS = 1000 * 60;
 
 let reportedBootstrapWarning = false;
+let cachedBootstrapPacket: PublicBootstrapPacket | null = null;
+let bootstrapRefreshPromise: Promise<PublicBootstrapPacket> | null = null;
 
 function warnOnce(message: string, error?: unknown) {
   if (reportedBootstrapWarning) {
@@ -164,10 +167,46 @@ async function buildPublicBootstrapPacketUnsafe(): Promise<PublicBootstrapPacket
   return packet;
 }
 
+function isCachedBootstrapFresh() {
+  return Boolean(
+    cachedBootstrapPacket &&
+      Date.now() - cachedBootstrapPacket.generatedAt <= BOOTSTRAP_CACHE_MAX_AGE_MS,
+  );
+}
+
+export function warmPublicBootstrapCache() {
+  if (bootstrapRefreshPromise) {
+    return bootstrapRefreshPromise;
+  }
+
+  bootstrapRefreshPromise = buildPublicBootstrapPacketUnsafe()
+    .then((packet) => {
+      cachedBootstrapPacket = packet;
+      return packet;
+    })
+    .catch((error) => {
+      warnOnce('Public bootstrap fetch failed.', error);
+      return cachedBootstrapPacket ?? createEmptyPublicBootstrapPacket();
+    })
+    .finally(() => {
+      bootstrapRefreshPromise = null;
+    });
+
+  return bootstrapRefreshPromise;
+}
+
+export function getCachedPublicBootstrapPacket() {
+  if (!isCachedBootstrapFresh()) {
+    void warmPublicBootstrapCache();
+  }
+
+  return cachedBootstrapPacket ?? createEmptyPublicBootstrapPacket();
+}
+
 export function buildPublicBootstrapPacket() {
   return withTimeout(
-    buildPublicBootstrapPacketUnsafe(),
+    warmPublicBootstrapCache(),
     BOOTSTRAP_TIMEOUT_MS,
-    createEmptyPublicBootstrapPacket(),
+    cachedBootstrapPacket ?? createEmptyPublicBootstrapPacket(),
   );
 }

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { PageSeo } from '@/components/shared/PageSeo';
-import { EmptyState, SkeletonBlocks, SkeletonLine, SkeletonMedia } from '@/components/shared/PageState';
+import { EmptyState, SkeletonBlocks, SkeletonMedia } from '@/components/shared/PageState';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { usePageConfig } from '@/hooks/usePageConfig';
 import { readComposerText } from '@/lib/admin/page-content';
@@ -30,7 +30,7 @@ const projectTypeKeyMap = {
 export const Projects = () => {
   const { data: projects, loading } = usePublicCollection<ProjectRecord>('projects');
   const { assets, loading: mediaLoading } = usePublicMediaLibrary();
-  const { pageConfig, loading: pageLoading } = usePageConfig('projects');
+  const { pageConfig } = usePageConfig('projects');
   const { t, i18n } = useTranslation();
   const [search, setSearch] = useState('');
   const [activeType, setActiveType] = useState<'all' | 'web' | 'mobile' | 'dashboard' | 'backend' | 'other'>('all');
@@ -73,28 +73,12 @@ export const Projects = () => {
 
       <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
-            {pageLoading ? <SkeletonLine className="h-4 w-44" /> : eyebrow}
-          </p>
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">{eyebrow}</p>
           <h1 className="mt-4 font-heading text-4xl font-black tracking-tight text-foreground md:text-6xl">
-            {pageLoading ? (
-              <span className="block space-y-3" aria-hidden="true">
-                <SkeletonLine className="h-11 w-full" />
-                <SkeletonLine className="h-11 w-3/4" />
-              </span>
-            ) : (
-              title
-            )}
+            {title}
           </h1>
           <p className="mt-4 text-base leading-8 text-muted-foreground md:text-lg">
-            {pageLoading ? (
-              <span className="block space-y-3" aria-hidden="true">
-                <SkeletonLine className="h-5 w-full" />
-                <SkeletonLine className="h-5 w-5/6" />
-              </span>
-            ) : (
-              subtitle
-            )}
+            {subtitle}
           </p>
         </div>
 
@@ -112,8 +96,8 @@ export const Projects = () => {
       <div className="flex flex-col gap-5">
         {listingTitle || listingSubtitle ? (
           <div className="max-w-3xl space-y-3">
-            {!pageLoading && listingTitle ? <h2 className="font-heading text-2xl font-bold text-foreground">{listingTitle}</h2> : null}
-            {!pageLoading && listingSubtitle ? <p className="text-sm leading-7 text-muted-foreground">{listingSubtitle}</p> : null}
+            {listingTitle ? <h2 className="font-heading text-2xl font-bold text-foreground">{listingTitle}</h2> : null}
+            {listingSubtitle ? <p className="text-sm leading-7 text-muted-foreground">{listingSubtitle}</p> : null}
           </div>
         ) : null}
         <div className="flex flex-wrap gap-2">

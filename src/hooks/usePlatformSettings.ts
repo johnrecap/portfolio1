@@ -49,6 +49,7 @@ function usePlatformSetting<T>(
     ? getInitialPublicDocument('settings', docId)
     : { data: null, hasData: false };
   const { data, loading, setDocument } = useDocument<Record<string, unknown>>('settings', docId, {
+    suppressPermissionDenied: options?.publicRead === true,
     initialData: initial.data,
     hasInitialData: initial.hasData,
     keepDataOnSuppressedError: options?.publicRead === true,

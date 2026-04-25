@@ -4,7 +4,11 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { buildPublicBootstrapPacket } from './src/server/public-bootstrap.js';
+import {
+  buildPublicBootstrapPacket,
+  getCachedPublicBootstrapPacket,
+  warmPublicBootstrapCache,
+} from './src/server/public-bootstrap.js';
 import { escapePublicBootstrapJson } from './src/lib/public-bootstrap.js';
 
 const DEFAULT_HOST = '0.0.0.0';
@@ -83,6 +87,8 @@ async function createApp() {
   }
 
   const distPath = path.join(projectRoot, 'dist');
+  void warmPublicBootstrapCache();
+
   app.use(express.static(distPath, { index: false }));
   app.get('/api/public/bootstrap', async (_req, res) => {
     const packet = await buildPublicBootstrapPacket();
@@ -96,7 +102,7 @@ async function createApp() {
       const indexPath = path.join(distPath, 'index.html');
       const [indexHtml, packet] = await Promise.all([
         fs.readFile(indexPath, 'utf8'),
-        buildPublicBootstrapPacket(),
+        Promise.resolve(getCachedPublicBootstrapPacket()),
       ]);
       const bootstrapScript = `<script>window.__PUBLIC_BOOTSTRAP__=${escapePublicBootstrapJson(packet)};</script>`;
       const html = indexHtml.includes('</head>')

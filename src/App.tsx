@@ -94,7 +94,7 @@ const withSuspense = (node: ReactNode, dashboard = false) => (
 
 const PublicLayout = () => {
   const { i18n } = useTranslation();
-  const { themeSettings } = useThemeSettings();
+  const { themeSettings } = useThemeSettings({ publicRead: true });
   const { resolvedTheme } = useTheme();
   const siteResolvedTheme = themeSettings.mode === 'system' ? resolvedTheme : themeSettings.mode;
 
