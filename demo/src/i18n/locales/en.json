@@ -1,0 +1,141 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "leads": "Leads",
+    "deals": "Deals",
+    "clients": "Clients",
+    "tasks": "Tasks",
+    "reports": "Reports",
+    "settings": "Settings",
+    "support": "Support"
+  },
+  "topbar": {
+    "search": "Search...",
+    "logo": "AgencyFlow"
+  },
+  "dashboard": {
+    "welcome": "Welcome back. Here's what's happening today.",
+    "newDeal": "New Deal",
+    "pipelineValue": "Pipeline Value",
+    "newLeads": "New Leads",
+    "activeDeals": "Active Deals",
+    "winRate": "Win Rate",
+    "overdueTasks": "Overdue Tasks",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity.",
+    "upcomingTasks": "Upcoming Tasks",
+    "viewAll": "View All",
+    "allCaughtUp": "You are all caught up!"
+  },
+  "leads": {
+    "title": "Leads",
+    "search": "Search leads...",
+    "filter": "Filter",
+    "addLead": "Add Lead",
+    "table": {
+      "lead": "Lead",
+      "company": "Company",
+      "source": "Source",
+      "status": "Status",
+      "value": "Value",
+      "owner": "Owner",
+      "lastContact": "Last Contact"
+    },
+    "unassigned": "Unassigned",
+    "never": "Never",
+    "noLeads": "No leads found.",
+    "drawer": {
+      "convertToDeal": "Convert to Deal",
+      "sendEmail": "Send Email",
+      "about": "About",
+      "estValue": "Est. Value",
+      "source": "Source",
+      "owner": "Owner"
+    }
+  },
+  "deals": {
+    "title": "Deals",
+    "newDeal": "New Deal",
+    "noDeals": "No deals",
+    "drawer": {
+      "changeStage": "Change Stage",
+      "dealInfo": "Deal Info",
+      "value": "Value",
+      "owner": "Owner",
+      "probability": "Probability",
+      "expectedClose": "Expected Close",
+      "contact": "Contact",
+      "unassigned": "Unassigned"
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "search": "Search clients...",
+    "addClient": "Add Client",
+    "table": {
+      "client": "Client",
+      "industry": "Industry",
+      "health": "Health",
+      "retainer": "Retainer",
+      "activeProjects": "Active Projects"
+    },
+    "noClients": "No clients found."
+  },
+  "support": {
+    "title": "Help & Support",
+    "description": "Get help with AgencyFlow and manage your tickets.",
+    "knowledgeBase": "Knowledge Base",
+    "knowledgeBaseDesc": "Browse our helpful articles and guides.",
+    "browseArticles": "Browse Articles",
+    "liveChat": "Live Chat",
+    "liveChatDesc": "Chat with our support team in real-time.",
+    "startChat": "Start Chat",
+    "emailSupport": "Email Support",
+    "emailSupportDesc": "Send us an email and we'll get back to you.",
+    "sendEmail": "Send Email",
+    "faq": "Frequently Asked Questions",
+    "faq1Q": "How do I add a new team member?",
+    "faq1A": "You can add new team members from the Settings > Team section. Click the \"Add Member\" button and enter their email address. They will receive an invitation to join your workspace.",
+    "faq2Q": "Can I export my data?",
+    "faq2A": "Yes, you can export your leads, deals, and clients as CSV files. Go to the respective list page, click the \"Filter\" button, and select \"Export to CSV\" from the dropdown menu."
+  },
+  "reports": {
+    "title": "Reports",
+    "overview": "Overview of agency performance metrics",
+    "exportCSV": "Export CSV",
+    "totalClosedRevenue": "Total Closed Revenue",
+    "openPipelinePotential": "Open Pipeline Potential",
+    "teamWorkload": "Team Workload (Open Tasks)"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "newTask": "New Task",
+    "all": "All",
+    "todo": "To Do",
+    "completed": "Completed",
+    "due": "Due",
+    "noTasks": "No tasks found."
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account settings and preferences.",
+    "profile": "Profile",
+    "profileDesc": "Update your photo and personal details.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "role": "Role",
+    "language": "Language",
+    "languageDesc": "Choose your preferred language.",
+    "save": "Save Changes",
+    "demoSession": "Demo session",
+    "demoSessionDesc": "Control the sample data for this private browser session.",
+    "privateSession": "Private editable demo",
+    "privateSessionDesc": "Changes are stored only in your current session and are not visible to other visitors.",
+    "resetDemo": "Reset demo data",
+    "resetDemoTitle": "Reset demo data?",
+    "resetDemoBody": "This clears only your current demo session and restores the original sample data. Other visitors are not affected.",
+    "keepChanges": "Keep changes",
+    "confirmReset": "Reset demo"
+  }
+}

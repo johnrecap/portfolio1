@@ -1,0 +1,53 @@
+import { Deal } from "../types/crm";
+import { subDays, addDays } from "date-fns";
+
+export const mockDeals: Deal[] = [
+  {
+    id: "dl-1",
+    title: "Paid Ads Launch",
+    companyName: "TechFlow Inc.",
+    contactName: "Sarah Jenkins",
+    stage: "new",
+    value: 14200,
+    probability: 35,
+    expectedCloseDate: addDays(new Date(), 14).toISOString(),
+    ownerId: "usr-2",
+    createdAt: subDays(new Date(), 5).toISOString(),
+  },
+  {
+    id: "dl-2",
+    title: "Brand Strategy Sprint",
+    companyName: "Nexus Retail",
+    contactName: "Mark Davis",
+    stage: "qualified",
+    value: 9800,
+    probability: 45,
+    expectedCloseDate: addDays(new Date(), 30).toISOString(),
+    ownerId: "usr-1",
+    createdAt: subDays(new Date(), 15).toISOString(),
+  },
+  {
+    id: "dl-3",
+    title: "Website Redesign Retainer",
+    companyName: "Global Logistics",
+    contactName: "Elena Rostova",
+    stage: "proposal",
+    value: 18500,
+    probability: 65,
+    expectedCloseDate: addDays(new Date(), 7).toISOString(),
+    ownerId: "usr-2",
+    createdAt: subDays(new Date(), 20).toISOString(),
+  },
+  {
+    id: "dl-4",
+    title: "Marketing Operations",
+    companyName: "Apex Financial",
+    contactName: "David Chen",
+    stage: "negotiation",
+    value: 26000,
+    probability: 75,
+    expectedCloseDate: addDays(new Date(), 3).toISOString(),
+    ownerId: "usr-1",
+    createdAt: subDays(new Date(), 25).toISOString(),
+  },
+];

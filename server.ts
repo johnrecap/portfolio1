@@ -87,6 +87,7 @@ async function createApp() {
   }
 
   const distPath = path.join(projectRoot, 'dist');
+  const agencyFlowDemoPath = path.join(distPath, 'demos', 'agency-flow-crm');
   void warmPublicBootstrapCache();
 
   app.use(express.static(distPath, { index: false }));
@@ -96,6 +97,14 @@ async function createApp() {
   });
   app.get('/api/*', (_req, res) => {
     res.status(404).json({ error: 'Not found' });
+  });
+  app.use('/demos/agency-flow-crm', express.static(agencyFlowDemoPath, { index: false }));
+  app.get('/demos/agency-flow-crm/*', async (_req, res, next) => {
+    try {
+      res.type('html').send(await fs.readFile(path.join(agencyFlowDemoPath, 'index.html'), 'utf8'));
+    } catch (error) {
+      next(error);
+    }
   });
   app.get('*', async (_req, res, next) => {
     try {

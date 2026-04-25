@@ -1,0 +1,53 @@
+import { Lead } from "../types/crm";
+import { subDays, subHours } from "date-fns";
+
+export const mockLeads: Lead[] = [
+  {
+    id: "ld-1",
+    fullName: "Emma Reed",
+    companyName: "BluePeak Labs",
+    email: "emma@bluepeak.com",
+    phone: "+1 (555) 019-2834",
+    source: "website",
+    status: "qualified",
+    estimatedValue: 18500,
+    ownerId: "usr-1",
+    createdAt: subDays(new Date(), 10).toISOString(),
+    lastContactedAt: subHours(new Date(), 2).toISOString(),
+  },
+  {
+    id: "ld-2",
+    fullName: "Daniel Park",
+    companyName: "UrbanNest Studio",
+    email: "daniel@urbannest.co",
+    source: "referral",
+    status: "contacted",
+    estimatedValue: 9800,
+    ownerId: "usr-2",
+    createdAt: subDays(new Date(), 5).toISOString(),
+    lastContactedAt: subDays(new Date(), 1).toISOString(),
+  },
+  {
+    id: "ld-3",
+    fullName: "Sofia Grant",
+    companyName: "LumaCraft Co.",
+    email: "s.grant@lumacraft.co",
+    source: "linkedin",
+    status: "new",
+    estimatedValue: 14200,
+    ownerId: "usr-1",
+    createdAt: subHours(new Date(), 3).toISOString(),
+  },
+  {
+    id: "ld-4",
+    fullName: "Noah Ellis",
+    companyName: "SilverOak Digital",
+    email: "noah@silveroak.com",
+    source: "cold_outreach",
+    status: "proposal_sent",
+    estimatedValue: 26000,
+    ownerId: "usr-2",
+    createdAt: subDays(new Date(), 20).toISOString(),
+    lastContactedAt: subDays(new Date(), 4).toISOString(),
+  },
+];
