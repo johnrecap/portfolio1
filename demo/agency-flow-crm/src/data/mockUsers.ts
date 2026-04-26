@@ -3,10 +3,10 @@ import { User } from "../types/crm";
 export const mockUsers: User[] = [
   {
     id: "usr-1",
-    name: "Alex Jenkins",
+    name: "Mohamed Saied",
     role: "owner",
-    avatarInitials: "AJ",
-    email: "alex@agencyflow.demo",
+    avatarInitials: "MS",
+    email: "mohamed@agencyflow.demo",
   },
   {
     id: "usr-2",

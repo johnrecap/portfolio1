@@ -98,6 +98,21 @@ export function AppShell() {
             )
           })}
         </nav>
+        <div className="mx-3 mb-4 rounded-xl border border-outline-variant bg-surface-container-low p-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-on-primary">
+              MS
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-on-surface-variant">
+                Built by
+              </p>
+              <p className="truncate text-sm font-semibold text-on-surface">
+                Mohamed Saied
+              </p>
+            </div>
+          </div>
+        </div>
       </aside>
 
       {/* Main Content */}
@@ -126,7 +141,7 @@ export function AppShell() {
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
             <Link to="/settings" className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-sm font-bold ms-2 hover:opacity-90 transition-opacity">
-              JD
+              MS
             </Link>
           </div>
         </header>

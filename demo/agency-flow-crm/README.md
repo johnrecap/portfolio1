@@ -1,20 +1,16 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# AgencyFlow CRM
 
-# Run and deploy your AI Studio app
+Interactive agency CRM dashboard demo built with React, TypeScript, Vite, Tailwind CSS, Zustand, Recharts, React Hook Form, Zod, and i18next.
 
-This contains everything you need to run your app locally.
+The demo uses session-scoped mock data, so every visitor can add, edit, move, and reset records without affecting another visitor.
 
-View your app in AI Studio: https://ai.studio/apps/c3f27c10-aa39-47e4-9804-e451dcd30968
+## Local commands
 
-## Run Locally
+```bash
+npm ci
+npm run lint
+npm run build
+npm run dev
+```
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Production builds are emitted to `../../dist/demos/agency-flow-crm` and served from `/demos/agency-flow-crm/`.

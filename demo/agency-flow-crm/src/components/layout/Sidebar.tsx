@@ -56,7 +56,19 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="mt-auto space-y-1 pt-4 border-t border-[#E2E8F0]">
+      <div className="mt-auto rounded-2xl border border-[#E2E8F0] bg-slate-50 p-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-on-primary">
+            MS
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Built by</p>
+            <p className="truncate text-sm font-bold text-slate-900">Mohamed Saied</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-1 pt-4 border-t border-[#E2E8F0]">
         <NavLink
           to="/settings"
           className={({ isActive }) =>
