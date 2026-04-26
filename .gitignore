@@ -11,6 +11,9 @@
 /.parcel-cache/
 *.tsbuildinfo
 
+# Local source captures for demo preview images.
+/demo/*.png
+
 # Logs
 *.log
 dev-server.err

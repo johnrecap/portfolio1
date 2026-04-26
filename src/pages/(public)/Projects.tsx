@@ -310,6 +310,7 @@ export const Projects = () => {
             const descriptionText =
               getLocalizedValue(project.description, project.descriptionAr, isArabic) || project.description;
             const highlightLabel = getLocalizedValue(project.highlightLabel, project.highlightLabelAr, isArabic);
+            const previewImage = resolveMediaField({ url: project.image, assetId: project.imageAssetId }, assets);
 
             return (
               <motion.article
@@ -323,18 +324,26 @@ export const Projects = () => {
                   to={`/projects/${project.slug}`}
                   className="block aspect-[16/10] overflow-hidden bg-slate-950"
                 >
-                  <div className="flex h-full flex-col justify-between p-6 text-slate-100">
-                    <div className="flex items-center justify-between font-mono text-xs text-slate-400">
-                      <span>{project.slug}.app</span>
-                      <span>{t('projects.demoBadge')}</span>
+                  {previewImage.url ? (
+                    <img
+                      src={previewImage.url}
+                      alt={titleText}
+                      className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full flex-col justify-between p-6 text-slate-100">
+                      <div className="flex items-center justify-between font-mono text-xs text-slate-400">
+                        <span>{project.slug}.app</span>
+                        <span>{t('projects.demoBadge')}</span>
+                      </div>
+                      <div>
+                        <p className="font-mono text-xs uppercase tracking-[0.18em] text-teal-300">
+                          {project.category}
+                        </p>
+                        <h3 className="mt-3 font-heading text-3xl font-black tracking-tight">{titleText}</h3>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-mono text-xs uppercase tracking-[0.18em] text-teal-300">
-                        {project.category}
-                      </p>
-                      <h3 className="mt-3 font-heading text-3xl font-black tracking-tight">{titleText}</h3>
-                    </div>
-                  </div>
+                  )}
                 </Link>
 
                 <div className="space-y-5 p-6">
