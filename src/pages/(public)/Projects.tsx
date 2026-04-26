@@ -73,7 +73,7 @@ export const Projects = () => {
     <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 pt-10 pb-20">
       <PageSeo title={seoTitle} description={seoDescription} image={pageConfig.seo.image} />
 
-      <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <header className="order-1 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">{eyebrow}</p>
           <h1 className="mt-4 font-heading text-4xl font-black tracking-tight text-foreground md:text-6xl">
@@ -95,7 +95,7 @@ export const Projects = () => {
         </div>
       </header>
 
-      <section className="flex flex-col gap-5">
+      <section className="order-3 flex flex-col gap-5">
         <div className="max-w-3xl space-y-3">
           <h2 className="font-heading text-2xl font-bold text-foreground">
             {listingTitle || t('projects.realProjectsTitle')}
@@ -169,15 +169,16 @@ export const Projects = () => {
         </div>
       </section>
 
-      {loading ? (
-        <SkeletonBlocks count={6} className="md:grid-cols-2 xl:grid-cols-3" />
-      ) : sortedProjects.length === 0 ? (
-        <EmptyState
-          title={t('projects.noProjects')}
-          description={t('projects.noProjectsDescription')}
-        />
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <section className="order-4">
+        {loading ? (
+          <SkeletonBlocks count={6} className="md:grid-cols-2 xl:grid-cols-3" />
+        ) : sortedProjects.length === 0 ? (
+          <EmptyState
+            title={t('projects.noProjects')}
+            description={t('projects.noProjectsDescription')}
+          />
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {sortedProjects.map((project, index) => {
             const projectType = normalizeProjectType(project.type ?? project.category);
             const titleText = getLocalizedValue(project.title, project.titleAr, isArabic) || project.title;
@@ -285,10 +286,11 @@ export const Projects = () => {
               </motion.article>
             );
           })}
-        </div>
-      )}
+          </div>
+        )}
+      </section>
 
-      <section className="flex flex-col gap-6 border-t border-border/60 pt-10">
+      <section className="order-2 flex flex-col gap-6 border-t border-border/60 pt-10">
         <div className="max-w-3xl space-y-3">
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
             {t('projects.demoBadge')}

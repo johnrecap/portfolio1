@@ -87,7 +87,7 @@ async function createApp() {
   }
 
   const distPath = path.join(projectRoot, 'dist');
-  const agencyFlowDemoPath = path.join(distPath, 'demos', 'agency-flow-crm');
+  const demosPath = path.join(distPath, 'demos');
   void warmPublicBootstrapCache();
 
   app.use(express.static(distPath, { index: false }));
@@ -98,10 +98,11 @@ async function createApp() {
   app.get('/api/*', (_req, res) => {
     res.status(404).json({ error: 'Not found' });
   });
-  app.use('/demos/agency-flow-crm', express.static(agencyFlowDemoPath, { index: false }));
-  app.get('/demos/agency-flow-crm/*', async (_req, res, next) => {
+  app.use('/demos', express.static(demosPath, { index: false }));
+  app.get(['/demos/:demoSlug', '/demos/:demoSlug/*'], async (req, res, next) => {
     try {
-      res.type('html').send(await fs.readFile(path.join(agencyFlowDemoPath, 'index.html'), 'utf8'));
+      const demoIndexPath = path.join(demosPath, req.params.demoSlug, 'index.html');
+      res.type('html').send(await fs.readFile(demoIndexPath, 'utf8'));
     } catch (error) {
       next(error);
     }

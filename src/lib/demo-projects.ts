@@ -44,7 +44,51 @@ export const AGENCY_FLOW_CRM_PROJECT: ProjectRecord = {
   createdAt: { seconds: 1_774_419_200 },
 };
 
-export const DEMO_PROJECTS: ProjectRecord[] = [AGENCY_FLOW_CRM_PROJECT];
+export const CLINIC_FLOW_MANAGER_PROJECT: ProjectRecord = {
+  id: 'clinic-flow-manager-demo',
+  title: 'ClinicFlow Manager',
+  titleAr: 'ClinicFlow Manager',
+  slug: 'clinic-flow-manager',
+  description:
+    'A working clinic operations dashboard demo with appointments, patients, doctors, billing, reports, and isolated editable visitor sessions.',
+  descriptionAr:
+    'ديمو عملي للوحة إدارة عيادة طبية تشمل المواعيد والمرضى والأطباء والفواتير والتقارير، مع جلسة تعديل منفصلة لكل زائر.',
+  category: 'Healthcare Dashboard',
+  type: 'dashboard',
+  color: 'bg-cyan-500',
+  tags: ['React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'Recharts', 'Vite', 'i18next'],
+  demoUrl: '/demos/clinic-flow-manager/',
+  githubUrl: '',
+  featured: true,
+  featuredOrder: 0,
+  highlightLabel: 'Session-isolated clinic operations demo',
+  highlightLabelAr: 'ديمو إدارة عيادة بجلسات معزولة لكل زائر',
+  problem:
+    'Clinic teams need a clear operational workspace for appointments, patient records, billing, and performance reporting without mixing visitor demo data.',
+  problemAr:
+    'فرق العيادات تحتاج مساحة تشغيل واضحة للمواعيد وملفات المرضى والفواتير والتقارير بدون خلط بيانات تجربة الزوار.',
+  solution:
+    'The demo provides a standalone React dashboard with editable session-scoped mock data, bilingual UI, RTL support, and practical clinic workflows.',
+  solutionAr:
+    'الديمو يقدم لوحة React مستقلة ببيانات وهمية قابلة للتعديل داخل جلسة الزائر، مع واجهة عربية وإنجليزية ودعم RTL وتدفقات عمل عملية للعيادة.',
+  projectRole: 'Frontend engineering, healthcare dashboard UX, local state architecture, bilingual product UI',
+  projectRoleAr: 'هندسة الواجهة، تجربة لوحة طبية، بناء الحالة المحلية، وواجهة منتج ثنائية اللغة',
+  result:
+    'A live proof-of-work for a healthcare operations panel that visitors can test safely and reset at any time.',
+  resultAr:
+    'دليل عملي مباشر للوحة تشغيل طبية يمكن للزائر تجربتها بأمان وإرجاع بياناتها الأصلية في أي وقت.',
+  seo: {
+    title: 'ClinicFlow Manager Demo',
+    titleAr: 'ديمو ClinicFlow Manager',
+    description:
+      'A React clinic management dashboard demo with isolated editable visitor sessions.',
+    descriptionAr:
+      'ديمو لوحة إدارة عيادة مبنية بـ React مع جلسات تعديل منفصلة لكل زائر.',
+  },
+  createdAt: { seconds: 1_774_505_600 },
+};
+
+export const DEMO_PROJECTS: ProjectRecord[] = [CLINIC_FLOW_MANAGER_PROJECT, AGENCY_FLOW_CRM_PROJECT];
 
 export function getDemoProjectBySlug(slug: string | undefined) {
   return DEMO_PROJECTS.find((project) => project.slug === slug);
