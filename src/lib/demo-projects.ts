@@ -44,11 +44,8 @@ export const AGENCY_FLOW_CRM_PROJECT: ProjectRecord = {
   createdAt: { seconds: 1_774_419_200 },
 };
 
-export function mergeDemoProjects<T extends ProjectRecord>(projects: T[]) {
-  const hasAgencyFlow = projects.some(
-    (project) => project.slug === AGENCY_FLOW_CRM_PROJECT.slug || project.id === AGENCY_FLOW_CRM_PROJECT.id,
-  );
+export const DEMO_PROJECTS: ProjectRecord[] = [AGENCY_FLOW_CRM_PROJECT];
 
-  return hasAgencyFlow ? projects : ([AGENCY_FLOW_CRM_PROJECT, ...projects] as Array<T | ProjectRecord>);
+export function getDemoProjectBySlug(slug: string | undefined) {
+  return DEMO_PROJECTS.find((project) => project.slug === slug);
 }
-

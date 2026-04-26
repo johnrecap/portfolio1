@@ -7,6 +7,7 @@ import { PageSeo } from '@/components/shared/PageSeo';
 import { EmptyState, SkeletonBlocks, SkeletonMedia } from '@/components/shared/PageState';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { getLocalizedValue, resolveEntitySeo, resolveMediaField } from '@/lib/content-hub';
+import { getDemoProjectBySlug } from '@/lib/demo-projects';
 import { normalizeMediaUrl } from '@/lib/media';
 import { getLocalizedCaseStudyValue, type ProjectRecord } from '@/lib/project-utils';
 
@@ -18,9 +19,10 @@ export const ProjectDetail = () => {
 
   const isArabic = i18n.language === 'ar';
   const backIconClass = isArabic ? 'rotate-180' : '';
-  const project = projects.find((item) => item.slug === slug);
+  const demoProject = getDemoProjectBySlug(slug);
+  const project = projects.find((item) => item.slug === slug) ?? demoProject;
 
-  if (loading) {
+  if (loading && !demoProject) {
     return (
       <div className="mx-auto w-full max-w-6xl py-10">
         <SkeletonBlocks count={3} />

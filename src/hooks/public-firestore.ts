@@ -1,6 +1,5 @@
 import { useCollection, useDocument } from './useFirestore';
 import { useMediaLibrary } from './useMediaLibrary';
-import { mergeDemoProjects } from '@/lib/demo-projects';
 import {
   getInitialPublicCollection,
   getInitialPublicDocument,
@@ -16,20 +15,14 @@ export const PUBLIC_FIRESTORE_READ_OPTIONS = {
 
 export function usePublicCollection<T>(path: string) {
   const initial = getInitialPublicCollection(path);
-  const initialData = path === 'projects'
-    ? mergeDemoProjects(initial.data as any[])
-    : initial.data;
 
   return useCollection<T>(path, {
     ...PUBLIC_FIRESTORE_READ_OPTIONS,
-    initialData,
-    hasInitialData: initial.hasData || path === 'projects',
+    initialData: initial.data,
+    hasInitialData: initial.hasData,
     keepDataOnSuppressedError: true,
     onData: (data) => {
-      const nextData = path === 'projects'
-        ? mergeDemoProjects(data as any[])
-        : data;
-      updatePublicCollectionCache(path, nextData as PublicBootstrapCollectionItem[]);
+      updatePublicCollectionCache(path, data as PublicBootstrapCollectionItem[]);
     },
   });
 }

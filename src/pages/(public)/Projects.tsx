@@ -10,6 +10,7 @@ import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-fires
 import { usePageConfig } from '@/hooks/usePageConfig';
 import { readComposerText } from '@/lib/admin/page-content';
 import { getLocalizedValue, resolveMediaField } from '@/lib/content-hub';
+import { DEMO_PROJECTS } from '@/lib/demo-projects';
 import {
   filterProjects,
   normalizeProjectType,
@@ -37,6 +38,7 @@ export const Projects = () => {
   const [activeTag, setActiveTag] = useState('');
   const [sortMode, setSortMode] = useState<ProjectSortMode>('featured');
 
+  const demoProjects = DEMO_PROJECTS;
   const filteredProjects = filterProjects(projects, { search, activeType, activeTag });
   const sortedProjects = sortProjects(filteredProjects, sortMode);
   const tags = Array.from(new Set(projects.flatMap((project) => project.tags ?? []))).sort((left, right) =>
@@ -93,13 +95,15 @@ export const Projects = () => {
         </div>
       </header>
 
-      <div className="flex flex-col gap-5">
-        {listingTitle || listingSubtitle ? (
-          <div className="max-w-3xl space-y-3">
-            {listingTitle ? <h2 className="font-heading text-2xl font-bold text-foreground">{listingTitle}</h2> : null}
-            {listingSubtitle ? <p className="text-sm leading-7 text-muted-foreground">{listingSubtitle}</p> : null}
-          </div>
-        ) : null}
+      <section className="flex flex-col gap-5">
+        <div className="max-w-3xl space-y-3">
+          <h2 className="font-heading text-2xl font-bold text-foreground">
+            {listingTitle || t('projects.realProjectsTitle')}
+          </h2>
+          <p className="text-sm leading-7 text-muted-foreground">
+            {listingSubtitle || t('projects.realProjectsDescription')}
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2">
           {Object.keys(projectTypeKeyMap).map((key) => (
             <button
@@ -163,7 +167,7 @@ export const Projects = () => {
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       {loading ? (
         <SkeletonBlocks count={6} className="md:grid-cols-2 xl:grid-cols-3" />
@@ -283,6 +287,117 @@ export const Projects = () => {
           })}
         </div>
       )}
+
+      <section className="flex flex-col gap-6 border-t border-border/60 pt-10">
+        <div className="max-w-3xl space-y-3">
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
+            {t('projects.demoBadge')}
+          </p>
+          <h2 className="font-heading text-2xl font-bold text-foreground">
+            {t('projects.demoProjectsTitle')}
+          </h2>
+          <p className="text-sm leading-7 text-muted-foreground">
+            {t('projects.demoProjectsDescription')}
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {demoProjects.map((project, index) => {
+            const projectType = normalizeProjectType(project.type ?? project.category);
+            const titleText = getLocalizedValue(project.title, project.titleAr, isArabic) || project.title;
+            const descriptionText =
+              getLocalizedValue(project.description, project.descriptionAr, isArabic) || project.description;
+            const highlightLabel = getLocalizedValue(project.highlightLabel, project.highlightLabelAr, isArabic);
+
+            return (
+              <motion.article
+                key={project.id}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="group overflow-hidden rounded-[1.75rem] border border-primary/20 bg-card/70 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+              >
+                <Link
+                  to={`/projects/${project.slug}`}
+                  className="block aspect-[16/10] overflow-hidden bg-slate-950"
+                >
+                  <div className="flex h-full flex-col justify-between p-6 text-slate-100">
+                    <div className="flex items-center justify-between font-mono text-xs text-slate-400">
+                      <span>{project.slug}.app</span>
+                      <span>{t('projects.demoBadge')}</span>
+                    </div>
+                    <div>
+                      <p className="font-mono text-xs uppercase tracking-[0.18em] text-teal-300">
+                        {project.category}
+                      </p>
+                      <h3 className="mt-3 font-heading text-3xl font-black tracking-tight">{titleText}</h3>
+                    </div>
+                  </div>
+                </Link>
+
+                <div className="space-y-5 p-6">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {t(projectTypeKeyMap[projectType])}
+                    </span>
+                    <span className="rounded-full bg-teal-500/10 px-3 py-1 text-xs font-semibold text-teal-600 dark:text-teal-400">
+                      {t('projects.demoBadge')}
+                    </span>
+                  </div>
+
+                  <div>
+                    <Link to={`/projects/${project.slug}`}>
+                      <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
+                        {titleText}
+                      </h2>
+                    </Link>
+                    <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                      {descriptionText}
+                    </p>
+                  </div>
+                  {highlightLabel ? (
+                    <div className="rounded-[1rem] border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+                      {highlightLabel}
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-wrap gap-2" dir="ltr">
+                    {(project.tags ?? []).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <Link
+                      to={`/projects/${project.slug}`}
+                      className="inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-primary hover:text-primary-foreground"
+                    >
+                      {t('projects.details')}
+                      <ArrowRight className={`h-4 w-4 ${isArabic ? 'rotate-180' : ''}`} />
+                    </Link>
+                    {project.demoUrl ? (
+                      <a
+                        href={project.demoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        {t('projects.liveDemo')}
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              </motion.article>
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 };

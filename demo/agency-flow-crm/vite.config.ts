@@ -13,7 +13,7 @@ export default defineConfig(() => {
       },
     },
     build: {
-      outDir: '../dist/demos/agency-flow-crm',
+      outDir: '../../dist/demos/agency-flow-crm',
       emptyOutDir: false,
     },
     server: {

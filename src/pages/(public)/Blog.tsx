@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { EmptyState, SkeletonBlocks, SkeletonMedia } from '@/components/shared/PageState';
+import { EmptyState, SkeletonBlocks, SkeletonLine, SkeletonMedia } from '@/components/shared/PageState';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { useProfile } from '@/hooks/useProfile';

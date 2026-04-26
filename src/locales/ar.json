@@ -94,7 +94,12 @@
       "dashboard": "لوحة تحكم",
       "backend": "خلفية",
       "other": "أخرى"
-    }
+    },
+    "realProjectsTitle": "أعمال عملاء ومشاريع فعلية",
+    "realProjectsDescription": "مواقع ولوحات وتدفقات منتج تتم إدارتها من قائمة المشاريع.",
+    "demoBadge": "ديمو تفاعلي",
+    "demoProjectsTitle": "ديموهات المنتج",
+    "demoProjectsDescription": "ديموهات مستقلة يمكن للزائر فتحها وتعديلها وتجربتها داخل جلسة معزولة."
   },
   "skills": {
     "title": "تقنيات أستخدمها في",

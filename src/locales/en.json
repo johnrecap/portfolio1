@@ -94,7 +94,12 @@
       "dashboard": "Dashboard",
       "backend": "Backend",
       "other": "Other"
-    }
+    },
+    "realProjectsTitle": "Client and production work",
+    "realProjectsDescription": "Websites, dashboards, and product workflows managed from the project collection.",
+    "demoBadge": "Interactive demo",
+    "demoProjectsTitle": "Product demos",
+    "demoProjectsDescription": "Standalone demos visitors can open, edit, and test in isolated browser sessions."
   },
   "skills": {
     "title": "What I use in",
