@@ -7,6 +7,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { getLocalizedValue, resolveMediaField } from '@/lib/content-hub';
+import { DEMO_PROJECTS } from '@/lib/demo-projects';
 import { getFeaturedProjects, normalizeProjectType, type ProjectRecord } from '@/lib/project-utils';
 import { readComposerText } from '@/lib/admin/page-content';
 
@@ -29,7 +30,12 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
   const { t, i18n } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const featuredProjects = getFeaturedProjects(data, 4);
+  const featuredProjects = [
+    ...DEMO_PROJECTS,
+    ...getFeaturedProjects(data, 4).filter(
+      (project) => !DEMO_PROJECTS.some((demoProject) => demoProject.slug === project.slug || demoProject.id === project.id),
+    ),
+  ];
   const activeProject = featuredProjects[Math.min(activeIndex, Math.max(featuredProjects.length - 1, 0))];
   const isArabic = i18n.language === 'ar';
   const ArrowIcon = isArabic ? ArrowLeft : ArrowRight;
@@ -38,7 +44,7 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
   const subtitle = readComposerText(content, 'subtitle', t('featuredProjects.subtitle'), isArabic);
   const viewAllLabel = readComposerText(content, 'viewAllLabel', t('featuredProjects.viewAll'), isArabic);
 
-  if (loading) {
+  if (loading && featuredProjects.length === 0) {
     return (
       <section className="py-8 md:py-12">
         <div className="mx-auto max-w-6xl">
