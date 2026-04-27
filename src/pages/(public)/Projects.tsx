@@ -28,6 +28,46 @@ const projectTypeKeyMap = {
   other: 'projects.types.other',
 } as const;
 
+type DemoCategoryKey = 'all' | 'dashboard' | 'store' | 'website' | 'mobile' | 'system';
+
+const demoCategoryOrder: DemoCategoryKey[] = ['all', 'dashboard', 'store', 'website', 'mobile', 'system'];
+
+function getDemoCategory(project: ProjectRecord): Exclude<DemoCategoryKey, 'all'> {
+  const category = project.category.toLowerCase();
+  const type = normalizeProjectType(project.type ?? project.category);
+
+  if (category.includes('commerce') || category.includes('store') || category.includes('shop')) {
+    return 'store';
+  }
+
+  if (type === 'dashboard') {
+    return 'dashboard';
+  }
+
+  if (type === 'mobile') {
+    return 'mobile';
+  }
+
+  if (type === 'web') {
+    return 'website';
+  }
+
+  return 'system';
+}
+
+function getDemoCategoryLabel(category: DemoCategoryKey, isArabic: boolean) {
+  const labels: Record<DemoCategoryKey, { en: string; ar: string }> = {
+    all: { en: 'All demos', ar: 'كل الديموز' },
+    dashboard: { en: 'Dashboards', ar: 'لوحات تحكم' },
+    store: { en: 'Stores', ar: 'متاجر' },
+    website: { en: 'Websites', ar: 'مواقع' },
+    mobile: { en: 'Apps', ar: 'تطبيقات' },
+    system: { en: 'Systems', ar: 'أنظمة' },
+  };
+
+  return isArabic ? labels[category].ar : labels[category].en;
+}
+
 export const Projects = () => {
   const { data: projects, loading } = usePublicCollection<ProjectRecord>('projects');
   const { assets, loading: mediaLoading } = usePublicMediaLibrary();
@@ -36,6 +76,7 @@ export const Projects = () => {
   const [search, setSearch] = useState('');
   const [activeType, setActiveType] = useState<'all' | 'web' | 'mobile' | 'dashboard' | 'backend' | 'other'>('all');
   const [activeTag, setActiveTag] = useState('');
+  const [activeDemoCategory, setActiveDemoCategory] = useState<DemoCategoryKey>('all');
   const [sortMode, setSortMode] = useState<ProjectSortMode>('featured');
 
   const demoProjects = DEMO_PROJECTS;
@@ -45,6 +86,17 @@ export const Projects = () => {
     left.localeCompare(right),
   );
   const isArabic = i18n.language === 'ar';
+  const demoCategories = demoCategoryOrder.filter((category) => {
+    if (category === 'all') {
+      return true;
+    }
+
+    return demoProjects.some((project) => getDemoCategory(project) === category);
+  });
+  const filteredDemoProjects =
+    activeDemoCategory === 'all'
+      ? demoProjects
+      : demoProjects.filter((project) => getDemoCategory(project) === activeDemoCategory);
   const heroSection = pageConfig.sections.find((section) => section.type === 'projectsHero');
   const listingSection = pageConfig.sections.find((section) => section.type === 'projectsListing');
   const seoTitle = isArabic
@@ -303,9 +355,26 @@ export const Projects = () => {
           </p>
         </div>
 
+        <div className="flex flex-wrap gap-2">
+          {demoCategories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setActiveDemoCategory(category)}
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                activeDemoCategory === category
+                  ? 'border-primary/30 bg-primary/10 text-primary'
+                  : 'border-border bg-card text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {getDemoCategoryLabel(category, isArabic)}
+            </button>
+          ))}
+        </div>
+
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {demoProjects.map((project, index) => {
+          {filteredDemoProjects.map((project, index) => {
             const projectType = normalizeProjectType(project.type ?? project.category);
+            const demoCategory = getDemoCategory(project);
             const titleText = getLocalizedValue(project.title, project.titleAr, isArabic) || project.title;
             const descriptionText =
               getLocalizedValue(project.description, project.descriptionAr, isArabic) || project.description;
@@ -355,6 +424,9 @@ export const Projects = () => {
                     </span>
                     <span className="rounded-full bg-teal-500/10 px-3 py-1 text-xs font-semibold text-teal-600 dark:text-teal-400">
                       {t('projects.demoBadge')}
+                    </span>
+                    <span className="rounded-full bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-600 dark:text-sky-400">
+                      {getDemoCategoryLabel(demoCategory, isArabic)}
                     </span>
                   </div>
 

@@ -180,7 +180,53 @@ export const HIREFLOW_ATS_PROJECT: ProjectRecord = {
   createdAt: { seconds: 1_777_276_800 },
 };
 
+export const SHOPNEST_COMMERCE_PROJECT: ProjectRecord = {
+  id: 'shopnest-commerce-demo',
+  title: 'ShopNest Commerce',
+  titleAr: 'متجر شوب نيست',
+  slug: 'shopnest-commerce',
+  description:
+    'A working e-commerce web app demo with storefront browsing, cart, checkout, coupons, and an admin workspace for products and orders.',
+  descriptionAr:
+    'ديمو متجر إلكتروني عملي يجمع بين واجهة شراء للزوار وسلة وCheckout وكوبونات، مع مساحة إدارة للمنتجات والطلبات.',
+  category: 'E-commerce Store',
+  type: 'web',
+  color: 'bg-rose-500',
+  tags: ['React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'React Router', 'React Hook Form', 'Zod', 'Recharts', 'Vite'],
+  image: '/demo-previews/ShopNest-Commerce.png',
+  demoUrl: '/demos/shopnest-commerce/',
+  githubUrl: '',
+  featured: true,
+  featuredOrder: 0,
+  highlightLabel: 'Storefront and admin workspace in one demo',
+  highlightLabelAr: 'واجهة متجر ومساحة إدارة في ديمو واحد',
+  problem:
+    'Commerce projects need more than a static product grid; they need browsing, cart behavior, checkout states, and a practical admin workflow.',
+  problemAr:
+    'مشاريع التجارة الإلكترونية لا تحتاج شبكة منتجات ثابتة فقط، بل تحتاج تصفح وسلة شراء وحالات Checkout وتدفق إدارة عملي.',
+  solution:
+    'The demo runs as a standalone React commerce app with session-scoped mock data, editable products, orders, coupons, and bilingual UI.',
+  solutionAr:
+    'الديمو يعمل كتطبيق تجارة إلكترونية مستقل مبني بـ React، ببيانات وهمية معزولة لكل جلسة، وإدارة منتجات وطلبات وكوبونات وواجهة ثنائية اللغة.',
+  projectRole: 'Frontend engineering, storefront UX, admin workflow, session-scoped state management',
+  projectRoleAr: 'هندسة الواجهة، تجربة المتجر، تدفقات الإدارة، وإدارة حالة معزولة لكل جلسة',
+  result:
+    'A live commerce proof-of-work that shows both customer-facing buying flows and the operational panel behind them.',
+  resultAr:
+    'دليل عملي مباشر يوضح تجربة الشراء للعميل ولوحة التشغيل والإدارة الموجودة خلفها.',
+  seo: {
+    title: 'ShopNest Commerce Demo',
+    titleAr: 'ديمو متجر شوب نيست',
+    description:
+      'A React e-commerce storefront and admin dashboard demo with isolated editable visitor sessions.',
+    descriptionAr:
+      'ديمو متجر إلكتروني ولوحة إدارة مبني بـ React مع جلسات تعديل معزولة لكل زائر.',
+  },
+  createdAt: { seconds: 1_777_320_000 },
+};
+
 export const DEMO_PROJECTS: ProjectRecord[] = [
+  SHOPNEST_COMMERCE_PROJECT,
   CLINIC_FLOW_MANAGER_PROJECT,
   AGENCY_FLOW_CRM_PROJECT,
   STOREOPS_INVENTORY_PROJECT,
