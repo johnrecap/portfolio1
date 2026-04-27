@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { usePublicCollection } from '@/hooks/public-firestore';
 import { SkeletonBlocks } from '@/components/shared/PageState';
 import { readComposerText } from '@/lib/admin/page-content';
+import { DEFAULT_SKILLS } from '@/lib/default-skills';
 
 type ShowcaseSectionProps = {
   variant?: 'grid' | 'spotlight';
@@ -18,6 +19,7 @@ export const ShowcaseSection = ({ variant = 'grid', content = {} }: ShowcaseSect
 
   const loading = projectsLoading || blogsLoading || skillsLoading;
   const isArabic = i18n.language === 'ar';
+  const displayedSkills = skills.length > 0 ? skills : DEFAULT_SKILLS;
   const stats = [
     {
       icon: FolderKanban,
@@ -35,7 +37,7 @@ export const ShowcaseSection = ({ variant = 'grid', content = {} }: ShowcaseSect
       icon: Layers3,
       title: t('showcase.crudTitle'),
       description: t('showcase.crudDescription'),
-      value: `${projects.length + blogs.length + skills.length}`,
+      value: `${projects.length + blogs.length + displayedSkills.length}`,
     },
     {
       icon: Languages,

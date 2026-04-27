@@ -10,6 +10,7 @@ import {
   type MediaAssetRecord,
 } from './content-hub';
 import { buildProfileImageStyle } from './profile-image';
+import { DEFAULT_SKILLS } from './default-skills';
 
 const mediaAssets = [
   {
@@ -190,6 +191,19 @@ test('groupSkillsByCategory sorts categories and skills using display metadata',
     result[1]?.items.map((item) => item.id),
     ['typescript', 'react'],
   );
+});
+
+test('default skills provide bilingual public fallback content', () => {
+  assert.ok(DEFAULT_SKILLS.length >= 12);
+  assert.ok(DEFAULT_SKILLS.every((skill) => skill.name && skill.nameAr));
+  assert.ok(DEFAULT_SKILLS.every((skill) => skill.category && skill.categoryAr));
+  assert.ok(DEFAULT_SKILLS.every((skill) => skill.proficiency >= 1 && skill.proficiency <= 100));
+
+  const arabicGroups = groupSkillsByCategory(DEFAULT_SKILLS, true);
+
+  assert.ok(arabicGroups.some((group) => group.label === 'المواقع والواجهات'));
+  assert.ok(arabicGroups.some((group) => group.label === 'تسجيل الدخول والتخزين'));
+  assert.ok(arabicGroups.some((group) => group.label === 'السيرفرات والنشر'));
 });
 
 test('resolveEntitySeo merges localized entity SEO and media asset image overrides', () => {

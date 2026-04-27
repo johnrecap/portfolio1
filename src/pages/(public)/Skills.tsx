@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Blocks, Cloud, Code, Layers, Wrench } from 'lucide-react';
+import { Blocks, Cloud, Code, Layers, Server, ShieldCheck, Smartphone, Wrench } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState, SkeletonBlocks, SkeletonLine } from '@/components/shared/PageState';
 import { PageSeo } from '@/components/shared/PageSeo';
@@ -10,6 +10,7 @@ import {
   resolveMediaField,
   type SkillRecord,
 } from '@/lib/content-hub';
+import { DEFAULT_SKILLS } from '@/lib/default-skills';
 
 
 export const Skills = () => {
@@ -17,8 +18,9 @@ export const Skills = () => {
   const { assets, loading: mediaLoading } = usePublicMediaLibrary();
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
+  const displayedSkills = skills.length > 0 ? skills : DEFAULT_SKILLS;
 
-  const groupedSkills = groupSkillsByCategory(skills).map((group) => ({
+  const groupedSkills = groupSkillsByCategory(displayedSkills, isArabic).map((group) => ({
     ...group,
     label: group.label?.trim() || t('skills.otherCategory'),
   }));
@@ -33,6 +35,18 @@ export const Skills = () => {
         return <Cloud className="h-6 w-6 text-blue-500" />;
       case 'tools':
         return <Wrench className="h-6 w-6 text-amber-500" />;
+      case 'websites-&-frontend':
+        return <Code className="h-6 w-6 text-primary" />;
+      case 'mobile-apps':
+        return <Smartphone className="h-6 w-6 text-teal-500" />;
+      case 'dashboards-&-panels':
+        return <Blocks className="h-6 w-6 text-cyan-500" />;
+      case 'backend-&-apis':
+        return <Server className="h-6 w-6 text-violet-500" />;
+      case 'auth-&-storage':
+        return <ShieldCheck className="h-6 w-6 text-emerald-500" />;
+      case 'servers-&-deployment':
+        return <Cloud className="h-6 w-6 text-blue-500" />;
       default:
         return <Layers className="h-6 w-6 text-primary" />;
     }
@@ -48,6 +62,18 @@ export const Skills = () => {
         return 'bg-blue-500/10';
       case 'tools':
         return 'bg-amber-500/10';
+      case 'websites-&-frontend':
+        return 'bg-primary/10';
+      case 'mobile-apps':
+        return 'bg-teal-500/10';
+      case 'dashboards-&-panels':
+        return 'bg-cyan-500/10';
+      case 'backend-&-apis':
+        return 'bg-violet-500/10';
+      case 'auth-&-storage':
+        return 'bg-emerald-500/10';
+      case 'servers-&-deployment':
+        return 'bg-blue-500/10';
       default:
         return 'bg-primary/10';
     }
@@ -79,7 +105,7 @@ export const Skills = () => {
         </motion.p>
         <div className="flex items-center gap-4 md:gap-6">
           <div className="rounded-2xl border border-slate-800 bg-slate-900/50 px-6 py-4">
-            <span className="block font-heading text-3xl font-bold text-teal-500">{skills.length}</span>
+            <span className="block font-heading text-3xl font-bold text-teal-500">{displayedSkills.length}</span>
             <span className="text-sm font-medium text-slate-400">{t('skills.coreTech')}</span>
           </div>
           <div className="rounded-2xl border border-slate-800 bg-slate-900/50 px-6 py-4">
@@ -92,7 +118,7 @@ export const Skills = () => {
       <section className="mb-12">
         {loading ? (
           <SkeletonBlocks count={6} className="md:grid-cols-2 lg:grid-cols-3" />
-        ) : Object.keys(groupedSkills).length === 0 ? (
+        ) : groupedSkills.length === 0 ? (
           <EmptyState title={t('skills.noSkills')} className="py-20" />
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -124,7 +150,7 @@ export const Skills = () => {
                             ) : icon.url ? (
                               <img src={icon.url} alt={name} className="h-5 w-5 rounded object-cover" />
                             ) : null}
-                            <span dir="ltr" className="truncate">
+                            <span dir={isArabic ? 'rtl' : 'ltr'} className="truncate">
                               {name}
                             </span>
                           </span>
