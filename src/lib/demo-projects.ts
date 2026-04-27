@@ -90,7 +90,102 @@ export const CLINIC_FLOW_MANAGER_PROJECT: ProjectRecord = {
   createdAt: { seconds: 1_774_505_600 },
 };
 
-export const DEMO_PROJECTS: ProjectRecord[] = [CLINIC_FLOW_MANAGER_PROJECT, AGENCY_FLOW_CRM_PROJECT];
+export const STOREOPS_INVENTORY_PROJECT: ProjectRecord = {
+  id: 'storeops-inventory-demo',
+  title: 'StoreOps Inventory',
+  titleAr: 'StoreOps Inventory',
+  slug: 'storeops-inventory',
+  description:
+    'A working inventory operations dashboard demo with products, suppliers, stock movements, sales orders, reports, and bilingual settings.',
+  descriptionAr:
+    'ديمو عملي للوحة تشغيل مخزون تشمل المنتجات والموردين وحركات المخزون وطلبات البيع والتقارير وإعدادات ثنائية اللغة.',
+  category: 'Inventory Dashboard',
+  type: 'dashboard',
+  color: 'bg-emerald-500',
+  tags: ['React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'Recharts', 'Vite', 'i18next'],
+  image: '/demo-previews/StoreOps-Inventory.png',
+  demoUrl: '/demos/storeops-inventory/',
+  githubUrl: '',
+  featured: true,
+  featuredOrder: 2,
+  highlightLabel: 'Editable inventory operations demo',
+  highlightLabelAr: 'ديمو تشغيل مخزون قابل للتعديل',
+  problem:
+    'Inventory tools need clear stock visibility, simple adjustment flows, and operational reporting without turning the demo into static screenshots.',
+  problemAr:
+    'أدوات المخزون تحتاج رؤية واضحة للمخزون وتدفقات تعديل بسيطة وتقارير تشغيلية بدون تحويل الديمو إلى صور ثابتة فقط.',
+  solution:
+    'The demo provides a standalone React dashboard with mock inventory data, working CRUD flows, stock adjustment logic, reports, and Arabic/English localization.',
+  solutionAr:
+    'الديمو يقدم لوحة React مستقلة ببيانات مخزون وهمية وتدفقات CRUD فعالة ومنطق تعديل مخزون وتقارير ودعم عربي وإنجليزي.',
+  projectRole: 'Frontend engineering, inventory dashboard UX, local state architecture, bilingual product UI',
+  projectRoleAr: 'هندسة الواجهة، تجربة لوحة مخزون، بناء الحالة المحلية، وواجهة منتج ثنائية اللغة',
+  result:
+    'A live proof-of-work for retail inventory operations that visitors can open, edit, reset, and inspect from the portfolio.',
+  resultAr:
+    'دليل عملي مباشر لتشغيل مخزون المتاجر يمكن للزائر فتحه وتعديله وإرجاع بياناته وفحصه من البورتفوليو.',
+  seo: {
+    title: 'StoreOps Inventory Demo',
+    titleAr: 'ديمو StoreOps Inventory',
+    description:
+      'A React inventory operations dashboard demo with products, suppliers, stock movements, sales orders, and reports.',
+    descriptionAr:
+      'ديمو لوحة تشغيل مخزون مبنية بـ React تشمل المنتجات والموردين وحركات المخزون وطلبات البيع والتقارير.',
+  },
+  createdAt: { seconds: 1_777_237_200 },
+};
+
+export const HIREFLOW_ATS_PROJECT: ProjectRecord = {
+  id: 'hireflow-ats-demo',
+  title: 'HireFlow ATS',
+  titleAr: 'HireFlow ATS',
+  slug: 'hireflow-ats',
+  description:
+    'A working applicant tracking dashboard demo with jobs, candidates, hiring pipeline stages, interviews, evaluations, reports, and bilingual settings.',
+  descriptionAr:
+    'ديمو عملي للوحة تتبع المتقدمين تشمل الوظائف والمرشحين ومراحل التوظيف والمقابلات والتقييمات والتقارير وإعدادات ثنائية اللغة.',
+  category: 'Recruiting Dashboard',
+  type: 'dashboard',
+  color: 'bg-indigo-500',
+  tags: ['React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'DnD Kit', 'Recharts', 'Vite', 'i18next'],
+  image: '/demo-previews/hireflow-ats.png',
+  demoUrl: '/demos/hireflow-ats/',
+  githubUrl: '',
+  featured: true,
+  featuredOrder: 3,
+  highlightLabel: 'Applicant tracking workflow demo',
+  highlightLabelAr: 'ديمو سير عمل لتتبع المتقدمين',
+  problem:
+    'Recruiting teams need a compact workspace for requisitions, candidates, pipeline movement, interviews, and reporting without relying on static portfolio screenshots.',
+  problemAr:
+    'فرق التوظيف تحتاج مساحة عمل واضحة للوظائف والمرشحين وتحريك مراحل التوظيف والمقابلات والتقارير بدون الاعتماد على صور ثابتة في البورتفوليو.',
+  solution:
+    'The demo ships a standalone React ATS with draggable pipeline stages, candidate and job management, recruitment analytics, theme controls, and Arabic/English localization.',
+  solutionAr:
+    'الديمو يقدم نظام ATS مستقل مبني بـ React مع مراحل توظيف قابلة للسحب وإدارة المرشحين والوظائف وتحليلات التوظيف والتحكم في الثيم ودعم عربي وإنجليزي.',
+  projectRole: 'Frontend engineering, recruiting dashboard UX, drag-and-drop workflow, bilingual product UI',
+  projectRoleAr: 'هندسة الواجهة، تجربة لوحة توظيف، سير عمل بالسحب والإفلات، وواجهة منتج ثنائية اللغة',
+  result:
+    'A live recruiting operations proof-of-work that visitors can open from the portfolio and test across pipeline, candidate, job, and reporting views.',
+  resultAr:
+    'دليل عملي مباشر لتشغيل التوظيف يمكن للزائر فتحه من البورتفوليو وتجربته عبر مسارات المرشحين والوظائف والتقارير.',
+  seo: {
+    title: 'HireFlow ATS Demo',
+    titleAr: 'ديمو HireFlow ATS',
+    description:
+      'A React applicant tracking dashboard demo with jobs, candidates, draggable pipeline stages, interviews, evaluations, and reports.',
+    descriptionAr:
+      'ديمو لوحة تتبع متقدمين مبنية بـ React تشمل الوظائف والمرشحين ومراحل توظيف قابلة للسحب والمقابلات والتقييمات والتقارير.',
+  },
+  createdAt: { seconds: 1_777_276_800 },
+};
+
+export const DEMO_PROJECTS: ProjectRecord[] = [
+  CLINIC_FLOW_MANAGER_PROJECT,
+  AGENCY_FLOW_CRM_PROJECT,
+  STOREOPS_INVENTORY_PROJECT,
+  HIREFLOW_ATS_PROJECT,
+];
 
 export function getDemoProjectBySlug(slug: string | undefined) {
   return DEMO_PROJECTS.find((project) => project.slug === slug);

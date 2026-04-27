@@ -1,0 +1,115 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview of your recruitment pipeline and activities.",
+    "totalCandidates": "Total Candidates",
+    "activeJobs": "Active Jobs",
+    "interviewsScheduled": "Interviews Scheduled",
+    "hiredCandidates": "Hired Candidates",
+    "candidateApplications": "Candidate Applications",
+    "recentCandidates": "Recent Candidates",
+    "viewAll": "View All"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "jobs": "Jobs",
+    "candidates": "Candidates",
+    "pipeline": "Pipeline",
+    "interviews": "Interviews",
+    "evaluations": "Evaluations",
+    "reports": "Reports",
+    "settings": "Settings",
+    "builtBy": "Built by"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your preferences and application settings.",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language",
+    "english": "English",
+    "arabic": "Arabic"
+  },
+  "interviews": {
+    "title": "Interviews",
+    "description": "Manage and schedule candidate interviews.",
+    "schedule": "Schedule Interview",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "join": "Join",
+    "joining": "Joining...",
+    "reschedule": "Reschedule",
+    "rescheduling": "Rescheduling...",
+    "noInterviews": "No {{tab}} interviews found."
+  },
+  "reports": {
+    "title": "Reports",
+    "description": "Analytics and recruitment performance reports.",
+    "timeToHire": "Time to Hire",
+    "conversionRate": "Conversion Rate",
+    "sourceEffectiveness": "Source Effectiveness"
+  },
+  "evaluations": {
+    "title": "Evaluations",
+    "description": "Review technical assignments and candidate assessments.",
+    "pending": "Pending",
+    "completed": "Completed",
+    "score": "Score",
+    "review": "Review",
+    "reviewing": "Reviewing...",
+    "noEvaluations": "No {{tab}} evaluations found."
+  },
+  "jobs": {
+    "title": "Jobs",
+    "description": "Manage active job postings and requisitions.",
+    "addJob": "Post New Job",
+    "search": "Search jobs...",
+    "all": "All",
+    "active": "Active",
+    "drafts": "Drafts",
+    "candidates": "Candidates",
+    "viewPipeline": "View Pipeline",
+    "noJobs": "No jobs found matching your criteria.",
+    "modalTitle": "Post New Job",
+    "jobTitle": "Job Title",
+    "department": "Department",
+    "location": "Location",
+    "type": "Type",
+    "cancel": "Cancel",
+    "postStart": "Post Job"
+  },
+  "candidates": {
+    "title": "Candidates",
+    "description": "Manage all candidate applications across all jobs.",
+    "addCandidate": "Add Candidate",
+    "search": "Search candidates by name, role or email...",
+    "filters": "More Filters",
+    "name": "Name",
+    "role": "Role",
+    "status": "Status",
+    "dateApplied": "Date Applied",
+    "actions": "Actions",
+    "noCandidates": "No candidates found.",
+    "showing": "Showing",
+    "results": "results",
+    "previous": "Previous",
+    "next": "Next",
+    "modalTitle": "Add Candidate",
+    "email": "Email",
+    "cancel": "Cancel",
+    "add": "Add Candidate"
+  },
+  "pipeline": {
+    "title": "Candidate Pipeline",
+    "description": "Drag and drop candidates across stages.",
+    "stages": {
+      "applied": "Applied",
+      "screening": "Screening",
+      "interview": "Interview",
+      "offer": "Offer",
+      "hired": "Hired",
+      "rejected": "Rejected"
+    }
+  }
+}

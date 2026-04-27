@@ -1,0 +1,115 @@
+{
+  "dashboard": {
+    "title": "لوحة القيادة",
+    "overview": "نظرة عامة على مسار التوظيف والأنشطة.",
+    "totalCandidates": "إجمالي المرشحين",
+    "activeJobs": "الوظائف النشطة",
+    "interviewsScheduled": "المقابلات المجدولة",
+    "hiredCandidates": "المرشحون المعينون",
+    "candidateApplications": "طلبات المرشحين",
+    "recentCandidates": "المرشحين الجدد",
+    "viewAll": "عرض الكل"
+  },
+  "sidebar": {
+    "dashboard": "لوحة القيادة",
+    "jobs": "الوظائف",
+    "candidates": "المرشحين",
+    "pipeline": "مسار التوظيف",
+    "interviews": "المقابلات",
+    "evaluations": "التقييمات",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
+    "builtBy": "تم التطوير بواسطة"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "description": "إدارة تفضيلاتك وإعدادات التطبيق.",
+    "theme": "المظهر",
+    "light": "فاتح",
+    "dark": "داكن",
+    "language": "اللغة",
+    "english": "الإنجليزية",
+    "arabic": "العربية"
+  },
+  "interviews": {
+    "title": "المقابلات",
+    "description": "إدارة وجدولة مقابلات المرشحين.",
+    "schedule": "جدولة مقابلة",
+    "upcoming": "القادمة",
+    "past": "السابقة",
+    "join": "انضمام",
+    "joining": "الانضمام...",
+    "reschedule": "إعادة جدولة",
+    "rescheduling": "تتم إعادة الجدولة...",
+    "noInterviews": "لم يتم العثور على أي مقابلات {{tab}}."
+  },
+  "reports": {
+    "title": "التقارير",
+    "description": "التحليلات وتقارير أداء التوظيف.",
+    "timeToHire": "وقت التوظيف",
+    "conversionRate": "معدل التحويل",
+    "sourceEffectiveness": "فعالية المصدر"
+  },
+  "evaluations": {
+    "title": "التقييمات",
+    "description": "مراجعة المهام الفنية وتقييمات المرشحين.",
+    "pending": "قيد الانتظار",
+    "completed": "مكتمل",
+    "score": "النتيجة",
+    "review": "مراجعة",
+    "reviewing": "جاري المراجعة...",
+    "noEvaluations": "لا توجد تقييمات {{tab}}."
+  },
+  "jobs": {
+    "title": "الوظائف",
+    "description": "إدارة إعلانات الوظائف النشطة والطلبات.",
+    "addJob": "نشر وظيفة جديدة",
+    "search": "ابحث عن وظائف...",
+    "all": "الكل",
+    "active": "نشط",
+    "drafts": "المسودات",
+    "candidates": "المرشحين",
+    "viewPipeline": "عرض مسار التوظيف",
+    "noJobs": "لم يتم العثور على وظائف مطابقة لبحثك.",
+    "modalTitle": "نشر وظيفة جديدة",
+    "jobTitle": "المسمى الوظيفي",
+    "department": "القسم",
+    "location": "الموقع",
+    "type": "النوع",
+    "cancel": "إلغاء",
+    "postStart": "نشر وظيفة"
+  },
+  "candidates": {
+    "title": "المرشحين",
+    "description": "إدارة جميع طلبات المرشحين عبر جميع الوظائف.",
+    "addCandidate": "إضافة مرشح",
+    "search": "ابحث عن المرشحين بالاسم، الدور أو البريد الإلكتروني...",
+    "filters": "مزيد من الفلاتر",
+    "name": "الاسم",
+    "role": "الدور",
+    "status": "الحالة",
+    "dateApplied": "تاريخ التقديم",
+    "actions": "إجراءات",
+    "noCandidates": "لم يتم العثور على مرشحين.",
+    "showing": "عرض",
+    "results": "النتائج",
+    "previous": "السابق",
+    "next": "التالي",
+    "modalTitle": "إضافة مرشح",
+    "email": "البريد الإلكتروني",
+    "cancel": "إلغاء",
+    "add": "إضافة مرشح"
+  },
+  "pipeline": {
+    "title": "مسار المرشحين",
+    "description": "قم بسحب وإفلات المرشحين عبر المراحل.",
+    "stages": {
+      "applied": "مقدم",
+      "screening": "فرز",
+      "interview": "مقابلة",
+      "offer": "عرض",
+      "hired": "معين",
+      "rejected": "مرفوض"
+    }
+  }
+}

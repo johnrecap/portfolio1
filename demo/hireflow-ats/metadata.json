@@ -1,0 +1,6 @@
+{
+  "name": "HireFlow ATS",
+  "description": "A professional frontend-only SaaS dashboard for applicant tracking. Built with React, Vite, Tailwind CSS, Zustand, and DnD Kit.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

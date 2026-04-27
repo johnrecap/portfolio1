@@ -4,6 +4,7 @@
 # Build outputs and caches
 /build/
 /dist/
+/demo/dist/
 /output/
 /output-*.png
 /coverage/

@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-primary-50: #f0fdf4;
+  --color-primary-100: #dcfce7;
+  --color-primary-500: #22c55e;
+  --color-primary-600: #16a34a;
+  --color-primary-700: #15803d;
+}
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #0f172a;
+    --sidebar-bg: #f8fafc;
+    --border: #e2e8f0;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+  }
+
+  .dark {
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    --sidebar-bg: #1e293b;
+    --border: #334155;
+    --card: #1e293b;
+    --card-foreground: #f8fafc;
+    --muted: #334155;
+    --muted-foreground: #94a3b8;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Base custom classes to match theme */
+.bg-background { background-color: var(--background); }
+.text-foreground { color: var(--foreground); }
+.bg-sidebar { background-color: var(--sidebar-bg); }
+.border-border { border-color: var(--border); }
+.bg-card { background-color: var(--card); }
+.text-card-foreground { color: var(--card-foreground); }
+.bg-muted { background-color: var(--muted); }
+.text-muted-foreground { color: var(--muted-foreground); }

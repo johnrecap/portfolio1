@@ -1,0 +1,6 @@
+{
+  "name": "StoreOps Inventory",
+  "description": "StoreOps Inventory provides a polished, frontend-only inventory operations dashboard with working CRUD flows, stock adjustment logic, reports, and Arabic/English localization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
