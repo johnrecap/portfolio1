@@ -86,7 +86,7 @@ export const ProjectDetail = () => {
           {t('projectDetail.breadcrumbProjects')}
         </Link>
         <span>/</span>
-        <span className="text-primary">{project.slug}</span>
+        <span className="text-primary">{title}</span>
       </div>
 
       <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
@@ -133,7 +133,7 @@ export const ProjectDetail = () => {
           className="overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl"
         >
           <div className="flex items-center justify-between border-b border-slate-800 bg-[#161b22] px-5 py-3 font-mono text-xs text-slate-400">
-            <span>{project.slug}.app</span>
+            <span dir={isArabic ? 'rtl' : 'ltr'}>{isArabic ? title : `${project.slug}.app`}</span>
             <Monitor className="h-4 w-4" />
           </div>
           <div className="aspect-video bg-slate-950">

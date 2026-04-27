@@ -3,7 +3,7 @@ import type { ProjectRecord } from './content-hub';
 export const AGENCY_FLOW_CRM_PROJECT: ProjectRecord = {
   id: 'agency-flow-crm-demo',
   title: 'AgencyFlow CRM',
-  titleAr: 'AgencyFlow CRM',
+  titleAr: 'إدارة علاقات العملاء للوكالات',
   slug: 'agency-flow-crm',
   description:
     'A working CRM dashboard demo for small agencies with leads, deals, clients, tasks, reports, and isolated editable visitor sessions.',
@@ -36,7 +36,7 @@ export const AGENCY_FLOW_CRM_PROJECT: ProjectRecord = {
     'دليل عملي مباشر داخل البورتفوليو يمكن فتحه وتجربته، مع رجوع البيانات الافتراضية لكل زائر جديد.',
   seo: {
     title: 'AgencyFlow CRM Demo',
-    titleAr: 'ديمو AgencyFlow CRM',
+    titleAr: 'ديمو إدارة علاقات العملاء للوكالات',
     description:
       'A React CRM dashboard demo with isolated editable visitor sessions.',
     descriptionAr:
@@ -48,7 +48,7 @@ export const AGENCY_FLOW_CRM_PROJECT: ProjectRecord = {
 export const CLINIC_FLOW_MANAGER_PROJECT: ProjectRecord = {
   id: 'clinic-flow-manager-demo',
   title: 'ClinicFlow Manager',
-  titleAr: 'ClinicFlow Manager',
+  titleAr: 'مدير العيادات',
   slug: 'clinic-flow-manager',
   description:
     'A working clinic operations dashboard demo with appointments, patients, doctors, billing, reports, and isolated editable visitor sessions.',
@@ -81,7 +81,7 @@ export const CLINIC_FLOW_MANAGER_PROJECT: ProjectRecord = {
     'دليل عملي مباشر للوحة تشغيل طبية يمكن للزائر تجربتها بأمان وإرجاع بياناتها الأصلية في أي وقت.',
   seo: {
     title: 'ClinicFlow Manager Demo',
-    titleAr: 'ديمو ClinicFlow Manager',
+    titleAr: 'ديمو مدير العيادات',
     description:
       'A React clinic management dashboard demo with isolated editable visitor sessions.',
     descriptionAr:
@@ -93,7 +93,7 @@ export const CLINIC_FLOW_MANAGER_PROJECT: ProjectRecord = {
 export const STOREOPS_INVENTORY_PROJECT: ProjectRecord = {
   id: 'storeops-inventory-demo',
   title: 'StoreOps Inventory',
-  titleAr: 'StoreOps Inventory',
+  titleAr: 'إدارة المخزون والمبيعات',
   slug: 'storeops-inventory',
   description:
     'A working inventory operations dashboard demo with products, suppliers, stock movements, sales orders, reports, and bilingual settings.',
@@ -126,7 +126,7 @@ export const STOREOPS_INVENTORY_PROJECT: ProjectRecord = {
     'دليل عملي مباشر لتشغيل مخزون المتاجر يمكن للزائر فتحه وتعديله وإرجاع بياناته وفحصه من البورتفوليو.',
   seo: {
     title: 'StoreOps Inventory Demo',
-    titleAr: 'ديمو StoreOps Inventory',
+    titleAr: 'ديمو إدارة المخزون والمبيعات',
     description:
       'A React inventory operations dashboard demo with products, suppliers, stock movements, sales orders, and reports.',
     descriptionAr:
@@ -138,7 +138,7 @@ export const STOREOPS_INVENTORY_PROJECT: ProjectRecord = {
 export const HIREFLOW_ATS_PROJECT: ProjectRecord = {
   id: 'hireflow-ats-demo',
   title: 'HireFlow ATS',
-  titleAr: 'HireFlow ATS',
+  titleAr: 'نظام تتبع المتقدمين',
   slug: 'hireflow-ats',
   description:
     'A working applicant tracking dashboard demo with jobs, candidates, hiring pipeline stages, interviews, evaluations, reports, and bilingual settings.',
@@ -171,7 +171,7 @@ export const HIREFLOW_ATS_PROJECT: ProjectRecord = {
     'دليل عملي مباشر لتشغيل التوظيف يمكن للزائر فتحه من البورتفوليو وتجربته عبر مسارات المرشحين والوظائف والتقارير.',
   seo: {
     title: 'HireFlow ATS Demo',
-    titleAr: 'ديمو HireFlow ATS',
+    titleAr: 'ديمو نظام تتبع المتقدمين',
     description:
       'A React applicant tracking dashboard demo with jobs, candidates, draggable pipeline stages, interviews, evaluations, and reports.',
     descriptionAr:

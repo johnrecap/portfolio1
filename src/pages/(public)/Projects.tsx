@@ -333,7 +333,9 @@ export const Projects = () => {
                   ) : (
                     <div className="flex h-full flex-col justify-between p-6 text-slate-100">
                       <div className="flex items-center justify-between font-mono text-xs text-slate-400">
-                        <span>{project.slug}.app</span>
+                        <span dir={isArabic ? 'rtl' : 'ltr'}>
+                          {isArabic ? titleText : `${project.slug}.app`}
+                        </span>
                         <span>{t('projects.demoBadge')}</span>
                       </div>
                       <div>

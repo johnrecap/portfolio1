@@ -92,20 +92,26 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
           </p>
         </div>
 
-        <div className={`mb-5 flex flex-wrap gap-2 ${variant === 'grid' ? 'justify-start' : ''}`} dir="ltr">
-          {featuredProjects.map((project, index) => (
-            <button
-              key={project.id}
-              onClick={() => setActiveIndex(index)}
-              className={`rounded-full border px-4 py-2 font-mono text-xs transition-colors sm:text-sm ${
-                activeProject.id === project.id
-                  ? 'border-primary/40 bg-primary/10 text-primary'
-                  : 'border-border bg-card text-muted-foreground hover:border-primary/20 hover:text-foreground'
-              }`}
-            >
-              $ open {project.slug}
-            </button>
-          ))}
+        <div className={`mb-5 flex flex-wrap gap-2 ${variant === 'grid' ? 'justify-start' : ''}`}>
+          {featuredProjects.map((project, index) => {
+            const projectTitle = getLocalizedValue(project.title, project.titleAr, isArabic) || project.title;
+            const buttonLabel = isArabic ? `افتح ${projectTitle}` : `$ open ${projectTitle}`;
+
+            return (
+              <button
+                key={project.id}
+                onClick={() => setActiveIndex(index)}
+                dir={isArabic ? 'rtl' : 'ltr'}
+                className={`rounded-full border px-4 py-2 font-mono text-xs transition-colors sm:text-sm ${
+                  activeProject.id === project.id
+                    ? 'border-primary/40 bg-primary/10 text-primary'
+                    : 'border-border bg-card text-muted-foreground hover:border-primary/20 hover:text-foreground'
+                }`}
+              >
+                {buttonLabel}
+              </button>
+            );
+          })}
         </div>
 
         <div className="overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl">
@@ -248,7 +254,9 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
                   className="relative z-10 w-full overflow-hidden rounded-[1.75rem] border border-slate-700/60 bg-[#151a21] shadow-2xl"
                 >
                   <div className="flex items-center justify-between border-b border-slate-700/60 px-4 py-3 font-mono text-xs text-slate-400">
-                    <span>{activeProject.slug}.app</span>
+                    <span dir={isArabic ? 'rtl' : 'ltr'}>
+                      {isArabic ? activeProjectTitle : `${activeProject.slug}.app`}
+                    </span>
                     <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-emerald-400">
                       {t('featuredProjects.featured')}
                     </span>
