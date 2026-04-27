@@ -38,7 +38,8 @@ import { useProfile } from '@/hooks/useProfile';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { auth, db, handleFirestoreError, OperationType } from '@/lib/firebase';
 import { readComposerText } from '@/lib/admin/page-content';
-import { resolveMediaField } from '@/lib/content-hub';
+import { resolveMediaField, type ProjectRecord } from '@/lib/content-hub';
+import { mergePublicProjects } from '@/lib/public-projects';
 import { buildProfileImageStyle } from '@/lib/profile-image';
 import type { AdminPageConfig, AdminPageSection, PlatformPageId, StylePreset } from '@/lib/admin/types';
 
@@ -68,7 +69,7 @@ function readSectionText(
 function AboutIntroSection({ section }: { section: AdminPageSection }) {
   const { profile, loading: profileLoading } = useProfile();
   const { assets, loading: mediaLoading } = usePublicMediaLibrary();
-  const { data: projects } = usePublicCollection<any>('projects');
+  const { data: projects } = usePublicCollection<ProjectRecord>('projects');
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const bio = isArabic ? profile.bioAr || profile.bio : profile.bio;
@@ -79,6 +80,7 @@ function AboutIntroSection({ section }: { section: AdminPageSection }) {
   const minimal = section.variant === 'minimal';
   const displayName = isArabic ? profile.displayNameAr || profile.displayName : profile.displayName;
   const profileMediaLoading = profileLoading || mediaLoading;
+  const totalProjectCount = mergePublicProjects(projects).length;
   const profileImage = profileMediaLoading
     ? null
     : resolveMediaField(
@@ -144,7 +146,7 @@ function AboutIntroSection({ section }: { section: AdminPageSection }) {
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
                 {t('about.statProjects')}
               </p>
-              <p className="mt-3 font-heading text-4xl font-black text-foreground">{projects.length}</p>
+              <p className="mt-3 font-heading text-4xl font-black text-foreground">{totalProjectCount}</p>
             </div>
             <div className={`rounded-[1.5rem] border p-5 shadow-sm ${getSurfaceTone(section.stylePreset)}`}>
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">

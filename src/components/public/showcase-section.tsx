@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { usePublicCollection } from '@/hooks/public-firestore';
 import { SkeletonBlocks } from '@/components/shared/PageState';
 import { readComposerText } from '@/lib/admin/page-content';
+import type { ProjectRecord } from '@/lib/content-hub';
 import { DEFAULT_SKILLS } from '@/lib/default-skills';
+import { mergePublicProjects } from '@/lib/public-projects';
 
 type ShowcaseSectionProps = {
   variant?: 'grid' | 'spotlight';
@@ -12,20 +14,21 @@ type ShowcaseSectionProps = {
 };
 
 export const ShowcaseSection = ({ variant = 'grid', content = {} }: ShowcaseSectionProps) => {
-  const { data: projects, loading: projectsLoading } = usePublicCollection<any>('projects');
+  const { data: projects, loading: projectsLoading } = usePublicCollection<ProjectRecord>('projects');
   const { data: blogs, loading: blogsLoading } = usePublicCollection<any>('blogs');
   const { data: skills, loading: skillsLoading } = usePublicCollection<any>('skills');
   const { t, i18n } = useTranslation();
 
   const loading = projectsLoading || blogsLoading || skillsLoading;
   const isArabic = i18n.language === 'ar';
+  const displayedProjects = mergePublicProjects(projects);
   const displayedSkills = skills.length > 0 ? skills : DEFAULT_SKILLS;
   const stats = [
     {
       icon: FolderKanban,
       title: t('showcase.publicTitle'),
       description: t('showcase.publicDescription'),
-      value: `${projects.length}`,
+      value: `${displayedProjects.length}`,
     },
     {
       icon: LayoutDashboard,
@@ -37,7 +40,7 @@ export const ShowcaseSection = ({ variant = 'grid', content = {} }: ShowcaseSect
       icon: Layers3,
       title: t('showcase.crudTitle'),
       description: t('showcase.crudDescription'),
-      value: `${projects.length + blogs.length + displayedSkills.length}`,
+      value: `${displayedProjects.length + blogs.length + displayedSkills.length}`,
     },
     {
       icon: Languages,

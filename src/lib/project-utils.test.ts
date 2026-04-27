@@ -8,6 +8,8 @@ import {
   sortProjects,
   type ProjectRecord,
 } from "./project-utils";
+import { DEMO_PROJECTS } from "./demo-projects";
+import { mergePublicProjects } from "./public-projects";
 
 const sampleProjects: ProjectRecord[] = [
   {
@@ -99,6 +101,28 @@ test("sortProjects supports featured, newest, and alphabetical order", () => {
     sortProjects(sampleProjects, "alphabetical").map((project) => project.slug),
     ["admin-hub", "api-core", "web-store"],
   );
+});
+
+test("mergePublicProjects includes demos and avoids duplicate project slugs", () => {
+  const mergedProjects = mergePublicProjects([
+    {
+      id: "custom-demo-copy",
+      title: "Duplicate demo",
+      slug: DEMO_PROJECTS[0]?.slug ?? "clinic-flow-manager",
+      description: "Duplicate demo record",
+      category: "Dashboard",
+    },
+    {
+      id: "custom-project",
+      title: "Custom Project",
+      slug: "custom-project",
+      description: "Custom public project",
+      category: "Web",
+    },
+  ]);
+
+  assert.equal(mergedProjects.length, DEMO_PROJECTS.length + 1);
+  assert.ok(mergedProjects.some((project) => project.slug === "custom-project"));
 });
 
 test("getLocalizedCaseStudyValue returns the Arabic value when requested and available", () => {
