@@ -18,6 +18,10 @@ const LOADING_PROFILE = {
   heroImageAssetId: '',
 };
 
+type PublicProfileOptions = {
+  disabled?: boolean;
+};
+
 function resolveProfile(data: Record<string, unknown> | null, loading: boolean) {
   if (loading) {
     return { profile: LOADING_PROFILE, loading };
@@ -40,8 +44,8 @@ function resolveProfile(data: Record<string, unknown> | null, loading: boolean) 
   };
 }
 
-export function useProfile() {
-  const { data, loading } = usePublicDocument<Record<string, unknown>>('settings', 'profile');
+export function useProfile(options?: PublicProfileOptions) {
+  const { data, loading } = usePublicDocument<Record<string, unknown>>('settings', 'profile', options);
   return resolveProfile(data, loading);
 }
 

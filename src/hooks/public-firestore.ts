@@ -14,14 +14,18 @@ export const PUBLIC_FIRESTORE_READ_OPTIONS = {
   suppressPermissionDenied: true,
 } as const;
 
-export function usePublicCollection<T>(path: string) {
+type PublicFirestoreReadOptions = {
+  disabled?: boolean;
+};
+
+export function usePublicCollection<T>(path: string, options?: PublicFirestoreReadOptions) {
   const publicData = useOptionalPublicData();
   const initial = getInitialPublicCollection(path);
   const contextData = publicData?.collections[path];
   const hasBootstrapData = contextData !== undefined || initial.hasData;
   const fallback = useCollection<T>(path, {
     ...PUBLIC_FIRESTORE_READ_OPTIONS,
-    disabled: hasBootstrapData,
+    disabled: hasBootstrapData || options?.disabled === true,
     initialData: contextData ?? initial.data,
     hasInitialData: hasBootstrapData,
     keepDataOnSuppressedError: true,
@@ -42,7 +46,7 @@ export function usePublicCollection<T>(path: string) {
   );
 }
 
-export function usePublicDocument<T>(path: string, docId: string) {
+export function usePublicDocument<T>(path: string, docId: string, options?: PublicFirestoreReadOptions) {
   const publicData = useOptionalPublicData();
   const initial = getInitialPublicDocument(path, docId);
   const documentKey = `${path}/${docId}`;
@@ -50,7 +54,7 @@ export function usePublicDocument<T>(path: string, docId: string) {
   const hasBootstrapData = Object.prototype.hasOwnProperty.call(publicData?.documents ?? {}, documentKey) || initial.hasData;
   const fallback = useDocument<T>(path, docId, {
     ...PUBLIC_FIRESTORE_READ_OPTIONS,
-    disabled: hasBootstrapData,
+    disabled: hasBootstrapData || options?.disabled === true,
     initialData: contextData ?? initial.data,
     hasInitialData: hasBootstrapData,
     keepDataOnSuppressedError: true,
@@ -69,9 +73,9 @@ export function usePublicDocument<T>(path: string, docId: string) {
   );
 }
 
-export function usePublicMediaLibrary() {
+export function usePublicMediaLibrary(options?: PublicFirestoreReadOptions) {
   const { data: assets, loading, error, addDocument, updateDocument, removeDocument } =
-    usePublicCollection<MediaAssetRecord>('mediaAssets');
+    usePublicCollection<MediaAssetRecord>('mediaAssets', options);
 
   return useMemo(
     () => ({ assets, loading, error, addDocument, updateDocument, removeDocument }),

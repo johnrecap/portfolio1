@@ -2,8 +2,7 @@ import { Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
 import { Navigate, createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ThemeProvider } from './components/shared/theme-provider';
-import { PublicFooter, PublicNavbar } from './components/public/layout-components';
-import { PageSeo } from '@/components/shared/PageSeo';
+import { PublicNavbar } from './components/public/layout-components';
 import { ScrollToTop } from './components/shared/ScrollToTop';
 import { DevBackground } from './components/shared/DevBackground';
 import { SkeletonBlocks } from '@/components/shared/PageState';
@@ -34,6 +33,9 @@ const TerminalEasterEgg = lazy(() =>
 );
 const NotFound = lazy(() =>
   import('./pages/(public)/NotFound').then((module) => ({ default: module.NotFound })),
+);
+const PublicFooter = lazy(() =>
+  import('./components/public/public-footer').then((module) => ({ default: module.PublicFooter })),
 );
 const DashboardLayout = lazy(() =>
   import('./components/dashboard/layout').then((module) => ({ default: module.DashboardLayout })),
@@ -158,6 +160,39 @@ const InteractionToaster = () => {
   );
 };
 
+const DeferredPublicFooter = () => {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    if (enabled) {
+      return;
+    }
+
+    const browserWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+
+    if (browserWindow.requestIdleCallback) {
+      const handle = browserWindow.requestIdleCallback(() => setEnabled(true), { timeout: 2200 });
+      return () => browserWindow.cancelIdleCallback?.(handle);
+    }
+
+    const handle = window.setTimeout(() => setEnabled(true), 1400);
+    return () => window.clearTimeout(handle);
+  }, [enabled]);
+
+  if (!enabled) {
+    return null;
+  }
+
+  return (
+    <Suspense fallback={null}>
+      <PublicFooter />
+    </Suspense>
+  );
+};
+
 const PublicLayout = () => {
   const { i18n } = useTranslation();
   const { themeSettings } = useThemeSettings({ publicRead: true });
@@ -173,16 +208,15 @@ const PublicLayout = () => {
       style={buildPublicThemeStyle(themeSettings, siteResolvedTheme === 'dark')}
     >
       <PublicDataProvider>
-        <PageSeo />
         <DevBackground />
         <TerminalEasterEggLoader />
         <ScrollToTop />
         <div className="flex min-h-screen flex-col">
-          <PublicNavbar />
+          <PublicNavbar themeMode={themeSettings.mode} />
           <main className="relative z-10 mx-auto flex w-full max-w-[1344px] flex-1 px-4 py-8 sm:px-6 lg:px-8">
             <Outlet />
           </main>
-          <PublicFooter />
+          <DeferredPublicFooter />
         </div>
       </PublicDataProvider>
     </div>

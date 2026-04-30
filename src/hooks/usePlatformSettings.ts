@@ -37,6 +37,7 @@ import type {
 
 type PlatformSettingsOptions = {
   publicRead?: boolean;
+  disabled?: boolean;
 };
 
 function usePlatformSetting<T>(
@@ -48,7 +49,8 @@ function usePlatformSetting<T>(
   const initial = options?.publicRead === true
     ? getInitialPublicDocument('settings', docId)
     : { data: null, hasData: false };
-  const shouldReadClientFallback = options?.publicRead === true && initial.hasData !== true;
+  const shouldReadClientFallback =
+    options?.publicRead === true && initial.hasData !== true && options?.disabled !== true;
   const { data, loading, setDocument } = useDocument<Record<string, unknown>>('settings', docId, {
     suppressPermissionDenied: options?.publicRead === true,
     disabled: options?.publicRead === true && !shouldReadClientFallback,

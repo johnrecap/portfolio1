@@ -43,7 +43,7 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
   return (
     <section className="relative overflow-hidden pt-10 pb-16 md:pt-20 md:pb-24">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(20,184,166,0.14),transparent_62%)]" />
         <div className="absolute inset-x-0 top-28 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       </div>
 
@@ -56,10 +56,9 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
               : 'grid lg:grid-cols-[1.15fr_0.85fr]'
         }`}
       >
-        <div className={`space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ${isCentered ? 'text-center' : ''}`}>
+        <div className={`space-y-8 ${isCentered ? 'text-center' : ''}`}>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-semibold text-primary">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
             </span>
             {t('hero.availability')}
@@ -136,8 +135,8 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
         </div>
 
         {!isMinimal ? (
-          <div className={`relative animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ${isCentered ? 'w-full max-w-3xl' : ''}`}>
-            <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-primary/15 via-transparent to-teal-400/15 blur-2xl" />
+          <div className={`relative ${isCentered ? 'w-full max-w-3xl' : ''}`}>
+            <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-teal-400/10" />
             <div className="relative overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl">
               <div className="flex items-center justify-between border-b border-slate-800 bg-[#161b22] px-5 py-3 font-mono text-xs text-slate-400">
                 <div className="flex gap-2">
