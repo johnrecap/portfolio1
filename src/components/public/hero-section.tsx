@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowRight, Check, Copy, Layers3, Rocket, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button-variants';
 import { useProfile } from '@/hooks/useProfile';
 import { readComposerText } from '@/lib/admin/page-content';
 import { SkeletonLine } from '@/components/shared/PageState';

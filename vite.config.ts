@@ -67,7 +67,6 @@ export default defineConfig(({mode}) => {
             if (
               normalizedId.includes('/node_modules/@base-ui/') ||
               normalizedId.includes('/node_modules/@radix-ui/') ||
-              normalizedId.includes('/node_modules/lucide-react/') ||
               normalizedId.includes('/node_modules/sonner/')
             ) {
               return 'vendor-ui';

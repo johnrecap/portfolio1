@@ -64,8 +64,13 @@ function setProductionStaticHeaders(res: express.Response, filePath: string) {
     return;
   }
 
+  if (normalizedPath.includes('/fonts/') || normalizedPath.includes('/demo-previews/optimized/')) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return;
+  }
+
   if (/\.(?:avif|webp|png|jpe?g|gif|svg|ico|woff2?)$/i.test(normalizedPath)) {
-    res.setHeader('Cache-Control', 'public, max-age=604800');
+    res.setHeader('Cache-Control', 'public, max-age=2592000');
     return;
   }
 

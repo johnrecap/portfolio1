@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, ArrowRight, ExternalLink, Github, Layers3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button-variants';
 import { OptimizedImage } from '@/components/shared/OptimizedImage';
 import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';

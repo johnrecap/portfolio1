@@ -133,7 +133,8 @@ Expected reverse-proxy behavior:
 The production Express server sets these response behaviors:
 
 - Hashed Vite assets under `/assets/`: `Cache-Control: public, max-age=31536000, immutable`.
-- Images, icons, and font files: `Cache-Control: public, max-age=604800`.
+- Font files and optimized demo previews under `/fonts/` and `/demo-previews/optimized/`: `Cache-Control: public, max-age=31536000, immutable`.
+- Other images and icons: `Cache-Control: public, max-age=2592000`.
 - HTML route responses: `Cache-Control: no-cache`.
 - Public bootstrap API: short public cache with stale revalidation.
 - Security headers: `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, and `X-Frame-Options`.

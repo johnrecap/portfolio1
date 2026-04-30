@@ -1,5 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button-variants';
 
 interface Props {
   children: ReactNode;
@@ -48,7 +48,9 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="max-w-md">
             <h1 className="text-2xl font-bold font-heading mb-4">Oops! Something went wrong.</h1>
             <p className="text-muted-foreground mb-6 break-words">{errorMessage}</p>
-            <Button onClick={() => window.location.reload()}>Refresh Page</Button>
+            <button type="button" className={buttonVariants()} onClick={() => window.location.reload()}>
+              Refresh Page
+            </button>
           </div>
         </div>
       );

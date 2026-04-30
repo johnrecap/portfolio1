@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Globe, Menu, Moon, Sun, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button-variants';
 import { useTheme } from '@/components/shared/theme-provider';
 import { SkeletonLine } from '@/components/shared/PageState';
 import { useProfile } from '@/hooks/useProfile';
@@ -14,15 +14,14 @@ const ThemeToggle = () => {
   const { t } = useTranslation();
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <button
+      type="button"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       aria-label={t('nav.toggleTheme')}
-      className="shrink-0 rounded-full"
+      className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'shrink-0 rounded-full' })}
     >
       {resolvedTheme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-    </Button>
+    </button>
   );
 };
 
@@ -30,16 +29,19 @@ const LanguageToggle = () => {
   const { i18n, t } = useTranslation();
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
+    <button
+      type="button"
       onClick={() => i18n.changeLanguage(i18n.resolvedLanguage === 'ar' ? 'en' : 'ar')}
       aria-label={i18n.resolvedLanguage === 'ar' ? t('nav.switchToEnglish') : t('nav.switchToArabic')}
-      className="flex shrink-0 items-center gap-2 rounded-full px-3 font-medium"
+      className={buttonVariants({
+        variant: 'ghost',
+        size: 'sm',
+        className: 'flex shrink-0 items-center gap-2 rounded-full px-3 font-medium',
+      })}
     >
       <Globe className="h-4 w-4" />
       <span>{i18n.resolvedLanguage === 'ar' ? t('nav.enShort') : t('nav.arShort')}</span>
-    </Button>
+    </button>
   );
 };
 
@@ -154,17 +156,16 @@ export const PublicNavbar = () => {
         <div className="flex items-center gap-1 md:hidden">
           {!navigationLoading && navigationSettings.showLanguageToggle ? <LanguageToggle /> : null}
           {showThemeToggle ? <ThemeToggle /> : null}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
+            type="button"
             onClick={() => setIsOpen((current) => !current)}
             aria-label={isOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={isOpen}
             aria-controls="public-mobile-menu"
-            className="rounded-full"
+            className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'rounded-full' })}
           >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+          </button>
         </div>
       </div>
 

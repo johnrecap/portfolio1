@@ -2,7 +2,7 @@ import { ArrowRight, Github, Linkedin, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useProfile';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button-variants';
 import { readComposerText } from '@/lib/admin/page-content';
 
 type CTASectionProps = {

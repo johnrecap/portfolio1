@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { SkeletonLine, SkeletonMedia } from '@/components/shared/PageState';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button-variants';
 import { useProfile } from '@/hooks/useProfile';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { resolveMediaField, type ProjectRecord } from '@/lib/content-hub';
