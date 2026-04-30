@@ -17,7 +17,7 @@ export default defineConfig(({mode}) => {
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+      // Do not modify - file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
     },
     build: {
@@ -31,18 +31,37 @@ export default defineConfig(({mode}) => {
             }
 
             if (
-              normalizedId.includes('/node_modules/firebase/') ||
-              normalizedId.includes('/node_modules/@firebase/')
-            ) {
-              return 'vendor-firebase';
-            }
-
-            if (
               normalizedId.includes('/node_modules/react/') ||
               normalizedId.includes('/node_modules/react-dom/') ||
               normalizedId.includes('/node_modules/react-router-dom/')
             ) {
               return 'vendor-react';
+            }
+
+            if (normalizedId.includes('/node_modules/motion/')) {
+              return 'vendor-motion';
+            }
+
+            if (
+              normalizedId.includes('/node_modules/firebase/') ||
+              normalizedId.includes('/node_modules/@firebase/')
+            ) {
+              if (normalizedId.includes('/auth/')) {
+                return 'vendor-firebase-auth';
+              }
+
+              if (normalizedId.includes('/firestore/')) {
+                return 'vendor-firebase-firestore';
+              }
+
+              return 'vendor-firebase-core';
+            }
+
+            if (
+              normalizedId.includes('/node_modules/@dnd-kit/') ||
+              normalizedId.includes('/node_modules/@tiptap/')
+            ) {
+              return 'vendor-admin-ui';
             }
 
             if (

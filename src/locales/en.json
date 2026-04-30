@@ -12,7 +12,11 @@
     "ar": "Arabic",
     "enShort": "EN",
     "arShort": "AR",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "switchToEnglish": "Switch to English",
+    "switchToArabic": "Switch to Arabic",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "footer": {
     "statusLabel": "status --availability",
@@ -183,6 +187,8 @@
     "successTitle": "Message received.",
     "successMsg": "Thanks for the context. I will read it and get back to you as soon as I can.",
     "whatsappReqGuest": "Please include a direct contact method if you are sending as a guest.",
+    "throttleError": "Please wait before sending another message.",
+    "sendError": "Something went wrong while sending your message. Please try again.",
     "availableForWork": "Current availability",
     "availableDesc": "I am most useful on projects that need a clear public experience and the systems behind it to work well too.",
     "location": "Base",
@@ -243,7 +249,9 @@
     "viewSite": "View Site",
     "logout": "Logout",
     "search": "Search dashboard...",
-    "quickSearch": "Quick search..."
+    "quickSearch": "Quick search...",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "dashboardOverview": {
     "overview": "Overview",

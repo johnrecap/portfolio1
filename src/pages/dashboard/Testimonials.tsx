@@ -394,6 +394,7 @@ export const DashboardTestimonials = () => {
                   ) : null}
                   <button
                     type="button"
+                    aria-label={t('dashboardTestimonials.editTestimonial')}
                     onClick={() => handleEdit(item)}
                     className="rounded-full border border-border bg-background/70 p-2 text-muted-foreground transition-colors hover:text-foreground"
                   >
@@ -401,6 +402,7 @@ export const DashboardTestimonials = () => {
                   </button>
                   <button
                     type="button"
+                    aria-label={t('dashboardTestimonials.delete')}
                     onClick={() => setDeleteId(item.id)}
                     className="rounded-full border border-border bg-background/70 p-2 text-muted-foreground transition-colors hover:text-destructive"
                   >

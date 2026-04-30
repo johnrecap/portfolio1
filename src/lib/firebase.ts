@@ -1,11 +1,35 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 import firebaseConfig from '../config/firebase-client-config.json';
+import type { FirebaseApp } from 'firebase/app';
+import type { Auth } from 'firebase/auth';
+import type { Firestore } from 'firebase/firestore';
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId);
-export const auth = getAuth(app);
+let appPromise: Promise<FirebaseApp> | null = null;
+let authPromise: Promise<Auth> | null = null;
+let firestorePromise: Promise<Firestore> | null = null;
+let cachedAuth: Auth | null = null;
+
+export function getFirebaseApp() {
+  appPromise ??= import('firebase/app').then(({ initializeApp }) => initializeApp(firebaseConfig));
+  return appPromise;
+}
+
+export async function getAuthInstance() {
+  if (!authPromise) {
+    authPromise = Promise.all([getFirebaseApp(), import('firebase/auth')]).then(([app, { getAuth }]) => {
+      cachedAuth = getAuth(app);
+      return cachedAuth;
+    });
+  }
+
+  return authPromise;
+}
+
+export async function getFirestoreInstance() {
+  firestorePromise ??= Promise.all([getFirebaseApp(), import('firebase/firestore')]).then(([app, { getFirestore }]) =>
+    getFirestore(app, (firebaseConfig as { firestoreDatabaseId?: string }).firestoreDatabaseId),
+  );
+  return firestorePromise;
+}
 
 export enum OperationType {
   CREATE = 'create',
@@ -43,12 +67,12 @@ export function buildFirestoreErrorInfo(error: unknown, operationType: Operation
     code: typeof error === 'object' && error !== null && 'code' in error ? String((error as { code?: unknown }).code) : undefined,
     error: errorMessage,
     authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
+      userId: cachedAuth?.currentUser?.uid,
+      email: cachedAuth?.currentUser?.email,
+      emailVerified: cachedAuth?.currentUser?.emailVerified,
+      isAnonymous: cachedAuth?.currentUser?.isAnonymous,
+      tenantId: cachedAuth?.currentUser?.tenantId,
+      providerInfo: cachedAuth?.currentUser?.providerData.map(provider => ({
         providerId: provider.providerId,
         displayName: provider.displayName,
         email: provider.email,

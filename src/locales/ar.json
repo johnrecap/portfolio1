@@ -12,7 +12,11 @@
     "ar": "العربية",
     "enShort": "EN",
     "arShort": "AR",
-    "toggleTheme": "تبديل النمط"
+    "toggleTheme": "تبديل النمط",
+    "switchToEnglish": "التبديل إلى الإنجليزية",
+    "switchToArabic": "التبديل إلى العربية",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة"
   },
   "footer": {
     "statusLabel": "status --availability",
@@ -183,6 +187,8 @@
     "successTitle": "تم استلام الرسالة.",
     "successMsg": "شكرًا على التفاصيل. سأراجعها وأرد عليك في أقرب وقت ممكن.",
     "whatsappReqGuest": "يرجى إضافة وسيلة تواصل مباشرة إذا كنت ترسل كزائر.",
+    "throttleError": "يرجى الانتظار قبل إرسال رسالة أخرى.",
+    "sendError": "حدث خطأ أثناء إرسال رسالتك. يرجى المحاولة مرة أخرى.",
     "availableForWork": "الوضع الحالي",
     "availableDesc": "أكون الأنسب للمشاريع التي تحتاج واجهة عامة واضحة، مع نظام خلفي يسهل العمل عليه أيضًا.",
     "location": "الموقع",
@@ -244,7 +250,9 @@
     "search": "ابحث داخل لوحة التحكم...",
     "quickSearch": "بحث سريع...",
     "testimonials": "التوصيات",
-    "media": "مكتبة الوسائط"
+    "media": "مكتبة الوسائط",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة"
   },
   "dashboardOverview": {
     "overview": "نظرة عامة",

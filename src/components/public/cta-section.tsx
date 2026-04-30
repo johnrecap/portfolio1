@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { ArrowRight, Github, Linkedin, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -73,12 +72,7 @@ export const CTASection = ({ variant = 'card', content = {} }: CTASectionProps) 
 
   return (
     <section className="py-20">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className={shellClass}
-      >
+      <div className={`${shellClass} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
         <div className={headerClass}>
           <div className="flex gap-2">
             <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
@@ -121,7 +115,7 @@ export const CTASection = ({ variant = 'card', content = {} }: CTASectionProps) 
                     key={action.href}
                     href={action.href}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className={buttonVariants({
                       variant: 'outline',
                       className:
@@ -155,7 +149,7 @@ export const CTASection = ({ variant = 'card', content = {} }: CTASectionProps) 
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

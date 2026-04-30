@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, ExternalLink, Github, Layers3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { buttonVariants } from '@/components/ui/button';
+import { OptimizedImage } from '@/components/shared/OptimizedImage';
 import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { getLocalizedValue, resolveMediaField } from '@/lib/content-hub';
@@ -127,14 +127,7 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
 
           <div className={`grid ${variant === 'grid' ? 'xl:grid-cols-[1fr_1fr]' : 'lg:grid-cols-[0.95fr_1.05fr]'}`}>
             <div className="border-b border-slate-800 p-6 lg:border-b-0 lg:border-e">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeProject.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-6"
-                >
+              <div key={activeProject.id} className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <div className="flex items-center gap-2 text-primary">
                     <Layers3 className="h-4 w-4" />
                     <span className="font-mono text-xs uppercase tracking-[0.18em]">
@@ -201,7 +194,7 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
                       <a
                         href={activeProject.demoUrl}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className={buttonVariants({
                           className:
                             'gap-2 bg-primary text-primary-foreground hover:bg-primary-hover',
@@ -215,7 +208,7 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
                       <a
                         href={activeProject.githubUrl}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className={buttonVariants({
                           variant: 'outline',
                           className:
@@ -237,22 +230,17 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
                       <ArrowIcon className="h-4 w-4" />
                     </Link>
                   </div>
-                </motion.div>
-              </AnimatePresence>
+              </div>
             </div>
 
             <div className="relative flex min-h-[360px] items-center justify-center bg-[#0a0d12] p-6 lg:p-10">
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <div className="h-[70%] w-[70%] rounded-full bg-primary/15 blur-[100px]" />
               </div>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeProject.id}
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.03 }}
-                  className="relative z-10 w-full overflow-hidden rounded-[1.75rem] border border-slate-700/60 bg-[#151a21] shadow-2xl"
-                >
+              <div
+                key={activeProject.id}
+                className="relative z-10 w-full overflow-hidden rounded-[1.75rem] border border-slate-700/60 bg-[#151a21] shadow-2xl animate-in fade-in zoom-in-95 duration-300"
+              >
                   <div className="flex items-center justify-between border-b border-slate-700/60 px-4 py-3 font-mono text-xs text-slate-400">
                     <span dir={isArabic ? 'rtl' : 'ltr'}>
                       {isArabic ? activeProjectTitle : `${activeProject.slug}.app`}
@@ -263,10 +251,11 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
                   </div>
                   <div className="aspect-video overflow-hidden bg-slate-950">
                     {previewImage.url ? (
-                      <img
-                        src={previewImage.url}
+                      <OptimizedImage
+                        imageUrl={previewImage.url}
                         alt={activeProjectTitle}
-                        referrerPolicy="no-referrer"
+                        priority
+                        sizes="(min-width: 1024px) 520px, 100vw"
                         className="h-full w-full object-cover object-top"
                       />
                     ) : (
@@ -275,8 +264,7 @@ export const FeaturedProjectsGrid = ({ variant = 'spotlight', content = {} }: Fe
                       </div>
                     )}
                   </div>
-                </motion.div>
-              </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>

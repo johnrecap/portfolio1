@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Terminal, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 
-export const TerminalEasterEgg = () => {
-  const [isOpen, setIsOpen] = useState(false);
+type TerminalEasterEggProps = {
+  initialOpen?: boolean;
+};
+
+export const TerminalEasterEgg = ({ initialOpen = false }: TerminalEasterEggProps) => {
+  const [isOpen, setIsOpen] = useState(initialOpen);
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<{ type: 'input' | 'output'; text: string }[]>([
     { type: 'output', text: 'Welcome to the hidden terminal. Type "help" to see available commands.' }
@@ -67,14 +70,9 @@ export const TerminalEasterEgg = () => {
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-[450px] bg-slate-950 border border-slate-700 shadow-2xl rounded-lg z-50 overflow-hidden text-sm"
-        >
+    <>
+      {isOpen ? (
+        <div className="fixed bottom-4 left-4 right-4 z-50 overflow-hidden rounded-lg border border-slate-700 bg-slate-950 text-sm shadow-2xl animate-in fade-in slide-in-from-bottom-3 md:left-auto md:right-4 md:w-[450px]">
           <div className="bg-slate-900 border-b border-slate-700 p-2 flex justify-between items-center cursor-move">
             <div className="flex gap-2 items-center text-slate-400 text-xs font-mono ml-2">
               <Terminal className="w-3 h-3" /> secret_terminal
@@ -106,8 +104,8 @@ export const TerminalEasterEgg = () => {
               />
             </form>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </div>
+      ) : null}
+    </>
   );
 };

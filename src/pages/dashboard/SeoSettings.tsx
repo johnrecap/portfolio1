@@ -10,13 +10,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { isSeoTitleMirroringProfile } from '@/lib/admin/brand';
 import { createDefaultSeoSettings } from '@/lib/admin/defaults';
-import { useProfile } from '@/hooks/useProfile';
+import { useDashboardProfile } from '@/hooks/useProfile';
 import { useSeoSettings } from '@/hooks/usePlatformSettings';
 import type { SeoSettings } from '@/lib/admin/types';
 
 export const DashboardSeoSettings = () => {
   const { t } = useTranslation();
-  const { profile } = useProfile();
+  const { profile } = useDashboardProfile();
   const { seoSettings, loading, setDocument } = useSeoSettings();
   const [formData, setFormData] = useState<SeoSettings>(seoSettings);
   const [isSaving, setIsSaving] = useState(false);

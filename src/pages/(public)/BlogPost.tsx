@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'motion/react';
 import { ArrowRight, Calendar, Clock, Copy, Github, Link as LinkIcon, Linkedin } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -154,13 +153,11 @@ export const BlogPost = () => {
         <span className="mb-6 inline-block rounded-full bg-primary/10 px-4 py-1.5 font-heading text-xs font-bold uppercase tracking-widest text-primary">
           {post.category || t('blogPost.article')}
         </span>
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <h1
           className="mb-8 font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground md:text-5xl lg:text-6xl"
         >
           {localizedTitle}
-        </motion.h1>
+        </h1>
         <div className="flex items-center justify-center gap-6 text-sm font-medium text-muted-foreground">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
@@ -215,10 +212,8 @@ export const BlogPost = () => {
           <SkeletonMedia className="h-[400px] w-full rounded-[2rem] md:h-[520px]" />
         </div>
       ) : heroImage.url ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mx-auto mb-16 w-full max-w-7xl px-6"
+        <div
+          className="mx-auto mb-16 w-full max-w-7xl px-6 animate-in fade-in zoom-in-95 duration-300"
         >
           <div className="relative h-[400px] overflow-hidden rounded-[2rem] border border-border bg-muted shadow-2xl md:h-[520px]">
             <img
@@ -233,7 +228,7 @@ export const BlogPost = () => {
               </span>
             </div>
           </div>
-        </motion.div>
+        </div>
       ) : null}
 
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 lg:flex-row lg:gap-16">
@@ -299,7 +294,7 @@ export const BlogPost = () => {
                 <a
                   href={profile.websiteUrl}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-2 font-bold text-primary hover:underline"
                 >
                   <LinkIcon className="h-4 w-4" />
@@ -310,7 +305,7 @@ export const BlogPost = () => {
                 <a
                   href={profile.linkedinUrl}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-2 font-bold text-primary hover:underline"
                 >
                   <Linkedin className="h-4 w-4" />
@@ -321,7 +316,7 @@ export const BlogPost = () => {
                 <a
                   href={profile.githubUrl}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-2 font-bold text-primary hover:underline"
                 >
                   <Github className="h-4 w-4" />

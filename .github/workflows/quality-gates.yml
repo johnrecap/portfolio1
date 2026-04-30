@@ -6,6 +6,17 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      run_lighthouse:
+        description: Run optional Lighthouse smoke audit
+        required: false
+        default: false
+        type: boolean
+      lighthouse_base_url:
+        description: URL to audit when Lighthouse is enabled
+        required: false
+        default: https://portfolio.saeeddev.com
+        type: string
 
 jobs:
   verify:
@@ -33,5 +44,17 @@ jobs:
       - name: Check localization
         run: npm run i18n:check
 
+      - name: Lint demo workspaces
+        run: npm run demo:lint
+
       - name: Build
         run: npm run build
+
+      - name: Check public bundle budget
+        run: npm run bundle:budget
+
+      - name: Optional Lighthouse smoke audit
+        if: github.event_name == 'workflow_dispatch' && inputs.run_lighthouse
+        env:
+          LIGHTHOUSE_BASE_URL: ${{ inputs.lighthouse_base_url }}
+        run: npm run lighthouse:mobile -- --route home

@@ -86,14 +86,20 @@ export function Orders() {
     const orderItems = data.items.map(item => {
       const p = products.find(prod => prod.id === item.productId);
       return {
+        id: generateId(),
         productId: item.productId,
+        productName: p ? p.name : '',
+        sku: p ? p.sku : '',
         quantity: item.quantity,
+        unit: p ? p.unit : 'pcs',
         unitPrice: p ? p.sellingPrice : 0,
-        totalPrice: p ? (p.sellingPrice * item.quantity) : 0
+        unitCost: p ? p.unitCost : 0,
+        lineTotal: p ? (p.sellingPrice * item.quantity) : 0
       };
     });
 
-    const subtotal = orderItems.reduce((sum, i) => sum + i.totalPrice, 0);
+    const subtotal = orderItems.reduce((sum, i) => sum + i.lineTotal, 0);
+    const estimatedCost = orderItems.reduce((sum, i) => sum + (i.unitCost * i.quantity), 0);
 
     const estimatedProfit = orderItems.reduce((sum, item) => {
       const p = products.find(prod => prod.id === item.productId);
@@ -107,11 +113,11 @@ export function Orders() {
       id: generateId(),
       orderNumber: `ORD-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
       customerName: data.customerName,
+      orderDate: new Date().toISOString(),
       status: 'draft',
       items: orderItems,
       subtotal,
-      tax: 0,
-      total: subtotal,
+      estimatedCost,
       estimatedProfit,
       stockApplied: false,
       createdAt: new Date().toISOString(),

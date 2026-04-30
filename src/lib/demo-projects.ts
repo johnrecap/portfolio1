@@ -1,4 +1,13 @@
 import type { ProjectRecord } from './content-hub';
+import { resolveOptimizedImage } from './image-sources';
+
+const DEMO_PREVIEW_IMAGES = {
+  agencyFlowCrm: resolveOptimizedImage('/demo-previews/agency-flow-crm.png'),
+  clinicFlowManager: resolveOptimizedImage('/demo-previews/clinic-flow-manager.png'),
+  storeOpsInventory: resolveOptimizedImage('/demo-previews/StoreOps-Inventory.png'),
+  hireflowAts: resolveOptimizedImage('/demo-previews/hireflow-ats.png'),
+  shopnestCommerce: resolveOptimizedImage('/demo-previews/ShopNest-Commerce.png'),
+} as const;
 
 export const AGENCY_FLOW_CRM_PROJECT: ProjectRecord = {
   id: 'agency-flow-crm-demo',
@@ -14,6 +23,7 @@ export const AGENCY_FLOW_CRM_PROJECT: ProjectRecord = {
   color: 'bg-teal-500',
   tags: ['React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'Recharts', 'Vite'],
   image: '/demo-previews/agency-flow-crm.png',
+  imageMetadata: DEMO_PREVIEW_IMAGES.agencyFlowCrm,
   demoUrl: '/demos/agency-flow-crm/',
   githubUrl: '',
   featured: true,
@@ -59,6 +69,7 @@ export const CLINIC_FLOW_MANAGER_PROJECT: ProjectRecord = {
   color: 'bg-cyan-500',
   tags: ['React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'Recharts', 'Vite', 'i18next'],
   image: '/demo-previews/clinic-flow-manager.png',
+  imageMetadata: DEMO_PREVIEW_IMAGES.clinicFlowManager,
   demoUrl: '/demos/clinic-flow-manager/',
   githubUrl: '',
   featured: true,
@@ -104,6 +115,7 @@ export const STOREOPS_INVENTORY_PROJECT: ProjectRecord = {
   color: 'bg-emerald-500',
   tags: ['React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'Recharts', 'Vite', 'i18next'],
   image: '/demo-previews/StoreOps-Inventory.png',
+  imageMetadata: DEMO_PREVIEW_IMAGES.storeOpsInventory,
   demoUrl: '/demos/storeops-inventory/',
   githubUrl: '',
   featured: true,
@@ -149,6 +161,7 @@ export const HIREFLOW_ATS_PROJECT: ProjectRecord = {
   color: 'bg-indigo-500',
   tags: ['React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'DnD Kit', 'Recharts', 'Vite', 'i18next'],
   image: '/demo-previews/hireflow-ats.png',
+  imageMetadata: DEMO_PREVIEW_IMAGES.hireflowAts,
   demoUrl: '/demos/hireflow-ats/',
   githubUrl: '',
   featured: true,
@@ -194,6 +207,7 @@ export const SHOPNEST_COMMERCE_PROJECT: ProjectRecord = {
   color: 'bg-rose-500',
   tags: ['React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'React Router', 'React Hook Form', 'Zod', 'Recharts', 'Vite'],
   image: '/demo-previews/ShopNest-Commerce.png',
+  imageMetadata: DEMO_PREVIEW_IMAGES.shopnestCommerce,
   demoUrl: '/demos/shopnest-commerce/',
   githubUrl: '',
   featured: true,

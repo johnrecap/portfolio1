@@ -26,8 +26,21 @@ Run the same quality gates locally that the repository expects in CI:
 2. `npm run test`
 3. `npm run i18n:check`
 4. `npm run build`
+5. `npm run bundle:budget`
 
 GitHub Actions runs the same verification path on repository changes.
+
+## Performance and SEO Checks
+
+Use these commands when changing public pages, images, metadata, or deployment behavior:
+
+- `npm run images:optimize` regenerates WebP/AVIF preview images and their manifest.
+- `npm run seo:sitemap` regenerates `public/sitemap.xml` and `public/robots.txt` for the canonical host.
+- `npm run bundle:budget` checks the public entry JS/CSS budgets after `npm run build:client`.
+- `npm run lighthouse:all` writes Lighthouse reports to `.agent/lighthouse/`.
+- `npm run budgets` checks the latest Lighthouse reports against the configured score gates.
+
+The bilingual SEO model is documented in [docs/seo/bilingual-seo.md](docs/seo/bilingual-seo.md). The current strategy is one canonical URL per route with runtime language switching, not separate `/ar` and `/en` URLs.
 
 ## Production on aaPanel / VPS
 
@@ -48,9 +61,11 @@ Quick deploy flow:
 2. Create `.env` on the server from `.env.example` and set `APP_URL`, `PORT`, `HOST`, and any optional secrets you use.
 3. Build the app:
    `npm run build`
-4. Start the production server:
+4. Verify the public bundle budget:
+   `npm run bundle:budget`
+5. Start the production server:
    `npm start`
-5. Verify the internal health endpoint:
+6. Verify the internal health endpoint:
    `http://127.0.0.1:<PORT>/api/health`
 
 The mock route `/api/mock/data` is development-only and is intentionally not exposed in production.

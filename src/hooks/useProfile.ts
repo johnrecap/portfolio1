@@ -1,4 +1,5 @@
 import { usePublicDocument } from './public-firestore';
+import { useDocument } from './useFirestore';
 import { createDefaultProfileSettings } from '@/lib/admin/defaults';
 
 const DEFAULT_PROFILE = {
@@ -17,9 +18,7 @@ const LOADING_PROFILE = {
   heroImageAssetId: '',
 };
 
-export function useProfile() {
-  const { data, loading } = usePublicDocument('settings', 'profile');
-
+function resolveProfile(data: Record<string, unknown> | null, loading: boolean) {
   if (loading) {
     return { profile: LOADING_PROFILE, loading };
   }
@@ -39,4 +38,14 @@ export function useProfile() {
     profile: mergedProfile,
     loading,
   };
+}
+
+export function useProfile() {
+  const { data, loading } = usePublicDocument<Record<string, unknown>>('settings', 'profile');
+  return resolveProfile(data, loading);
+}
+
+export function useDashboardProfile() {
+  const { data, loading } = useDocument<Record<string, unknown>>('settings', 'profile');
+  return resolveProfile(data, loading);
 }

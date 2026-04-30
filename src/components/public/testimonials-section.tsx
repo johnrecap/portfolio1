@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { Quote } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState, SkeletonBlocks } from '@/components/shared/PageState';
@@ -97,17 +96,14 @@ export const TestimonialsSection = ({ variant = 'card', content = {} }: Testimon
         ) : (
         <div className="grid gap-6 md:grid-cols-2">
           {cards.map((item, index) => (
-            <motion.article
+            <article
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.08 }}
               className={`relative flex h-full flex-col rounded-[1.75rem] border p-8 shadow-sm ${
                 variant === 'minimal'
                   ? 'border-primary/10 bg-background/40'
                   : 'border-border/60 bg-card/70'
-              }`}
+              } animate-in fade-in slide-in-from-bottom-3 duration-500`}
+              style={{ animationDelay: `${index * 60}ms` }}
             >
               <Quote className="absolute end-6 top-6 h-10 w-10 text-primary/10" />
               <p className="relative z-10 flex-1 text-base leading-8 text-foreground">"{item.quote}"</p>
@@ -136,7 +132,7 @@ export const TestimonialsSection = ({ variant = 'card', content = {} }: Testimon
                   />
                 ) : null}
               </div>
-            </motion.article>
+            </article>
           ))}
         </div>
         )}

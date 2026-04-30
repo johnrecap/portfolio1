@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { useEffect, useState } from 'react';
 import { Globe, Menu, Moon, Sun, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +34,7 @@ const LanguageToggle = () => {
       variant="ghost"
       size="sm"
       onClick={() => i18n.changeLanguage(i18n.resolvedLanguage === 'ar' ? 'en' : 'ar')}
+      aria-label={i18n.resolvedLanguage === 'ar' ? t('nav.switchToEnglish') : t('nav.switchToArabic')}
       className="flex shrink-0 items-center gap-2 rounded-full px-3 font-medium"
     >
       <Globe className="h-4 w-4" />
@@ -76,6 +76,21 @@ export const PublicNavbar = () => {
   const adminCtaHref = '/login';
   const adminCtaLabel = t('nav.adminLogin');
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
   return (
     <header
       className="sticky top-0 z-50 w-full border-b bg-background/85 backdrop-blur-lg supports-[backdrop-filter]:bg-background/70"
@@ -111,6 +126,7 @@ export const PublicNavbar = () => {
               <Link
                 key={link.href}
                 to={link.href}
+                aria-current={active ? 'page' : undefined}
                 className={`text-sm font-medium transition-colors ${
                   active ? 'text-primary' : 'text-muted-foreground hover:text-primary'
                 }`}
@@ -142,6 +158,9 @@ export const PublicNavbar = () => {
             variant="ghost"
             size="icon"
             onClick={() => setIsOpen((current) => !current)}
+            aria-label={isOpen ? t('nav.closeMenu') : t('nav.openMenu')}
+            aria-expanded={isOpen}
+            aria-controls="public-mobile-menu"
             className="rounded-full"
           >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -149,52 +168,46 @@ export const PublicNavbar = () => {
         </div>
       </div>
 
-      <AnimatePresence>
-        {isOpen ? (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="border-t bg-background md:hidden"
-          >
-            <div className="space-y-3 px-4 py-4">
-              {navigationLoading ? (
-                <div className="space-y-3" aria-hidden="true">
-                  <SkeletonLine className="h-9 w-full rounded-xl" />
-                  <SkeletonLine className="h-9 w-full rounded-xl" />
-                  <SkeletonLine className="h-9 w-full rounded-xl" />
-                </div>
-              ) : navLinks.map((link) => {
-                const active =
-                  link.href === '/'
-                    ? location.pathname === link.href
-                    : location.pathname === link.href || location.pathname.startsWith(`${link.href}/`);
-                return (
-                  <Link
-                    key={link.id}
-                    to={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className={`block rounded-xl px-3 py-2 text-sm font-medium ${
-                      active
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
-              <Link
-                to={adminCtaHref}
-                onClick={() => setIsOpen(false)}
-                className={buttonVariants({ className: 'mt-2 w-full rounded-full' })}
-              >
-                {adminCtaLabel}
-              </Link>
-            </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      {isOpen ? (
+        <div id="public-mobile-menu" className="border-t bg-background animate-in fade-in slide-in-from-top-2 md:hidden">
+          <div className="space-y-3 px-4 py-4">
+            {navigationLoading ? (
+              <div className="space-y-3" aria-hidden="true">
+                <SkeletonLine className="h-9 w-full rounded-xl" />
+                <SkeletonLine className="h-9 w-full rounded-xl" />
+                <SkeletonLine className="h-9 w-full rounded-xl" />
+              </div>
+            ) : navLinks.map((link) => {
+              const active =
+                link.href === '/'
+                  ? location.pathname === link.href
+                  : location.pathname === link.href || location.pathname.startsWith(`${link.href}/`);
+              return (
+                <Link
+                  key={link.id}
+                  to={link.href}
+                  aria-current={active ? 'page' : undefined}
+                  onClick={() => setIsOpen(false)}
+                  className={`block rounded-xl px-3 py-2 text-sm font-medium ${
+                    active
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            <Link
+              to={adminCtaHref}
+              onClick={() => setIsOpen(false)}
+              className={buttonVariants({ className: 'mt-2 w-full rounded-full' })}
+            >
+              {adminCtaLabel}
+            </Link>
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 };
@@ -304,9 +317,9 @@ export const PublicFooter = () => {
         </div>
 
         <div className="space-y-4">
-          <h4 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-foreground dark:text-slate-100">
+          <h2 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-foreground dark:text-slate-100">
             {t('footer.quickLinks')}
-          </h4>
+          </h2>
           <ul className="space-y-3 text-sm text-muted-foreground dark:text-slate-400">
             {footerLoading ? (
               <>
@@ -325,9 +338,9 @@ export const PublicFooter = () => {
         </div>
 
         <div className="space-y-4">
-          <h4 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-foreground dark:text-slate-100">
+          <h2 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-foreground dark:text-slate-100">
             {t('footer.connect')}
-          </h4>
+          </h2>
           <ul className="space-y-3 text-sm text-muted-foreground dark:text-slate-400">
             {footerContentLoading ? (
               <>
@@ -340,7 +353,7 @@ export const PublicFooter = () => {
                 <a
                   href={item.href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="transition-colors hover:text-foreground dark:hover:text-white"
                 >
                   {item.label}

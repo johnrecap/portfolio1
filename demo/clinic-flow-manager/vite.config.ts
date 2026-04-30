@@ -8,7 +8,8 @@ export default defineConfig(() => {
     base: '/demos/clinic-flow-manager/',
     build: {
       outDir: '../../dist/demos/clinic-flow-manager',
-      emptyOutDir: true
+      emptyOutDir: true,
+      chunkSizeWarningLimit: 1200,
     },
     plugins: [react(), tailwindcss()],
     resolve: {

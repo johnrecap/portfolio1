@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { motion } from 'motion/react';
 import { ArrowRight, ExternalLink, Github, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
+import { OptimizedImage } from '@/components/shared/OptimizedImage';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { EmptyState, SkeletonBlocks, SkeletonMedia } from '@/components/shared/PageState';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
@@ -231,7 +231,7 @@ export const Projects = () => {
           />
         ) : (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {sortedProjects.map((project, index) => {
+          {sortedProjects.map((project) => {
             const projectType = normalizeProjectType(project.type ?? project.category);
             const titleText = getLocalizedValue(project.title, project.titleAr, isArabic) || project.title;
             const descriptionText =
@@ -240,21 +240,18 @@ export const Projects = () => {
             const previewImage = resolveMediaField({ url: project.image, assetId: project.imageAssetId }, assets);
 
             return (
-              <motion.article
+              <article
                 key={project.id}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="group overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/70 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                className="group overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/70 shadow-sm transition-all animate-in fade-in slide-in-from-bottom-2 duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
                 <Link to={`/projects/${project.slug}`} className="block aspect-[16/10] overflow-hidden bg-muted">
                   {mediaLoading ? (
                     <SkeletonMedia className="h-full w-full rounded-none" />
                   ) : previewImage.url ? (
-                    <img
-                      src={previewImage.url}
+                    <OptimizedImage
+                      imageUrl={previewImage.url}
                       alt={titleText}
-                      referrerPolicy="no-referrer"
+                      sizes="(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 100vw"
                       className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
@@ -315,7 +312,7 @@ export const Projects = () => {
                       <a
                         href={project.demoUrl}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
                       >
                         <ExternalLink className="h-4 w-4" />
@@ -326,7 +323,7 @@ export const Projects = () => {
                       <a
                         href={project.githubUrl}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
                       >
                         <Github className="h-4 w-4" />
@@ -335,7 +332,7 @@ export const Projects = () => {
                     ) : null}
                   </div>
                 </div>
-              </motion.article>
+              </article>
             );
           })}
           </div>
@@ -382,21 +379,20 @@ export const Projects = () => {
             const previewImage = resolveMediaField({ url: project.image, assetId: project.imageAssetId }, assets);
 
             return (
-              <motion.article
+              <article
                 key={project.id}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="group overflow-hidden rounded-[1.75rem] border border-primary/20 bg-card/70 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                className="group overflow-hidden rounded-[1.75rem] border border-primary/20 bg-card/70 shadow-sm transition-all animate-in fade-in slide-in-from-bottom-2 duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
                 <Link
                   to={`/projects/${project.slug}`}
                   className="block aspect-[16/10] overflow-hidden bg-slate-950"
                 >
                   {previewImage.url ? (
-                    <img
-                      src={previewImage.url}
+                    <OptimizedImage
+                      imageUrl={previewImage.url}
                       alt={titleText}
+                      priority={index < 2}
+                      sizes="(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 100vw"
                       className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
@@ -469,7 +465,7 @@ export const Projects = () => {
                       <a
                         href={project.demoUrl}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
                       >
                         <ExternalLink className="h-4 w-4" />
@@ -478,7 +474,7 @@ export const Projects = () => {
                     ) : null}
                   </div>
                 </div>
-              </motion.article>
+              </article>
             );
           })}
         </div>

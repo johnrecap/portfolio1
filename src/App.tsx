@@ -1,4 +1,4 @@
-import { Suspense, lazy, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
 import { Navigate, createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ThemeProvider } from './components/shared/theme-provider';
@@ -7,8 +7,8 @@ import { Toaster } from '@/components/ui/sonner';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { ScrollToTop } from './components/shared/ScrollToTop';
 import { DevBackground } from './components/shared/DevBackground';
-import { TerminalEasterEgg } from './components/shared/TerminalEasterEgg';
 import { SkeletonBlocks } from '@/components/shared/PageState';
+import { PublicDataProvider } from '@/contexts/PublicDataProvider';
 import { buildPublicThemeStyle } from '@/lib/admin/settings';
 import { useTheme } from '@/components/shared/theme-provider';
 import { useThemeSettings } from '@/hooks/usePlatformSettings';
@@ -29,6 +29,9 @@ const ContactForm = lazy(() =>
 );
 const ProjectDetail = lazy(() =>
   import('./pages/(public)/ProjectDetail').then((module) => ({ default: module.ProjectDetail })),
+);
+const TerminalEasterEgg = lazy(() =>
+  import('./components/shared/TerminalEasterEgg').then((module) => ({ default: module.TerminalEasterEgg })),
 );
 const NotFound = lazy(() =>
   import('./pages/(public)/NotFound').then((module) => ({ default: module.NotFound })),
@@ -92,6 +95,39 @@ const withSuspense = (node: ReactNode, dashboard = false) => (
   <Suspense fallback={<RouteLoader dashboard={dashboard} />}>{node}</Suspense>
 );
 
+const TerminalEasterEggLoader = () => {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    if (enabled) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const isTypingTarget = target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA';
+
+      if (event.key === '`' && !isTypingTarget) {
+        event.preventDefault();
+        setEnabled(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [enabled]);
+
+  if (!enabled) {
+    return null;
+  }
+
+  return (
+    <Suspense fallback={null}>
+      <TerminalEasterEgg initialOpen />
+    </Suspense>
+  );
+};
+
 const PublicLayout = () => {
   const { i18n } = useTranslation();
   const { themeSettings } = useThemeSettings({ publicRead: true });
@@ -106,17 +142,19 @@ const PublicLayout = () => {
       dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
       style={buildPublicThemeStyle(themeSettings, siteResolvedTheme === 'dark')}
     >
-      <PageSeo />
-      <DevBackground />
-      <TerminalEasterEgg />
-      <ScrollToTop />
-      <div className="flex min-h-screen flex-col">
-        <PublicNavbar />
-        <main className="relative z-10 mx-auto flex w-full max-w-[1344px] flex-1 px-4 py-8 sm:px-6 lg:px-8">
-          <Outlet />
-        </main>
-        <PublicFooter />
-      </div>
+      <PublicDataProvider>
+        <PageSeo />
+        <DevBackground />
+        <TerminalEasterEggLoader />
+        <ScrollToTop />
+        <div className="flex min-h-screen flex-col">
+          <PublicNavbar />
+          <main className="relative z-10 mx-auto flex w-full max-w-[1344px] flex-1 px-4 py-8 sm:px-6 lg:px-8">
+            <Outlet />
+          </main>
+          <PublicFooter />
+        </div>
+      </PublicDataProvider>
     </div>
   );
 };
