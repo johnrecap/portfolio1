@@ -19,7 +19,7 @@
     "lint": "tsc --noEmit",
     "test:content": "tsx --test src/lib/content-utils.test.ts src/lib/project-utils.test.ts src/lib/content-hub.test.ts src/lib/image-sources.test.ts src/lib/media.test.ts src/lib/public-bootstrap.test.ts src/server/seo.test.ts",
     "test:admin": "tsx --test src/lib/admin/auth.test.ts src/lib/admin/defaults.test.ts src/lib/admin/page-config.test.ts src/lib/admin/page-content.test.ts src/lib/admin/platform-settings.test.ts src/lib/admin/section-registry.test.ts src/lib/admin/settings.test.ts",
-    "test:firestore": "tsx --test src/hooks/useFirestore.test.ts src/hooks/public-firestore.test.ts",
+    "test:firestore": "tsx --test src/hooks/useFirestore.test.ts src/hooks/public-firestore.test.ts src/contexts/PublicDataProvider.test.tsx",
     "test:locales": "tsx --test src/locales/dashboard-locales.test.ts",
     "test": "npm run test:content && npm run test:admin && npm run test:firestore && npm run test:locales",
     "start": "node -e \"process.env.NODE_ENV='production'; import('./dist/server/server.js')\"",

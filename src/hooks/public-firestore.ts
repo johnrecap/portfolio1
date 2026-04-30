@@ -70,12 +70,11 @@ export function usePublicDocument<T>(path: string, docId: string) {
 }
 
 export function usePublicMediaLibrary() {
-  const publicData = useOptionalPublicData();
-  const initial = getInitialPublicCollection('mediaAssets');
-  const assets = (publicData?.collections.mediaAssets ?? initial.data) as MediaAssetRecord[];
+  const { data: assets, loading, error, addDocument, updateDocument, removeDocument } =
+    usePublicCollection<MediaAssetRecord>('mediaAssets');
 
   return useMemo(
-    () => ({ assets, loading: false, error: null, addDocument: async () => undefined, updateDocument: async () => undefined, removeDocument: async () => undefined }),
-    [assets],
+    () => ({ assets, loading, error, addDocument, updateDocument, removeDocument }),
+    [assets, loading, error, addDocument, updateDocument, removeDocument],
   );
 }
