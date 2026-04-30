@@ -48,9 +48,10 @@ function usePlatformSetting<T>(
   const initial = options?.publicRead === true
     ? getInitialPublicDocument('settings', docId)
     : { data: null, hasData: false };
+  const shouldReadClientFallback = options?.publicRead === true && initial.hasData !== true;
   const { data, loading, setDocument } = useDocument<Record<string, unknown>>('settings', docId, {
     suppressPermissionDenied: options?.publicRead === true,
-    disabled: options?.publicRead === true,
+    disabled: options?.publicRead === true && !shouldReadClientFallback,
     initialData: initial.data,
     hasInitialData: initial.hasData,
     keepDataOnSuppressedError: options?.publicRead === true,

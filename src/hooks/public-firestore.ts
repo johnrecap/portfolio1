@@ -4,7 +4,10 @@ import { useOptionalPublicData } from '@/contexts/PublicDataProvider';
 import {
   getInitialPublicCollection,
   getInitialPublicDocument,
+  updatePublicCollectionCache,
+  updatePublicDocumentCache,
 } from '@/lib/public-bootstrap';
+import { useCollection, useDocument } from './useFirestore';
 import type { MediaAssetRecord } from '@/lib/content-hub';
 
 export const PUBLIC_FIRESTORE_READ_OPTIONS = {
@@ -14,22 +17,55 @@ export const PUBLIC_FIRESTORE_READ_OPTIONS = {
 export function usePublicCollection<T>(path: string) {
   const publicData = useOptionalPublicData();
   const initial = getInitialPublicCollection(path);
-  const data = (publicData?.collections[path] ?? initial.data) as (T & { id: string })[];
+  const contextData = publicData?.collections[path];
+  const hasBootstrapData = contextData !== undefined || initial.hasData;
+  const fallback = useCollection<T>(path, {
+    ...PUBLIC_FIRESTORE_READ_OPTIONS,
+    disabled: hasBootstrapData,
+    initialData: contextData ?? initial.data,
+    hasInitialData: hasBootstrapData,
+    keepDataOnSuppressedError: true,
+    onData: (value) => updatePublicCollectionCache(path, value as Array<Record<string, unknown> & { id: string }>),
+  });
+  const data = (hasBootstrapData ? contextData ?? initial.data : fallback.data) as (T & { id: string })[];
 
   return useMemo(
-    () => ({ data, loading: false, error: null, addDocument: async () => undefined, updateDocument: async () => undefined, removeDocument: async () => undefined }),
-    [data],
+    () => ({
+      data,
+      loading: hasBootstrapData ? false : fallback.loading,
+      error: fallback.error,
+      addDocument: fallback.addDocument,
+      updateDocument: fallback.updateDocument,
+      removeDocument: fallback.removeDocument,
+    }),
+    [data, fallback.loading, fallback.error, fallback.addDocument, fallback.updateDocument, fallback.removeDocument, hasBootstrapData],
   );
 }
 
 export function usePublicDocument<T>(path: string, docId: string) {
   const publicData = useOptionalPublicData();
   const initial = getInitialPublicDocument(path, docId);
-  const data = (publicData?.documents[`${path}/${docId}`] ?? initial.data) as (T & { id: string }) | null;
+  const documentKey = `${path}/${docId}`;
+  const contextData = publicData?.documents[documentKey];
+  const hasBootstrapData = Object.prototype.hasOwnProperty.call(publicData?.documents ?? {}, documentKey) || initial.hasData;
+  const fallback = useDocument<T>(path, docId, {
+    ...PUBLIC_FIRESTORE_READ_OPTIONS,
+    disabled: hasBootstrapData,
+    initialData: contextData ?? initial.data,
+    hasInitialData: hasBootstrapData,
+    keepDataOnSuppressedError: true,
+    onData: (value) => updatePublicDocumentCache(path, docId, value as Record<string, unknown> | null),
+  });
+  const data = (hasBootstrapData ? contextData ?? initial.data : fallback.data) as (T & { id: string }) | null;
 
   return useMemo(
-    () => ({ data, loading: false, error: null, setDocument: async (_docData?: unknown, _merge?: boolean) => undefined }),
-    [data],
+    () => ({
+      data,
+      loading: hasBootstrapData ? false : fallback.loading,
+      error: fallback.error,
+      setDocument: fallback.setDocument,
+    }),
+    [data, fallback.loading, fallback.error, fallback.setDocument, hasBootstrapData],
   );
 }
 
