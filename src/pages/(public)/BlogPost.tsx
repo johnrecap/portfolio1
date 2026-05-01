@@ -10,39 +10,13 @@ import { PageSeo } from '@/components/shared/PageSeo';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { useProfile } from '@/hooks/useProfile';
 import { sortByCreatedAtDesc } from '@/hooks/useFirestore';
-import { getLocalizedValue, resolveEntitySeo, resolveMediaField } from '@/lib/content-hub';
-
-type BlogPostRecord = {
-  id: string;
-  slug: string;
-  title: string;
-  titleAr?: string;
-  excerpt?: string;
-  excerptAr?: string;
-  content?: string;
-  contentAr?: string;
-  category?: string;
-  image?: string;
-  imageAssetId?: string;
-  coverImage?: string;
-  coverImageAssetId?: string;
-  readTime?: string;
-  featured?: boolean;
-  seo?: {
-    title?: string;
-    titleAr?: string;
-    description?: string;
-    descriptionAr?: string;
-    image?: string;
-    imageAssetId?: string;
-  };
-  createdAt?: { seconds?: number };
-};
+import { getLocalizedValue, resolveEntitySeo, resolveMediaField, type BlogRecord } from '@/lib/content-hub';
+import { mergePublicBlogPosts } from '@/lib/demo-blog-posts';
 
 export const BlogPost = () => {
   const { slug } = useParams();
   const [readingProgress, setReadingProgress] = useState(0);
-  const { data: articles, loading } = usePublicCollection<BlogPostRecord>('blogs');
+  const { data: articles, loading } = usePublicCollection<BlogRecord>('blogs');
   const { assets, loading: mediaLoading } = usePublicMediaLibrary();
   const { profile, loading: profileLoading } = useProfile();
   const { i18n, t } = useTranslation();
@@ -50,6 +24,7 @@ export const BlogPost = () => {
   const displayName = i18n.language === 'ar' ? profile.displayNameAr || profile.displayName : profile.displayName;
   const title = i18n.language === 'ar' ? profile.titleAr || profile.title : profile.title;
   const bio = i18n.language === 'ar' ? profile.bioAr || profile.bio : profile.bio;
+  const mergedArticles = useMemo(() => mergePublicBlogPosts(articles), [articles]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,8 +39,8 @@ export const BlogPost = () => {
   }, []);
 
   const post = useMemo(
-    () => articles.find((article) => article.slug === slug) ?? null,
-    [articles, slug],
+    () => mergedArticles.find((article) => article.slug === slug) ?? null,
+    [mergedArticles, slug],
   );
 
   const related = useMemo(() => {
@@ -73,10 +48,10 @@ export const BlogPost = () => {
       return [];
     }
 
-    return sortByCreatedAtDesc(articles)
+    return sortByCreatedAtDesc(mergedArticles)
       .filter((article) => article.id !== post.id && article.category === post.category)
       .slice(0, 3);
-  }, [articles, post]);
+  }, [mergedArticles, post]);
 
   const formatDate = (seconds?: number) => {
     if (!seconds) {

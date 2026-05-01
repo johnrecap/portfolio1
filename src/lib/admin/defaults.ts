@@ -64,40 +64,40 @@ const DEFAULT_PAGE_METADATA: Record<
   { title: string; titleAr: string; description: string; descriptionAr: string }
 > = {
   home: {
-    title: 'Websites and Dashboards',
+    title: 'Mohamed Saied - React Developer for Websites and Dashboards',
     titleAr: 'مواقع ولوحات تحكم',
     description:
-      'Public websites, dashboards, and internal tools for small teams and founders who need clear structure and practical delivery.',
+      'React developer in Egypt building public websites, admin dashboards, internal tools, and bilingual Arabic-English web apps for small teams.',
     descriptionAr:
       'مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق صغيرة وأصحاب مشاريع يحتاجون إلى هيكل واضح وتنفيذ عملي.',
   },
   about: {
-    title: 'About',
+    title: 'About Mohamed Saied - Product Engineer in Egypt',
     titleAr: 'نبذة',
     description:
-      'How Mohamed Saied approaches public websites, dashboards, and the internal systems behind them.',
+      'Learn how Mohamed Saied builds websites, React dashboards, and internal tools with practical delivery for small teams and founders.',
     descriptionAr:
       'كيف يتعامل محمد سعيد مع المواقع العامة، ولوحات الإدارة، والأنظمة الداخلية التي تدعمها.',
   },
   projects: {
-    title: 'Selected Work',
+    title: 'React Dashboards, Web Apps, and Internal Tools Portfolio',
     titleAr: 'أعمال مختارة',
-    description: 'Selected client work across public websites, dashboards, and practical product workflows.',
+    description: 'Explore live React dashboard demos, web app projects, CRM workflows, inventory systems, clinic tools, and e-commerce admin experiences.',
     descriptionAr: 'أعمال مختارة عبر مواقع عامة، ولوحات إدارة، وتدفقات منتج عملية.',
   },
   blog: {
-    title: 'Notes',
+    title: 'Notes on React Dashboards, Web Apps, and Internal Tools',
     titleAr: 'ملاحظات',
     description:
-      'Notes on product work, web systems, and the decisions behind public websites and internal tools.',
+      'Practical notes for founders and teams planning websites, React dashboards, internal tools, and bilingual web products.',
     descriptionAr:
       'ملاحظات عن العمل على المنتجات، وأنظمة الويب، والقرارات خلف المواقع العامة والأدوات الداخلية.',
   },
   contact: {
-    title: 'Contact',
+    title: 'Hire Mohamed Saied for Websites and Dashboards',
     titleAr: 'تواصل',
     description:
-      'Share the project context, the current stage, and where you need help to start a practical conversation.',
+      'Contact Mohamed Saied to discuss a website, React dashboard, internal tool, or bilingual Arabic-English web app project.',
     descriptionAr:
       'شارك سياق المشروع، والمرحلة الحالية، والجزء الذي تحتاج فيه إلى المساعدة لبدء محادثة عملية.',
   },
@@ -142,18 +142,18 @@ export function createDefaultProfileSettings(): ProfileSettings {
   return {
     displayName: 'Mohamed Saied',
     displayNameAr: 'محمد سعيد',
-    title: 'Product Engineer',
+    title: 'React Developer and Product Engineer in Egypt',
     titleAr: 'مهندس منتجات رقمية',
-    bio: 'I build public websites, dashboards, and internal tools for teams that need clear structure and practical day-to-day use.',
+    bio: 'I am Mohamed Saied, also searched as Mohamed Saeed or saeeddev. I build public websites, React dashboards, and internal tools for teams that need clear structure and practical day-to-day use.',
     bioAr: 'أبني مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق تحتاج إلى هيكل واضح واستخدام عملي يمكن الاعتماد عليه يوميًا.',
     isAvailable: true,
     githubUrl: '',
     linkedinUrl: '',
     websiteUrl: '',
-    metaTitle: 'Mohamed Studio | Mohamed Saied',
+    metaTitle: 'Mohamed Saied - React Developer for Websites and Dashboards',
     metaTitleAr: 'محمد ستوديو | محمد سعيد',
     metaDescription:
-      'Mohamed Saied builds public websites, dashboards, and internal tools for small teams and founders who need clear structure, practical delivery, and bilingual support.',
+      'Mohamed Saied, also searched as Mohamed Saeed and saeeddev, builds React websites, admin dashboards, and internal tools for small teams.',
     metaDescriptionAr:
       'يبني محمد سعيد مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق صغيرة وأصحاب مشاريع يحتاجون إلى هيكل واضح، وتنفيذ عملي، ودعم ثنائي اللغة.',
     profileImage: '',
@@ -171,7 +171,7 @@ export function createDefaultSiteSettings(): SiteSettings {
   return {
     siteName: 'Mohamed Studio',
     siteNameAr: 'محمد ستوديو',
-    siteTagline: 'I build public-facing websites, dashboards, and internal tools with the same focus on clarity and day-to-day usability.',
+    siteTagline: 'I build React websites, admin dashboards, internal tools, and bilingual Arabic-English web apps with a focus on clarity and day-to-day usability.',
     siteTaglineAr: 'أبني مواقع عامة، ولوحات إدارة، وأدوات داخلية مع اهتمام واضح بسهولة الاستخدام وسهولة التطوير لاحقًا.',
     logoUrl: '',
     logoAssetId: '',
@@ -231,10 +231,10 @@ export function createDefaultFooterSettings(): FooterSettings {
 
 export function createDefaultSeoSettings(): SeoSettings {
   return {
-    defaultTitle: 'Mohamed Studio | Mohamed Saied',
+    defaultTitle: 'Mohamed Saied - React Developer for Websites and Dashboards',
     defaultTitleAr: 'محمد ستوديو | محمد سعيد',
     defaultDescription:
-      'Public websites, dashboards, and internal tools built by Mohamed Saied with a focus on clarity, practical delivery, and bilingual support.',
+      'React developer in Egypt building public websites, admin dashboards, internal tools, and bilingual Arabic-English web apps for small teams.',
     defaultDescriptionAr:
       'مواقع عامة، ولوحات إدارة، وأدوات داخلية يبنيها محمد سعيد مع تركيز على الوضوح، والتنفيذ العملي، ودعم العربية والإنجليزية.',
     ogImage: '',

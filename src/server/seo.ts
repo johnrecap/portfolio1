@@ -1,6 +1,113 @@
 import type { PublicBootstrapCollectionItem, PublicBootstrapPacket } from '../lib/public-bootstrap.js';
+import { DEMO_BLOG_POSTS } from '../lib/demo-blog-posts.js';
 
 export const DEFAULT_CANONICAL_SITE_URL = 'https://portfolio.saeeddev.com';
+
+const STATIC_ROUTE_SEO_TARGETS: Record<string, { title: string; description: string }> = {
+  '/': {
+    title: 'Mohamed Saied - React Developer for Websites and Dashboards',
+    description:
+      'React developer in Egypt building public websites, admin dashboards, internal tools, and bilingual Arabic-English web apps for small teams.',
+  },
+  '/about': {
+    title: 'About Mohamed Saied - Product Engineer in Egypt',
+    description:
+      'Learn how Mohamed Saied builds websites, React dashboards, and internal tools with practical delivery for small teams and founders.',
+  },
+  '/projects': {
+    title: 'React Dashboards, Web Apps, and Internal Tools Portfolio',
+    description:
+      'Explore live React dashboard demos, web app projects, CRM workflows, inventory systems, clinic tools, and e-commerce admin experiences.',
+  },
+  '/skills': {
+    title: 'React, TypeScript, and Firebase Developer Skills',
+    description:
+      'A practical React, TypeScript, Firebase, and Node.js stack used to build dashboards, bilingual websites, and internal tools.',
+  },
+  '/blog': {
+    title: 'Notes on React Dashboards, Web Apps, and Internal Tools',
+    description:
+      'Practical notes for founders and teams planning websites, React dashboards, internal tools, and bilingual web products.',
+  },
+  '/contact': {
+    title: 'Hire Mohamed Saied for Websites and Dashboards',
+    description:
+      'Contact Mohamed Saied to discuss a website, React dashboard, internal tool, or bilingual Arabic-English web app project.',
+  },
+};
+
+const DEMO_PROJECT_SEO_TARGETS: PublicBootstrapCollectionItem[] = [
+  {
+    id: 'shopnest-commerce-demo',
+    slug: 'shopnest-commerce',
+    title: 'ShopNest Commerce',
+    description:
+      'A working e-commerce web app demo with storefront browsing, cart, checkout, coupons, and an admin workspace for products and orders.',
+    category: 'E-commerce Store',
+    image: '/demo-previews/ShopNest-Commerce.png',
+    seo: {
+      title: 'React Ecommerce Dashboard Demo - ShopNest Commerce',
+      description:
+        'A React ecommerce dashboard and e-commerce admin dashboard demo with storefront browsing, cart, checkout, products, orders, and coupons.',
+    },
+  },
+  {
+    id: 'clinic-flow-manager-demo',
+    slug: 'clinic-flow-manager',
+    title: 'ClinicFlow Manager',
+    description:
+      'A working clinic operations dashboard demo with appointments, patients, doctors, billing, reports, and isolated editable visitor sessions.',
+    category: 'Healthcare Dashboard',
+    image: '/demo-previews/clinic-flow-manager.png',
+    seo: {
+      title: 'Clinic Management Dashboard Demo - ClinicFlow Manager',
+      description:
+        'A clinic management dashboard and healthcare admin dashboard demo with appointments, patients, doctors, billing, reports, and isolated sessions.',
+    },
+  },
+  {
+    id: 'agency-flow-crm-demo',
+    slug: 'agency-flow-crm',
+    title: 'AgencyFlow CRM',
+    description:
+      'A working CRM dashboard demo for small agencies with leads, deals, clients, tasks, reports, and isolated editable visitor sessions.',
+    category: 'React Dashboard',
+    image: '/demo-previews/agency-flow-crm.png',
+    seo: {
+      title: 'React CRM Dashboard Demo - AgencyFlow CRM',
+      description:
+        'A React CRM dashboard and agency CRM dashboard demo with leads, deals, clients, tasks, reports, and isolated editable visitor sessions.',
+    },
+  },
+  {
+    id: 'storeops-inventory-demo',
+    slug: 'storeops-inventory',
+    title: 'StoreOps Inventory',
+    description:
+      'A working inventory operations dashboard demo with products, suppliers, stock movements, sales orders, reports, and bilingual settings.',
+    category: 'Inventory Dashboard',
+    image: '/demo-previews/StoreOps-Inventory.png',
+    seo: {
+      title: 'Inventory Dashboard React Demo - StoreOps Inventory',
+      description:
+        'An inventory dashboard React demo and inventory management dashboard with products, suppliers, stock movements, sales orders, and reports.',
+    },
+  },
+  {
+    id: 'hireflow-ats-demo',
+    slug: 'hireflow-ats',
+    title: 'HireFlow ATS',
+    description:
+      'A working applicant tracking dashboard demo with jobs, candidates, hiring pipeline stages, interviews, evaluations, reports, and bilingual settings.',
+    category: 'Recruiting Dashboard',
+    image: '/demo-previews/hireflow-ats.png',
+    seo: {
+      title: 'Applicant Tracking System Dashboard Demo - HireFlow ATS',
+      description:
+        'An applicant tracking system dashboard and ATS dashboard React demo with jobs, candidates, draggable pipeline stages, interviews, and reports.',
+    },
+  },
+];
 
 type RouteSeoOptions = {
   siteUrl?: string;
@@ -105,6 +212,12 @@ export function buildRouteHeadTags(routePath: string, packet: PublicBootstrapPac
   let description = getStringField(pageSeo, 'description') || fallbackDescription;
   let image = getStringField(pageSeo, 'image') || getStringField(seo, 'defaultImage');
   let pageType = 'website';
+
+  const staticRouteSeo = STATIC_ROUTE_SEO_TARGETS[normalizedPath];
+  if (staticRouteSeo && !getStringField(pageSeo, 'title') && !getStringField(page, 'title')) {
+    title = staticRouteSeo.title;
+    description = staticRouteSeo.description;
+  }
   const jsonLd: Array<Record<string, unknown>> = [
     {
       '@context': 'https://schema.org',
@@ -123,7 +236,7 @@ export function buildRouteHeadTags(routePath: string, packet: PublicBootstrapPac
 
   const [, collectionName, slug] = normalizedPath.split('/');
   if (collectionName === 'projects' && slug) {
-    const project = findBySlug(packet.collections.projects, slug);
+    const project = findBySlug(packet.collections.projects, slug) ?? findBySlug(DEMO_PROJECT_SEO_TARGETS, slug);
     if (project) {
       title = resolveEntityTitle(project, title);
       description = resolveEntityDescription(project, description);
@@ -142,7 +255,7 @@ export function buildRouteHeadTags(routePath: string, packet: PublicBootstrapPac
   }
 
   if (collectionName === 'blog' && slug) {
-    const post = findBySlug(packet.collections.blogs, slug);
+    const post = findBySlug(packet.collections.blogs, slug) ?? findBySlug(DEMO_BLOG_POSTS, slug);
     if (post) {
       title = resolveEntityTitle(post, title);
       description = resolveEntityDescription(post, description);

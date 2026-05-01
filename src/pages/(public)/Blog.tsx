@@ -13,6 +13,7 @@ import { usePageConfig } from '@/hooks/usePageConfig';
 import { readComposerText } from '@/lib/admin/page-content';
 import { ALL_BLOG_CATEGORY, buildBlogCategories, filterBlogsByCategory } from '@/lib/content-utils';
 import { getLocalizedValue, resolveMediaField, type BlogRecord } from '@/lib/content-hub';
+import { mergePublicBlogPosts } from '@/lib/demo-blog-posts';
 
 export const Blog = () => {
   const { data: articles, loading } = usePublicCollection<BlogRecord>('blogs');
@@ -26,6 +27,7 @@ export const Blog = () => {
 
   const displayName = i18n.language === 'ar' ? profile.displayNameAr || profile.displayName : profile.displayName;
   const isArabic = i18n.language === 'ar';
+  const mergedArticles = useMemo(() => mergePublicBlogPosts(articles), [articles]);
   const heroSection = pageConfig.sections.find((section) => section.type === 'blogHero');
   const listingSection = pageConfig.sections.find((section) => section.type === 'blogListing');
   const seoTitle = isArabic
@@ -52,11 +54,11 @@ export const Blog = () => {
   const listingSubtitle = listingSection
     ? readComposerText(listingSection.content, 'subtitle', '', isArabic)
     : '';
-  const categories = useMemo(() => buildBlogCategories(articles), [articles]);
+  const categories = useMemo(() => buildBlogCategories(mergedArticles), [mergedArticles]);
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
   const filteredArticles = useMemo(() => {
-    return filterBlogsByCategory(articles, activeCategory).filter((article) => {
+    return filterBlogsByCategory(mergedArticles, activeCategory).filter((article) => {
       if (!normalizedQuery) {
         return true;
       }
@@ -75,7 +77,7 @@ export const Blog = () => {
 
       return haystack.includes(normalizedQuery);
     });
-  }, [activeCategory, articles, normalizedQuery]);
+  }, [activeCategory, mergedArticles, normalizedQuery]);
 
   const visibleArticles = filteredArticles.slice(0, visibleCount);
 

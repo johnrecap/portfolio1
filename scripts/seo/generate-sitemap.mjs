@@ -6,6 +6,14 @@ const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..',
 const publicDir = path.join(rootDir, 'public');
 const siteUrl = (process.env.PUBLIC_SITE_URL || process.env.SITE_URL || 'https://portfolio.saeeddev.com').replace(/\/$/, '');
 
+const demoBlogRoutes = [
+  '/blog/shopnest-commerce-react-ecommerce-dashboard',
+  '/blog/clinic-flow-manager-clinic-management-dashboard',
+  '/blog/agency-flow-crm-react-crm-dashboard',
+  '/blog/storeops-inventory-dashboard-react-demo',
+  '/blog/hireflow-ats-applicant-tracking-dashboard',
+];
+
 const staticRoutes = [
   '/',
   '/about',
@@ -18,6 +26,7 @@ const staticRoutes = [
   '/blog',
   '/skills',
   '/contact',
+  ...demoBlogRoutes,
 ];
 
 function escapeXml(value) {

@@ -45,10 +45,10 @@ export const AGENCY_FLOW_CRM_PROJECT: ProjectRecord = {
   resultAr:
     'دليل عملي مباشر داخل البورتفوليو يمكن فتحه وتجربته، مع رجوع البيانات الافتراضية لكل زائر جديد.',
   seo: {
-    title: 'AgencyFlow CRM Demo',
+    title: 'React CRM Dashboard Demo - AgencyFlow CRM',
     titleAr: 'ديمو إدارة علاقات العملاء للوكالات',
     description:
-      'A React CRM dashboard demo with isolated editable visitor sessions.',
+      'A React CRM dashboard and agency CRM dashboard demo with leads, deals, clients, tasks, reports, and isolated editable visitor sessions.',
     descriptionAr:
       'ديمو لوحة CRM مبنية بـ React مع جلسات تعديل منفصلة لكل زائر.',
   },
@@ -91,10 +91,10 @@ export const CLINIC_FLOW_MANAGER_PROJECT: ProjectRecord = {
   resultAr:
     'دليل عملي مباشر للوحة تشغيل طبية يمكن للزائر تجربتها بأمان وإرجاع بياناتها الأصلية في أي وقت.',
   seo: {
-    title: 'ClinicFlow Manager Demo',
+    title: 'Clinic Management Dashboard Demo - ClinicFlow Manager',
     titleAr: 'ديمو مدير العيادات',
     description:
-      'A React clinic management dashboard demo with isolated editable visitor sessions.',
+      'A clinic management dashboard and healthcare admin dashboard demo with appointments, patients, doctors, billing, reports, and isolated sessions.',
     descriptionAr:
       'ديمو لوحة إدارة عيادة مبنية بـ React مع جلسات تعديل منفصلة لكل زائر.',
   },
@@ -137,10 +137,10 @@ export const STOREOPS_INVENTORY_PROJECT: ProjectRecord = {
   resultAr:
     'دليل عملي مباشر لتشغيل مخزون المتاجر يمكن للزائر فتحه وتعديله وإرجاع بياناته وفحصه من البورتفوليو.',
   seo: {
-    title: 'StoreOps Inventory Demo',
+    title: 'Inventory Dashboard React Demo - StoreOps Inventory',
     titleAr: 'ديمو إدارة المخزون والمبيعات',
     description:
-      'A React inventory operations dashboard demo with products, suppliers, stock movements, sales orders, and reports.',
+      'An inventory dashboard React demo and inventory management dashboard with products, suppliers, stock movements, sales orders, and reports.',
     descriptionAr:
       'ديمو لوحة تشغيل مخزون مبنية بـ React تشمل المنتجات والموردين وحركات المخزون وطلبات البيع والتقارير.',
   },
@@ -183,10 +183,10 @@ export const HIREFLOW_ATS_PROJECT: ProjectRecord = {
   resultAr:
     'دليل عملي مباشر لتشغيل التوظيف يمكن للزائر فتحه من البورتفوليو وتجربته عبر مسارات المرشحين والوظائف والتقارير.',
   seo: {
-    title: 'HireFlow ATS Demo',
+    title: 'Applicant Tracking System Dashboard Demo - HireFlow ATS',
     titleAr: 'ديمو نظام تتبع المتقدمين',
     description:
-      'A React applicant tracking dashboard demo with jobs, candidates, draggable pipeline stages, interviews, evaluations, and reports.',
+      'An applicant tracking system dashboard and ATS dashboard React demo with jobs, candidates, draggable pipeline stages, interviews, and reports.',
     descriptionAr:
       'ديمو لوحة تتبع متقدمين مبنية بـ React تشمل الوظائف والمرشحين ومراحل توظيف قابلة للسحب والمقابلات والتقييمات والتقارير.',
   },
@@ -229,10 +229,10 @@ export const SHOPNEST_COMMERCE_PROJECT: ProjectRecord = {
   resultAr:
     'دليل عملي مباشر يوضح تجربة الشراء للعميل ولوحة التشغيل والإدارة الموجودة خلفها.',
   seo: {
-    title: 'ShopNest Commerce Demo',
+    title: 'React Ecommerce Dashboard Demo - ShopNest Commerce',
     titleAr: 'ديمو متجر شوب نيست',
     description:
-      'A React e-commerce storefront and admin dashboard demo with isolated editable visitor sessions.',
+      'A React ecommerce dashboard and e-commerce admin dashboard demo with storefront browsing, cart, checkout, products, orders, and coupons.',
     descriptionAr:
       'ديمو متجر إلكتروني ولوحة إدارة مبني بـ React مع جلسات تعديل معزولة لكل زائر.',
   },
