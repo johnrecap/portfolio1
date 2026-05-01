@@ -27,6 +27,9 @@ import {
 } from './types';
 import { DASHBOARD_MODULE_COPY, DASHBOARD_ROUTE_MODULE_IDS } from './dashboard-config';
 
+export const PUBLIC_GITHUB_URL = 'https://github.com/johnrecap';
+export const PUBLIC_LINKEDIN_URL = 'https://www.linkedin.com/in/muhammad-saeed-587a96217';
+
 const DEFAULT_PAGE_SECTIONS: Record<PlatformPageId, AdminPageSection[]> = {
   home: [
     createSection('hero-1', 'hero', 1, 'split'),
@@ -147,8 +150,8 @@ export function createDefaultProfileSettings(): ProfileSettings {
     bio: 'I am Mohamed Saied, also searched as Mohamed Saeed or saeeddev. I build public websites, React dashboards, and internal tools for teams that need clear structure and practical day-to-day use.',
     bioAr: 'أبني مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق تحتاج إلى هيكل واضح واستخدام عملي يمكن الاعتماد عليه يوميًا.',
     isAvailable: true,
-    githubUrl: '',
-    linkedinUrl: '',
+    githubUrl: PUBLIC_GITHUB_URL,
+    linkedinUrl: PUBLIC_LINKEDIN_URL,
     websiteUrl: '',
     metaTitle: 'Mohamed Saied - React Developer for Websites and Dashboards',
     metaTitleAr: 'محمد ستوديو | محمد سعيد',

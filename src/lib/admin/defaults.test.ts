@@ -10,6 +10,8 @@ import {
   createDefaultSiteSettings,
   createDefaultThemeSettings,
   normalizePageConfig,
+  PUBLIC_GITHUB_URL,
+  PUBLIC_LINKEDIN_URL,
 } from './defaults';
 
 test('createDefaultProfileSettings returns media asset ID placeholders', () => {
@@ -22,6 +24,8 @@ test('createDefaultProfileSettings returns media asset ID placeholders', () => {
   assert.equal(result.profileImageZoom, 100);
   assert.equal(result.heroImageAssetId, '');
   assert.equal(result.title, 'React Developer and Product Engineer in Egypt');
+  assert.equal(result.githubUrl, PUBLIC_GITHUB_URL);
+  assert.equal(result.linkedinUrl, PUBLIC_LINKEDIN_URL);
   assert.equal(result.metaDescription.length > 0, true);
 });
 
