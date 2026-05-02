@@ -121,9 +121,11 @@ function createDefaultSeoPacket(): PublicBootstrapPacket {
 test('buildRouteHeadTags uses the configured canonical host', () => {
   const html = buildRouteHeadTags('/', createPacket(), { siteUrl: 'https://portfolio.saeeddev.com' });
 
-  assert.match(html, /<link rel="canonical" href="https:\/\/portfolio\.saeeddev\.com\/" \/>/);
-  assert.match(html, /<meta property="og:url" content="https:\/\/portfolio\.saeeddev\.com\/" \/>/);
+  assert.match(html, /<link data-rh="true" rel="canonical" href="https:\/\/portfolio\.saeeddev\.com\/" \/>/);
+  assert.match(html, /<meta data-rh="true" name="robots" content="index, follow" \/>/);
+  assert.match(html, /<meta data-rh="true" property="og:url" content="https:\/\/portfolio\.saeeddev\.com\/" \/>/);
   assert.match(html, /"@type":"WebSite"/);
+  assert.match(html, /"@type":"Person"/);
 });
 
 test('buildRouteHeadTags emits project metadata and SoftwareApplication JSON-LD', () => {
@@ -132,7 +134,7 @@ test('buildRouteHeadTags emits project metadata and SoftwareApplication JSON-LD'
   });
 
   assert.match(html, /<title>ShopNest Commerce<\/title>/);
-  assert.match(html, /<meta property="og:image" content="https:\/\/portfolio\.saeeddev\.com\/demo-previews\/ShopNest-Commerce\.png" \/>/);
+  assert.match(html, /<meta data-rh="true" property="og:image" content="https:\/\/portfolio\.saeeddev\.com\/demo-previews\/ShopNest-Commerce\.png" \/>/);
   assert.match(html, /"@type":"SoftwareApplication"/);
 });
 
@@ -183,7 +185,7 @@ test('buildRouteHeadTags falls back cleanly for unknown routes', () => {
   });
 
   assert.match(html, /<title>Mohamed Studio<\/title>/);
-  assert.match(html, /<link rel="canonical" href="https:\/\/portfolio\.saeeddev\.com\/unknown-route" \/>/);
+  assert.match(html, /<link data-rh="true" rel="canonical" href="https:\/\/portfolio\.saeeddev\.com\/unknown-route" \/>/);
   assert.doesNotMatch(html, /SoftwareApplication|BlogPosting/);
 });
 
@@ -192,8 +194,8 @@ test('buildRouteHeadTags targets React developer service intent on the homepage'
     siteUrl: 'https://portfolio.saeeddev.com',
   });
 
-  assert.match(html, /<title>Mohamed Saied - React Developer for Websites and Dashboards<\/title>/);
-  assert.match(html, /React developer in Egypt building public websites, admin dashboards, internal tools/);
+  assert.match(html, /<title>Mohamed Saied - React Developer \| Portfolio &amp; Projects<\/title>/);
+  assert.match(html, /React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps/);
 });
 
 test('buildRouteHeadTags targets Mohamed Saied identity intent on the about page', () => {
@@ -237,7 +239,7 @@ test('buildRouteHeadTags uses keyword static fallbacks when bootstrap page data 
   packet.documents = {};
 
   const cases = [
-    ['/', /Mohamed Saied - React Developer for Websites and Dashboards/, /React developer in Egypt/],
+    ['/', /Mohamed Saied - React Developer \| Portfolio &amp; Projects/, /React developer in Egypt/],
     ['/about', /About Mohamed Saied - Product Engineer in Egypt/, /Learn how Mohamed Saied builds websites/],
     ['/projects', /React Dashboards, Web Apps, and Internal Tools Portfolio/, /Explore live React dashboard demos/],
     ['/skills', /React, TypeScript, and Firebase Developer Skills/, /bilingual websites, and internal tools/],
@@ -253,6 +255,26 @@ test('buildRouteHeadTags uses keyword static fallbacks when bootstrap page data 
     assert.match(html, title);
     assert.match(html, description);
   }
+});
+
+test('buildRouteHeadTags removes exact duplicate SEO title and description text', () => {
+  const packet = createDefaultSeoPacket();
+  packet.documents['pages/home'] = {
+    id: 'home',
+    title: 'Mohamed Saied - React Developer | Portfolio & Projects | Mohamed Saied - React Developer | Portfolio & Projects',
+    seo: {
+      description:
+        'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps.React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps.',
+    },
+  };
+
+  const html = buildRouteHeadTags('/', packet, {
+    siteUrl: 'https://portfolio.saeeddev.com',
+  });
+
+  assert.match(html, /<title>Mohamed Saied - React Developer \| Portfolio &amp; Projects<\/title>/);
+  assert.doesNotMatch(html, /Projects \| Mohamed Saied/);
+  assert.doesNotMatch(html, /web apps\.React developer/);
 });
 
 test('buildRouteHeadTags emits long-tail SEO metadata for bundled demo project routes', () => {

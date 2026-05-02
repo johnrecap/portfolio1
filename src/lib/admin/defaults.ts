@@ -71,10 +71,10 @@ const DEFAULT_PAGE_METADATA: Record<
   { title: string; titleAr: string; description: string; descriptionAr: string }
 > = {
   home: {
-    title: 'Mohamed Saied - React Developer for Websites and Dashboards',
+    title: 'Mohamed Saied - React Developer | Portfolio & Projects',
     titleAr: 'مواقع ولوحات تحكم',
     description:
-      'React developer in Egypt building public websites, admin dashboards, internal tools, and bilingual Arabic-English web apps for small teams.',
+      'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps. View a portfolio of real projects.',
     descriptionAr:
       'مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق صغيرة وأصحاب مشاريع يحتاجون إلى هيكل واضح وتنفيذ عملي.',
   },
@@ -157,10 +157,10 @@ export function createDefaultProfileSettings(): ProfileSettings {
     githubUrl: PUBLIC_GITHUB_URL,
     linkedinUrl: PUBLIC_LINKEDIN_URL,
     websiteUrl: '',
-    metaTitle: 'Mohamed Saied - React Developer for Websites and Dashboards',
+    metaTitle: 'Mohamed Saied - React Developer | Portfolio & Projects',
     metaTitleAr: 'محمد ستوديو | محمد سعيد',
     metaDescription:
-      'Mohamed Saied, also searched as Mohamed Saeed and saeeddev, builds React websites, admin dashboards, and internal tools for small teams.',
+      'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps. View a portfolio of real projects.',
     metaDescriptionAr:
       'يبني محمد سعيد مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق صغيرة وأصحاب مشاريع يحتاجون إلى هيكل واضح، وتنفيذ عملي، ودعم ثنائي اللغة.',
     profileImage: '',
@@ -238,10 +238,10 @@ export function createDefaultFooterSettings(): FooterSettings {
 
 export function createDefaultSeoSettings(): SeoSettings {
   return {
-    defaultTitle: 'Mohamed Saied - React Developer for Websites and Dashboards',
+    defaultTitle: 'Mohamed Saied - React Developer | Portfolio & Projects',
     defaultTitleAr: 'محمد ستوديو | محمد سعيد',
     defaultDescription:
-      'React developer in Egypt building public websites, admin dashboards, internal tools, and bilingual Arabic-English web apps for small teams.',
+      'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps. View a portfolio of real projects.',
     defaultDescriptionAr:
       'مواقع عامة، ولوحات إدارة، وأدوات داخلية يبنيها محمد سعيد مع تركيز على الوضوح، والتنفيذ العملي، ودعم العربية والإنجليزية.',
     ogImage: '',

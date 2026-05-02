@@ -5,9 +5,9 @@ export const DEFAULT_CANONICAL_SITE_URL = 'https://portfolio.saeeddev.com';
 
 const STATIC_ROUTE_SEO_TARGETS: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'Mohamed Saied - React Developer for Websites and Dashboards',
+    title: 'Mohamed Saied - React Developer | Portfolio & Projects',
     description:
-      'React developer in Egypt building public websites, admin dashboards, internal tools, and bilingual Arabic-English web apps for small teams.',
+      'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps. View a portfolio of real projects.',
   },
   '/about': {
     title: 'About Mohamed Saied - Product Engineer in Egypt',
@@ -161,6 +161,41 @@ function absoluteUrl(siteUrl: string, value: string) {
   }
 }
 
+function stripTrailingTitleDuplicate(title: string) {
+  const parts = title
+    .split('|')
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length > 1 && parts[0] === parts[1]) {
+    return parts[0];
+  }
+
+  if (parts.length > 2 && parts.length % 2 === 0) {
+    const midpoint = parts.length / 2;
+    const firstHalf = parts.slice(0, midpoint).join(' | ');
+    const secondHalf = parts.slice(midpoint).join(' | ');
+    if (firstHalf === secondHalf) {
+      return firstHalf;
+    }
+  }
+
+  return title.trim().replace(/\s+/g, ' ');
+}
+
+function stripRepeatedText(value: string) {
+  const normalized = value.trim().replace(/\s+/g, ' ');
+  const halfLength = normalized.length / 2;
+
+  if (!Number.isInteger(halfLength)) {
+    return normalized;
+  }
+
+  const firstHalf = normalized.slice(0, halfLength).trim();
+  const secondHalf = normalized.slice(halfLength).trim();
+  return firstHalf && firstHalf === secondHalf ? firstHalf : normalized;
+}
+
 function findBySlug(items: PublicBootstrapCollectionItem[] | undefined, slug: string) {
   return items?.find((item) => getStringField(item, 'slug') === slug) ?? null;
 }
@@ -208,8 +243,8 @@ export function buildRouteHeadTags(routePath: string, packet: PublicBootstrapPac
     getStringField(site, 'siteTagline') ||
     'Portfolio, projects, and product engineering work by Mohamed Saied.';
 
-  let title = getStringField(pageSeo, 'title') || getStringField(page, 'title') || fallbackTitle;
-  let description = getStringField(pageSeo, 'description') || fallbackDescription;
+  let title = stripTrailingTitleDuplicate(getStringField(pageSeo, 'title') || getStringField(page, 'title') || fallbackTitle);
+  let description = stripRepeatedText(getStringField(pageSeo, 'description') || fallbackDescription);
   let image = getStringField(pageSeo, 'image') || getStringField(seo, 'defaultImage');
   let pageType = 'website';
 
@@ -224,6 +259,7 @@ export function buildRouteHeadTags(routePath: string, packet: PublicBootstrapPac
       '@type': 'WebSite',
       name: getStringField(site, 'siteName') || 'Mohamed Studio',
       url: `${siteUrl}/`,
+      inLanguage: ['en', 'ar'],
     },
     {
       '@context': 'https://schema.org',
@@ -231,6 +267,10 @@ export function buildRouteHeadTags(routePath: string, packet: PublicBootstrapPac
       name: getStringField(profile, 'displayName') || 'Mohamed Saied',
       url: `${siteUrl}/`,
       jobTitle: getStringField(profile, 'title') || undefined,
+      sameAs: [
+        getStringField(profile, 'githubUrl'),
+        getStringField(profile, 'linkedinUrl'),
+      ].filter(Boolean),
     },
   ];
 
@@ -279,21 +319,22 @@ export function buildRouteHeadTags(routePath: string, packet: PublicBootstrapPac
   const absoluteImage = absoluteUrl(siteUrl, image);
   const tags = [
     `<title>${escapeHtmlAttribute(title)}</title>`,
-    `<meta name="description" content="${escapeHtmlAttribute(description)}" />`,
-    `<link rel="canonical" href="${escapeHtmlAttribute(canonicalUrl)}" />`,
-    `<meta property="og:type" content="${escapeHtmlAttribute(pageType)}" />`,
-    `<meta property="og:title" content="${escapeHtmlAttribute(title)}" />`,
-    `<meta property="og:description" content="${escapeHtmlAttribute(description)}" />`,
-    `<meta property="og:url" content="${escapeHtmlAttribute(canonicalUrl)}" />`,
-    `<meta property="og:site_name" content="${escapeHtmlAttribute(getStringField(site, 'siteName') || 'Mohamed Studio')}" />`,
-    `<meta name="twitter:card" content="${absoluteImage ? 'summary_large_image' : 'summary'}" />`,
-    `<meta name="twitter:title" content="${escapeHtmlAttribute(title)}" />`,
-    `<meta name="twitter:description" content="${escapeHtmlAttribute(description)}" />`,
+    `<meta data-rh="true" name="description" content="${escapeHtmlAttribute(description)}" />`,
+    '<meta data-rh="true" name="robots" content="index, follow" />',
+    `<link data-rh="true" rel="canonical" href="${escapeHtmlAttribute(canonicalUrl)}" />`,
+    `<meta data-rh="true" property="og:type" content="${escapeHtmlAttribute(pageType)}" />`,
+    `<meta data-rh="true" property="og:title" content="${escapeHtmlAttribute(title)}" />`,
+    `<meta data-rh="true" property="og:description" content="${escapeHtmlAttribute(description)}" />`,
+    `<meta data-rh="true" property="og:url" content="${escapeHtmlAttribute(canonicalUrl)}" />`,
+    `<meta data-rh="true" property="og:site_name" content="${escapeHtmlAttribute(getStringField(site, 'siteName') || 'Mohamed Studio')}" />`,
+    `<meta data-rh="true" name="twitter:card" content="${absoluteImage ? 'summary_large_image' : 'summary'}" />`,
+    `<meta data-rh="true" name="twitter:title" content="${escapeHtmlAttribute(title)}" />`,
+    `<meta data-rh="true" name="twitter:description" content="${escapeHtmlAttribute(description)}" />`,
   ];
 
   if (absoluteImage) {
-    tags.push(`<meta property="og:image" content="${escapeHtmlAttribute(absoluteImage)}" />`);
-    tags.push(`<meta name="twitter:image" content="${escapeHtmlAttribute(absoluteImage)}" />`);
+    tags.push(`<meta data-rh="true" property="og:image" content="${escapeHtmlAttribute(absoluteImage)}" />`);
+    tags.push(`<meta data-rh="true" name="twitter:image" content="${escapeHtmlAttribute(absoluteImage)}" />`);
   }
 
   tags.push(`<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`);

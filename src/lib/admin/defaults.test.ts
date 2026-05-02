@@ -52,7 +52,8 @@ test('createDefaultSiteSettings returns a neutral site settings baseline', () =>
 test('createDefaultSeoSettings returns an Open Graph asset placeholder', () => {
   const result = createDefaultSeoSettings();
 
-  assert.equal(result.defaultTitle, 'Mohamed Saied - React Developer for Websites and Dashboards');
+  assert.equal(result.defaultTitle, 'Mohamed Saied - React Developer | Portfolio & Projects');
+  assert.ok(result.defaultDescription.length <= 155);
   assert.equal(result.ogImageAssetId, '');
 });
 
@@ -85,7 +86,7 @@ test('createDefaultPageConfig returns the correct page scaffold', () => {
   const result = createDefaultPageConfig('home');
 
   assert.equal(result.pageId, 'home');
-  assert.equal(result.title, 'Mohamed Saied - React Developer for Websites and Dashboards');
+  assert.equal(result.title, 'Mohamed Saied - React Developer | Portfolio & Projects');
   assert.equal(result.titleAr, 'مواقع ولوحات تحكم');
   assert.equal(result.status, 'draft');
   assert.equal(result.seo.description?.length > 0, true);

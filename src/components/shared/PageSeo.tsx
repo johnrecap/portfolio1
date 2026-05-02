@@ -4,6 +4,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { useSeoSettings } from "@/hooks/usePlatformSettings";
 import { resolveLocalizedSeoTitle } from "@/lib/admin/brand";
 
+const DEFAULT_CANONICAL_SITE_URL = "https://portfolio.saeeddev.com";
+
 type PageSeoProps = {
   title?: string;
   description?: string;
@@ -21,21 +23,32 @@ export function PageSeo({ title, description, image }: PageSeoProps) {
       ? seoSettings.defaultDescriptionAr || profile.metaDescriptionAr || profile.metaDescription || profile.bioAr || profile.bio
       : seoSettings.defaultDescription || profile.metaDescription || profile.bio;
 
-  const fullTitle = title ? `${title} | ${localizedSiteTitle}` : localizedSiteTitle;
+  const normalizedTitle = title?.trim();
+  const fullTitle =
+    normalizedTitle && normalizedTitle !== localizedSiteTitle
+      ? `${normalizedTitle} | ${localizedSiteTitle}`
+      : localizedSiteTitle;
   const metaDescription = description || (profileLoading || seoLoading ? "" : localizedSiteDescription);
   const metaImage =
     image ||
     (!seoLoading ? seoSettings.ogImage : "") ||
     (!profileLoading ? profile.heroImage || profile.profileImage : "");
+  const siteUrl = (seoSettings.siteUrl || DEFAULT_CANONICAL_SITE_URL).replace(/\/$/, "");
+  const canonicalUrl =
+    typeof window === "undefined"
+      ? `${siteUrl}/`
+      : `${siteUrl}${window.location.pathname === "/" ? "/" : window.location.pathname}`;
 
   return (
     <Helmet>
       <title>{fullTitle}</title>
       {metaDescription ? <meta name="description" content={metaDescription} /> : null}
+      <meta name="robots" content="index, follow" />
+      <link rel="canonical" href={canonicalUrl} />
       <meta property="og:title" content={fullTitle} />
       {metaDescription ? <meta property="og:description" content={metaDescription} /> : null}
       {metaImage ? <meta property="og:image" content={metaImage} /> : null}
-      {seoSettings.siteUrl ? <meta property="og:url" content={seoSettings.siteUrl} /> : null}
+      <meta property="og:url" content={canonicalUrl} />
     </Helmet>
   );
 }
