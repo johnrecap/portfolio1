@@ -3,6 +3,7 @@ import { Navigate, createBrowserRouter, Outlet, RouterProvider } from 'react-rou
 import { useTranslation } from 'react-i18next';
 import { ThemeProvider } from './components/shared/theme-provider';
 import { PublicNavbar } from './components/public/layout-components';
+import { FloatingWhatsAppButton } from './components/public/floating-whatsapp-button';
 import { ScrollToTop } from './components/shared/ScrollToTop';
 import { DevBackground } from './components/shared/DevBackground';
 import { SkeletonBlocks } from '@/components/shared/PageState';
@@ -211,6 +212,7 @@ const PublicLayout = () => {
         <DevBackground />
         <TerminalEasterEggLoader />
         <ScrollToTop />
+        <FloatingWhatsAppButton />
         <div className="flex min-h-screen flex-col">
           <PublicNavbar themeMode={themeSettings.mode} />
           <main className="relative z-10 mx-auto flex w-full max-w-[1344px] flex-1 px-4 py-8 sm:px-6 lg:px-8">
