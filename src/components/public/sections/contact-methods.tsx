@@ -1,10 +1,10 @@
-import { BriefcaseBusiness, Code, ExternalLink, Mail } from 'lucide-react';
+import { BriefcaseBusiness, Code, ExternalLink, Mail, Store } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { SkeletonLine } from '@/components/shared/PageState';
 import { useContactSettings } from '@/hooks/usePlatformSettings';
 import { useProfile } from '@/hooks/useProfile';
-import { PUBLIC_MOSTAQL_URL } from '@/lib/admin/defaults';
+import { PUBLIC_KHAMSAT_URL, PUBLIC_MOSTAQL_URL } from '@/lib/admin/defaults';
 import type { AdminPageSection } from '@/lib/admin/types';
 import { getSurfaceTone, readSectionText } from './section-utils';
 
@@ -33,6 +33,7 @@ function ContactMethodsSection({ section }: { section: AdminPageSection }) {
     profile.linkedinUrl ? { href: profile.linkedinUrl, label: 'LinkedIn', icon: ExternalLink } : null,
     profile.githubUrl ? { href: profile.githubUrl, label: 'GitHub', icon: Code } : null,
     { href: PUBLIC_MOSTAQL_URL, label: 'Mostaql', icon: BriefcaseBusiness },
+    { href: PUBLIC_KHAMSAT_URL, label: 'Khamsat', icon: Store },
     profile.websiteUrl ? { href: profile.websiteUrl, label: t('contact.website'), icon: ExternalLink } : null,
   ].filter(Boolean) as Array<{ href: string; label: string; icon: typeof ExternalLink }>;
 

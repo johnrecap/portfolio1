@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BriefcaseBusiness, Github, Globe, Linkedin, Menu, MessageCircle, Moon, Sun, X } from 'lucide-react';
+import { BriefcaseBusiness, Github, Globe, Linkedin, Menu, MessageCircle, Moon, Store, Sun, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { buttonVariants } from '@/components/ui/button-variants';
@@ -8,7 +8,7 @@ import { SkeletonLine } from '@/components/shared/PageState';
 import { useProfile } from '@/hooks/useProfile';
 import { useNavigationSettings, useSiteSettings } from '@/hooks/usePlatformSettings';
 import { resolveLocalizedSiteBrand } from '@/lib/admin/brand';
-import { PUBLIC_MOSTAQL_URL, PUBLIC_WHATSAPP_URL } from '@/lib/admin/defaults';
+import { PUBLIC_KHAMSAT_URL, PUBLIC_MOSTAQL_URL, PUBLIC_WHATSAPP_URL } from '@/lib/admin/defaults';
 import type { ThemeSettings } from '@/lib/admin/types';
 
 const ThemeToggle = () => {
@@ -120,6 +120,7 @@ export const PublicNavbar = ({ themeMode }: PublicNavbarProps) => {
   const contactLinks: HeaderContactLink[] = [
     { href: PUBLIC_WHATSAPP_URL, label: isArabic ? '\u0648\u0627\u062a\u0633\u0627\u0628' : 'WhatsApp', icon: MessageCircle },
     { href: PUBLIC_MOSTAQL_URL, label: isArabic ? '\u0645\u0633\u062a\u0642\u0644' : 'Mostaql', icon: BriefcaseBusiness },
+    { href: PUBLIC_KHAMSAT_URL, label: isArabic ? '\u062e\u0645\u0633\u0627\u062a' : 'Khamsat', icon: Store },
     profile.githubUrl ? { href: profile.githubUrl, label: 'GitHub', icon: Github } : null,
     profile.linkedinUrl ? { href: profile.linkedinUrl, label: 'LinkedIn', icon: Linkedin } : null,
   ].filter(Boolean) as HeaderContactLink[];

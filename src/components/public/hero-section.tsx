@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { ArrowRight, BriefcaseBusiness, Check, Copy, Github, Layers3, Linkedin, MessageCircle, Rocket, Terminal } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, Check, Copy, Github, Layers3, Linkedin, MessageCircle, Rocket, Store, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { buttonVariants } from '@/components/ui/button-variants';
 import { useProfile } from '@/hooks/useProfile';
 import { readComposerText } from '@/lib/admin/page-content';
 import { SkeletonLine } from '@/components/shared/PageState';
-import { PUBLIC_MOSTAQL_URL, PUBLIC_WHATSAPP_URL } from '@/lib/admin/defaults';
+import { PUBLIC_KHAMSAT_URL, PUBLIC_MOSTAQL_URL, PUBLIC_WHATSAPP_URL } from '@/lib/admin/defaults';
 
 type HeroSectionProps = {
   variant?: 'split' | 'centered' | 'minimal';
@@ -37,6 +37,7 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
   const contactLinks = [
     { href: PUBLIC_WHATSAPP_URL, label: isArabic ? '\u0648\u0627\u062a\u0633\u0627\u0628' : 'WhatsApp', icon: MessageCircle },
     { href: PUBLIC_MOSTAQL_URL, label: isArabic ? '\u0645\u0633\u062a\u0642\u0644' : 'Mostaql', icon: BriefcaseBusiness },
+    { href: PUBLIC_KHAMSAT_URL, label: isArabic ? '\u062e\u0645\u0633\u0627\u062a' : 'Khamsat', icon: Store },
     profile.githubUrl ? { href: profile.githubUrl, label: 'GitHub', icon: Github } : null,
     profile.linkedinUrl ? { href: profile.linkedinUrl, label: 'LinkedIn', icon: Linkedin } : null,
   ].filter(Boolean) as Array<{ href: string; label: string; icon: typeof MessageCircle }>;

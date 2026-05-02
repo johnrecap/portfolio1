@@ -1,10 +1,10 @@
-import { ArrowRight, BriefcaseBusiness, Github, Linkedin, Terminal } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, Github, Linkedin, Store, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useProfile';
 import { buttonVariants } from '@/components/ui/button-variants';
 import { readComposerText } from '@/lib/admin/page-content';
-import { PUBLIC_MOSTAQL_URL } from '@/lib/admin/defaults';
+import { PUBLIC_KHAMSAT_URL, PUBLIC_MOSTAQL_URL } from '@/lib/admin/defaults';
 
 type CTASectionProps = {
   variant?: 'banner' | 'card' | 'terminal-strip';
@@ -51,6 +51,12 @@ export const CTASection = ({ variant = 'card', content = {} }: CTASectionProps) 
       label: 'Mostaql',
       internal: false,
       icon: BriefcaseBusiness,
+    },
+    {
+      href: PUBLIC_KHAMSAT_URL,
+      label: 'Khamsat',
+      internal: false,
+      icon: Store,
     },
   ].filter(Boolean) as Array<{
     href: string;

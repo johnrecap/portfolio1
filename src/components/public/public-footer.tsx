@@ -7,7 +7,7 @@ import { buttonVariants } from '@/components/ui/button-variants';
 import { useProfile } from '@/hooks/useProfile';
 import { useContactSettings, useFooterSettings, useSiteSettings } from '@/hooks/usePlatformSettings';
 import { resolveLocalizedSiteBrand } from '@/lib/admin/brand';
-import { PUBLIC_MOSTAQL_URL } from '@/lib/admin/defaults';
+import { PUBLIC_KHAMSAT_URL, PUBLIC_MOSTAQL_URL } from '@/lib/admin/defaults';
 
 function useDeferredPublicReads() {
   const [enabled, setEnabled] = useState(false);
@@ -56,7 +56,10 @@ export const PublicFooter = () => {
     profile.linkedinUrl ? { href: profile.linkedinUrl, label: 'LinkedIn' } : null,
     profile.websiteUrl ? { href: profile.websiteUrl, label: t('footer.website') } : null,
   ].filter(Boolean) as { href: string; label: string }[];
-  const requiredSocialLinks = [{ href: PUBLIC_MOSTAQL_URL, label: 'Mostaql' }];
+  const requiredSocialLinks = [
+    { href: PUBLIC_MOSTAQL_URL, label: 'Mostaql' },
+    { href: PUBLIC_KHAMSAT_URL, label: 'Khamsat' },
+  ];
   const footerLinks =
     footerSettings.links.length > 0
       ? footerSettings.links.map((item) => ({
