@@ -1,20 +1,18 @@
 import { MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-const WHATSAPP_PHONE = '+201063887871';
-const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_PHONE.replace(/[^\d]/g, '')}`;
+import { PUBLIC_WHATSAPP_PHONE, PUBLIC_WHATSAPP_URL } from '@/lib/admin/defaults';
 
 export const FloatingWhatsAppButton = () => {
   const { i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
   const label = isArabic ? '\u062a\u0648\u0627\u0635\u0644 \u0648\u0627\u062a\u0633\u0627\u0628' : 'WhatsApp';
   const ariaLabel = isArabic
-    ? `\u062a\u0648\u0627\u0635\u0644 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628 \u0639\u0644\u0649 \u0631\u0642\u0645 ${WHATSAPP_PHONE}`
-    : `Contact on WhatsApp at ${WHATSAPP_PHONE}`;
+    ? `\u062a\u0648\u0627\u0635\u0644 \u0639\u0628\u0631 \u0648\u0627\u062a\u0633\u0627\u0628 \u0639\u0644\u0649 \u0631\u0642\u0645 ${PUBLIC_WHATSAPP_PHONE}`
+    : `Contact on WhatsApp at ${PUBLIC_WHATSAPP_PHONE}`;
 
   return (
     <a
-      href={WHATSAPP_LINK}
+      href={PUBLIC_WHATSAPP_URL}
       aria-label={ariaLabel}
       className="whatsapp-float-button group fixed bottom-4 end-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#18bf63] text-white shadow-[0_18px_40px_rgba(24,191,99,0.34)] outline-none transition-[width,transform,box-shadow,background-color] duration-300 hover:w-[9.75rem] hover:-translate-y-1 hover:bg-[#12a955] hover:shadow-[0_22px_48px_rgba(24,191,99,0.42)] focus-visible:ring-4 focus-visible:ring-[#18bf63]/35 sm:bottom-6 sm:end-6 sm:h-[3.25rem] sm:w-[3.25rem]"
     >

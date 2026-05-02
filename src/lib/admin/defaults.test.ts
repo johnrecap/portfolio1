@@ -13,6 +13,8 @@ import {
   PUBLIC_GITHUB_URL,
   PUBLIC_LINKEDIN_URL,
   PUBLIC_MOSTAQL_URL,
+  PUBLIC_WHATSAPP_PHONE,
+  PUBLIC_WHATSAPP_URL,
 } from './defaults';
 
 test('createDefaultProfileSettings returns media asset ID placeholders', () => {
@@ -28,6 +30,8 @@ test('createDefaultProfileSettings returns media asset ID placeholders', () => {
   assert.equal(result.githubUrl, PUBLIC_GITHUB_URL);
   assert.equal(result.linkedinUrl, PUBLIC_LINKEDIN_URL);
   assert.equal(PUBLIC_MOSTAQL_URL, 'https://mostaql.com/u/Beyond_Screenn');
+  assert.equal(PUBLIC_WHATSAPP_PHONE, '+201063887871');
+  assert.equal(PUBLIC_WHATSAPP_URL, 'https://wa.me/201063887871');
   assert.equal(result.metaDescription.length > 0, true);
 });
 

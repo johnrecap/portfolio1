@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { ArrowRight, Check, Copy, Layers3, Rocket, Terminal } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, Check, Copy, Github, Layers3, Linkedin, MessageCircle, Rocket, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { buttonVariants } from '@/components/ui/button-variants';
 import { useProfile } from '@/hooks/useProfile';
 import { readComposerText } from '@/lib/admin/page-content';
 import { SkeletonLine } from '@/components/shared/PageState';
+import { PUBLIC_MOSTAQL_URL, PUBLIC_WHATSAPP_URL } from '@/lib/admin/defaults';
 
 type HeroSectionProps = {
   variant?: 'split' | 'centered' | 'minimal';
@@ -33,6 +34,12 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
   const eyebrow = readComposerText(content, 'eyebrow', `${displayName} / ${title}`, isArabic);
   const isCentered = variant === 'centered';
   const isMinimal = variant === 'minimal';
+  const contactLinks = [
+    { href: PUBLIC_WHATSAPP_URL, label: isArabic ? '\u0648\u0627\u062a\u0633\u0627\u0628' : 'WhatsApp', icon: MessageCircle },
+    { href: PUBLIC_MOSTAQL_URL, label: isArabic ? '\u0645\u0633\u062a\u0642\u0644' : 'Mostaql', icon: BriefcaseBusiness },
+    profile.githubUrl ? { href: profile.githubUrl, label: 'GitHub', icon: Github } : null,
+    profile.linkedinUrl ? { href: profile.linkedinUrl, label: 'LinkedIn', icon: Linkedin } : null,
+  ].filter(Boolean) as Array<{ href: string; label: string; icon: typeof MessageCircle }>;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(installCommand);
@@ -87,7 +94,7 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
             </p>
           </div>
 
-          <div className={`flex flex-col gap-4 sm:flex-row ${isCentered ? 'justify-center' : ''}`}>
+          <div className={`flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center ${isCentered ? 'justify-center' : ''}`}>
             <Link
               to={primaryHref}
               className={buttonVariants({
@@ -110,6 +117,20 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
             >
               {secondaryLabel}
             </Link>
+            <div className="flex flex-wrap gap-2">
+              {contactLinks.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border/70 bg-background/50 px-4 text-sm font-bold text-foreground backdrop-blur transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                </a>
+              ))}
+            </div>
           </div>
 
           <div className={`grid gap-3 sm:grid-cols-3 ${isCentered ? 'mx-auto w-full max-w-4xl' : ''}`}>

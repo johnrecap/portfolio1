@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Globe, Menu, Moon, Sun, X } from 'lucide-react';
+import { BriefcaseBusiness, Github, Globe, Linkedin, Menu, MessageCircle, Moon, Sun, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { buttonVariants } from '@/components/ui/button-variants';
@@ -8,6 +8,7 @@ import { SkeletonLine } from '@/components/shared/PageState';
 import { useProfile } from '@/hooks/useProfile';
 import { useNavigationSettings, useSiteSettings } from '@/hooks/usePlatformSettings';
 import { resolveLocalizedSiteBrand } from '@/lib/admin/brand';
+import { PUBLIC_MOSTAQL_URL, PUBLIC_WHATSAPP_URL } from '@/lib/admin/defaults';
 import type { ThemeSettings } from '@/lib/admin/types';
 
 const ThemeToggle = () => {
@@ -50,6 +51,41 @@ type PublicNavbarProps = {
   themeMode: ThemeSettings['mode'];
 };
 
+type HeaderContactLink = {
+  href: string;
+  label: string;
+  icon: typeof MessageCircle;
+};
+
+const HeaderContactLinks = ({ links, compact = false }: { links: HeaderContactLink[]; compact?: boolean }) => {
+  if (links.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={compact ? 'grid grid-cols-2 gap-2' : 'hidden items-center gap-1 lg:flex'}>
+      {links.map((item) => (
+        <a
+          key={item.href}
+          href={item.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={item.label}
+          title={item.label}
+          className={
+            compact
+              ? 'inline-flex h-10 items-center justify-center gap-2 rounded-full border border-border/70 bg-background/70 px-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted'
+              : 'inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-background/65 text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary'
+          }
+        >
+          <item.icon className="h-4 w-4" />
+          {compact ? <span>{item.label}</span> : null}
+        </a>
+      ))}
+    </div>
+  );
+};
+
 export const PublicNavbar = ({ themeMode }: PublicNavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
@@ -81,6 +117,12 @@ export const PublicNavbar = ({ themeMode }: PublicNavbarProps) => {
   const showThemeToggle = !navigationLoading && navigationSettings.showThemeToggle && themeMode === 'system';
   const adminCtaHref = '/login';
   const adminCtaLabel = t('nav.adminLogin');
+  const contactLinks: HeaderContactLink[] = [
+    { href: PUBLIC_WHATSAPP_URL, label: isArabic ? '\u0648\u0627\u062a\u0633\u0627\u0628' : 'WhatsApp', icon: MessageCircle },
+    { href: PUBLIC_MOSTAQL_URL, label: isArabic ? '\u0645\u0633\u062a\u0642\u0644' : 'Mostaql', icon: BriefcaseBusiness },
+    profile.githubUrl ? { href: profile.githubUrl, label: 'GitHub', icon: Github } : null,
+    profile.linkedinUrl ? { href: profile.linkedinUrl, label: 'LinkedIn', icon: Linkedin } : null,
+  ].filter(Boolean) as HeaderContactLink[];
 
   useEffect(() => {
     if (!isOpen) {
@@ -144,6 +186,8 @@ export const PublicNavbar = ({ themeMode }: PublicNavbarProps) => {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
+          <HeaderContactLinks links={contactLinks} />
+          {contactLinks.length > 0 ? <div className="mx-1 hidden h-4 w-px bg-border lg:block" /> : null}
           {!navigationLoading && navigationSettings.showLanguageToggle ? <LanguageToggle /> : null}
           {!navigationLoading && navigationSettings.showLanguageToggle && showThemeToggle ? (
             <div className="mx-1 h-4 w-px bg-border" />
@@ -210,6 +254,9 @@ export const PublicNavbar = ({ themeMode }: PublicNavbarProps) => {
             >
               {adminCtaLabel}
             </Link>
+            <div className="border-t border-border/70 pt-3">
+              <HeaderContactLinks links={contactLinks} compact />
+            </div>
           </div>
         </div>
       ) : null}

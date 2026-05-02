@@ -30,6 +30,8 @@ import { DASHBOARD_MODULE_COPY, DASHBOARD_ROUTE_MODULE_IDS } from './dashboard-c
 export const PUBLIC_GITHUB_URL = 'https://github.com/johnrecap';
 export const PUBLIC_LINKEDIN_URL = 'https://www.linkedin.com/in/muhammad-saeed-587a96217';
 export const PUBLIC_MOSTAQL_URL = 'https://mostaql.com/u/Beyond_Screenn';
+export const PUBLIC_WHATSAPP_PHONE = '+201063887871';
+export const PUBLIC_WHATSAPP_URL = `https://wa.me/${PUBLIC_WHATSAPP_PHONE.replace(/[^\d]/g, '')}`;
 
 const DEFAULT_PAGE_SECTIONS: Record<PlatformPageId, AdminPageSection[]> = {
   home: [
