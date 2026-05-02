@@ -9,6 +9,7 @@ import {
   getCachedPublicBootstrapPacket,
   warmPublicBootstrapCache,
 } from './src/server/public-bootstrap.js';
+import { DEFAULT_CANONICAL_SITE_URL, buildRouteHeadTags } from './src/server/seo.js';
 import { escapePublicBootstrapJson } from './src/lib/public-bootstrap.js';
 
 const DEFAULT_HOST = '0.0.0.0';
@@ -42,6 +43,40 @@ function parsePort(rawPort: string | undefined) {
   return port;
 }
 
+function applySecurityHeaders(_req: express.Request, res: express.Response, next: express.NextFunction) {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  next();
+}
+
+function setProductionStaticHeaders(res: express.Response, filePath: string) {
+  const normalizedPath = filePath.replace(/\\/g, '/');
+
+  if (normalizedPath.endsWith('.html')) {
+    res.setHeader('Cache-Control', 'no-cache');
+    return;
+  }
+
+  if (normalizedPath.includes('/assets/')) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return;
+  }
+
+  if (normalizedPath.includes('/fonts/') || normalizedPath.includes('/demo-previews/optimized/')) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return;
+  }
+
+  if (/\.(?:avif|webp|png|jpe?g|gif|svg|ico|woff2?)$/i.test(normalizedPath)) {
+    res.setHeader('Cache-Control', 'public, max-age=2592000');
+    return;
+  }
+
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+}
+
 loadEnvironment();
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -52,6 +87,7 @@ const port = parsePort(process.env.PORT);
 async function createApp() {
   const app = express();
 
+  app.use(applySecurityHeaders);
   app.use(express.json());
 
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
@@ -90,15 +126,16 @@ async function createApp() {
   const demosPath = path.join(distPath, 'demos');
   void warmPublicBootstrapCache();
 
-  app.use(express.static(distPath, { index: false }));
+  app.use(express.static(distPath, { index: false, setHeaders: setProductionStaticHeaders }));
   app.get('/api/public/bootstrap', async (_req, res) => {
     const packet = await buildPublicBootstrapPacket();
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
     res.json(packet);
   });
   app.get('/api/*', (_req, res) => {
     res.status(404).json({ error: 'Not found' });
   });
-  app.use('/demos', express.static(demosPath, { index: false }));
+  app.use('/demos', express.static(demosPath, { index: false, setHeaders: setProductionStaticHeaders }));
   app.get(['/demos/:demoSlug', '/demos/:demoSlug/*'], async (req, res, next) => {
     try {
       const demoIndexPath = path.join(demosPath, req.params.demoSlug, 'index.html');
@@ -107,7 +144,7 @@ async function createApp() {
       next(error);
     }
   });
-  app.get('*', async (_req, res, next) => {
+  app.get('*', async (req, res, next) => {
     try {
       const indexPath = path.join(distPath, 'index.html');
       const [indexHtml, packet] = await Promise.all([
@@ -115,10 +152,17 @@ async function createApp() {
         Promise.resolve(getCachedPublicBootstrapPacket()),
       ]);
       const bootstrapScript = `<script>window.__PUBLIC_BOOTSTRAP__=${escapePublicBootstrapJson(packet)};</script>`;
-      const html = indexHtml.includes('</head>')
-        ? indexHtml.replace('</head>', `${bootstrapScript}</head>`)
+      const routeHeadTags = buildRouteHeadTags(req.path, packet, {
+        siteUrl: process.env.PUBLIC_SITE_URL || process.env.SITE_URL || DEFAULT_CANONICAL_SITE_URL,
+      });
+      const htmlWithHead = indexHtml
+        .replace(/<title>.*?<\/title>/, '')
+        .replace(/<meta name="description" content=".*?" \/>/, '');
+      const html = htmlWithHead.includes('</head>')
+        ? htmlWithHead.replace('</head>', `${routeHeadTags}${bootstrapScript}</head>`)
         : `${bootstrapScript}${indexHtml}`;
 
+      res.setHeader('Cache-Control', 'no-cache');
       res.type('html').send(html);
     } catch (error) {
       next(error);

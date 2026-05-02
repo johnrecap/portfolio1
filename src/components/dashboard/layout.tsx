@@ -21,12 +21,12 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react';
-import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 
-import { auth } from '@/lib/firebase';
+import { getAuthInstance } from '@/lib/firebase';
 import { useDashboardSettings } from '@/hooks/usePlatformSettings';
-import { useProfile } from '@/hooks/useProfile';
+import { useDashboardProfile } from '@/hooks/useProfile';
 import { useCollection } from '@/hooks/useFirestore';
 import { countUnreadMessages } from '@/lib/content-utils';
 import { isSuperAdminUser } from '@/lib/admin/auth';
@@ -62,16 +62,36 @@ export const DashboardLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const { profile } = useProfile();
+  const { profile } = useDashboardProfile();
   const { dashboardSettings } = useDashboardSettings();
   const { data: messages } = useCollection<{ read?: boolean }>('messages');
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
-      setUser(nextUser);
-      setLoading(false);
-    });
-    return () => unsubscribe();
+    let unsubscribe: (() => void) | undefined;
+    let isMounted = true;
+
+    async function subscribe() {
+      const [{ onAuthStateChanged }, auth] = await Promise.all([
+        import('firebase/auth'),
+        getAuthInstance(),
+      ]);
+
+      if (!isMounted) {
+        return;
+      }
+
+      unsubscribe = onAuthStateChanged(auth, (nextUser) => {
+        setUser(nextUser);
+        setLoading(false);
+      });
+    }
+
+    void subscribe().catch(() => setLoading(false));
+
+    return () => {
+      isMounted = false;
+      unsubscribe?.();
+    };
   }, []);
 
   const unreadMessages = countUnreadMessages(messages);
@@ -99,6 +119,10 @@ export const DashboardLayout = () => {
 
   const handleLogout = async (event: React.MouseEvent) => {
     event.preventDefault();
+    const [{ signOut }, auth] = await Promise.all([
+      import('firebase/auth'),
+      getAuthInstance(),
+    ]);
     await signOut(auth);
     navigate('/');
   };
@@ -142,6 +166,7 @@ export const DashboardLayout = () => {
         >
           <button
             className="rounded-full border border-transparent p-2 text-[var(--dashboard-muted-foreground)] transition-colors hover:border-[var(--dashboard-border)] hover:text-[var(--dashboard-foreground)]"
+            aria-label={t('dashboardLayout.closeMenu')}
             onClick={() => setMobileMenuOpen(false)}
           >
             <X className="h-5 w-5" />
@@ -242,30 +267,19 @@ export const DashboardLayout = () => {
           <div className="flex w-full items-center gap-4">
             <button
               className="rounded-full border border-transparent p-2 text-[var(--dashboard-muted-foreground)] transition-colors hover:border-[var(--dashboard-border)] hover:text-[var(--dashboard-foreground)] md:hidden"
+              aria-label={t('dashboardLayout.openMenu')}
               onClick={() => setMobileMenuOpen(true)}
             >
               <Menu className="h-5 w-5" />
             </button>
 
-            <div className="relative hidden w-full max-w-md sm:block">
-              <Search className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--dashboard-muted-foreground)] ${isArabic ? 'right-4' : 'left-4'}`} />
-              <input
-                type="text"
-                placeholder={t('dashboardLayout.quickSearch')}
-                className={`h-11 w-full rounded-full border px-4 text-sm outline-none transition-colors placeholder:text-[var(--dashboard-muted-foreground)] ${
-                  isArabic ? 'pr-11 pl-4' : 'pl-11 pr-4'
-                }`}
-                style={{
-                  backgroundColor: 'var(--dashboard-surface)',
-                  borderColor: 'var(--dashboard-border)',
-                  color: 'var(--dashboard-foreground)',
-                }}
-              />
-            </div>
+            <div className="hidden w-full max-w-md sm:block" />
           </div>
 
           <div className="ml-4 flex shrink-0 items-center gap-2 sm:gap-4">
-            <button
+            <Link
+              to="/dashboard/messages"
+              aria-label={t('dashboardLayout.messages')}
               className="relative flex h-10 w-10 items-center justify-center rounded-full border transition-colors"
               style={{
                 backgroundColor: 'var(--dashboard-surface)',
@@ -280,7 +294,7 @@ export const DashboardLayout = () => {
                   style={{ backgroundColor: 'var(--dashboard-accent)' }}
                 />
               ) : null}
-            </button>
+            </Link>
 
             <Link
               to="/"
@@ -297,6 +311,7 @@ export const DashboardLayout = () => {
 
             <Link
               to="/dashboard/dashboard-settings"
+              aria-label={t('dashboardLayout.settings')}
               className="hidden h-10 w-10 items-center justify-center rounded-full border transition-colors sm:flex"
               style={{
                 backgroundColor: 'var(--dashboard-surface)',

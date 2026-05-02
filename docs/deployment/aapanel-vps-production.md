@@ -21,7 +21,9 @@ If any box remains unchecked, treat the release as blocked.
 ### Required Runtime Values
 
 - `APP_URL`
-  The full public origin for the deployed site, for example `https://mohamed.studio`.
+  The full public origin for the deployed site, for example `https://portfolio.saeeddev.com`.
+- `PUBLIC_SITE_URL`
+  The canonical public origin used for server-rendered canonical, Open Graph, Twitter, JSON-LD, sitemap, and robots output. Keep this aligned with the final public domain.
 - `PORT`
   The internal Node.js port configured in the `aaPanel` Node Project.
 - `HOST`
@@ -80,13 +82,19 @@ npm ci
 npm run build
 ```
 
-6. Set the `aaPanel` startup command to:
+6. Verify public bundle budgets:
+
+```bash
+npm run bundle:budget
+```
+
+7. Set the `aaPanel` startup command to:
 
 ```bash
 npm start
 ```
 
-7. Point the reverse proxy or bound domain to the same internal `PORT` value from `.env`.
+8. Point the reverse proxy or bound domain to the same internal `PORT` value from `.env`.
 
 ## Release Verification Gates
 
@@ -97,6 +105,7 @@ npm run lint
 npm run test
 npm run i18n:check
 npm run build
+npm run bundle:budget
 ```
 
 The repository CI workflow runs this same sequence on GitHub Actions. Do not skip local verification just because CI exists.
@@ -116,7 +125,30 @@ Expected reverse-proxy behavior:
 
 - The public domain should terminate at aaPanel, then forward traffic to the same internal `PORT` used by the Node Project.
 - `APP_URL` should stay set to the final public `https://` origin, not the internal port URL.
+- `PUBLIC_SITE_URL` should match the same public origin used by `robots.txt`, `sitemap.xml`, and canonical tags.
 - If you change the internal `PORT`, update the Node Project settings, the reverse-proxy target, and the `.env` value together.
+
+## Cache, Headers, and Lighthouse
+
+The production Express server sets these response behaviors:
+
+- Hashed Vite assets under `/assets/`: `Cache-Control: public, max-age=31536000, immutable`.
+- Font files and optimized demo previews under `/fonts/` and `/demo-previews/optimized/`: `Cache-Control: public, max-age=31536000, immutable`.
+- Other images and icons: `Cache-Control: public, max-age=2592000`.
+- HTML route responses: `Cache-Control: no-cache`.
+- Public bootstrap API: short public cache with stale revalidation.
+- Security headers: `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, and `X-Frame-Options`.
+
+Compression should be handled by aaPanel / the reverse proxy layer. Do not add Express compression middleware unless the proxy is confirmed not to compress responses; otherwise the same response can be compressed twice or caching behavior can become harder to reason about.
+
+After deployment, run Lighthouse from a clean browser context:
+
+```bash
+npm run lighthouse:all
+npm run budgets
+```
+
+If auditing a staging host, set `LIGHTHOUSE_BASE_URL` first.
 
 ## Runtime and Process Checks
 

@@ -1,52 +1,84 @@
-import { useCollection, useDocument } from './useFirestore';
-import { useMediaLibrary } from './useMediaLibrary';
+import { useMemo } from 'react';
+
+import { useOptionalPublicData } from '@/contexts/PublicDataProvider';
 import {
   getInitialPublicCollection,
   getInitialPublicDocument,
   updatePublicCollectionCache,
   updatePublicDocumentCache,
-  type PublicBootstrapCollectionItem,
-  type PublicBootstrapDocument,
 } from '@/lib/public-bootstrap';
+import { useCollection, useDocument } from './useFirestore';
+import type { MediaAssetRecord } from '@/lib/content-hub';
 
 export const PUBLIC_FIRESTORE_READ_OPTIONS = {
   suppressPermissionDenied: true,
 } as const;
 
-export function usePublicCollection<T>(path: string) {
+type PublicFirestoreReadOptions = {
+  disabled?: boolean;
+};
+
+export function usePublicCollection<T>(path: string, options?: PublicFirestoreReadOptions) {
+  const publicData = useOptionalPublicData();
   const initial = getInitialPublicCollection(path);
-
-  return useCollection<T>(path, {
+  const contextData = publicData?.collections[path];
+  const hasBootstrapData = contextData !== undefined || initial.hasData;
+  const fallback = useCollection<T>(path, {
     ...PUBLIC_FIRESTORE_READ_OPTIONS,
-    initialData: initial.data,
-    hasInitialData: initial.hasData,
+    disabled: hasBootstrapData || options?.disabled === true,
+    initialData: contextData ?? initial.data,
+    hasInitialData: hasBootstrapData,
     keepDataOnSuppressedError: true,
-    onData: (data) => {
-      updatePublicCollectionCache(path, data as PublicBootstrapCollectionItem[]);
-    },
+    onData: (value) => updatePublicCollectionCache(path, value as Array<Record<string, unknown> & { id: string }>),
   });
+  const data = (hasBootstrapData ? contextData ?? initial.data : fallback.data) as (T & { id: string })[];
+
+  return useMemo(
+    () => ({
+      data,
+      loading: hasBootstrapData ? false : fallback.loading,
+      error: fallback.error,
+      addDocument: fallback.addDocument,
+      updateDocument: fallback.updateDocument,
+      removeDocument: fallback.removeDocument,
+    }),
+    [data, fallback.loading, fallback.error, fallback.addDocument, fallback.updateDocument, fallback.removeDocument, hasBootstrapData],
+  );
 }
 
-export function usePublicDocument<T>(path: string, docId: string) {
+export function usePublicDocument<T>(path: string, docId: string, options?: PublicFirestoreReadOptions) {
+  const publicData = useOptionalPublicData();
   const initial = getInitialPublicDocument(path, docId);
-
-  return useDocument<T>(path, docId, {
+  const documentKey = `${path}/${docId}`;
+  const contextData = publicData?.documents[documentKey];
+  const hasBootstrapData = Object.prototype.hasOwnProperty.call(publicData?.documents ?? {}, documentKey) || initial.hasData;
+  const fallback = useDocument<T>(path, docId, {
     ...PUBLIC_FIRESTORE_READ_OPTIONS,
-    initialData: initial.data,
-    hasInitialData: initial.hasData,
+    disabled: hasBootstrapData || options?.disabled === true,
+    initialData: contextData ?? initial.data,
+    hasInitialData: hasBootstrapData,
     keepDataOnSuppressedError: true,
-    onData: (data) => updatePublicDocumentCache(path, docId, data as PublicBootstrapDocument | null),
+    onData: (value) => updatePublicDocumentCache(path, docId, value as Record<string, unknown> | null),
   });
+  const data = (hasBootstrapData ? contextData ?? initial.data : fallback.data) as (T & { id: string }) | null;
+
+  return useMemo(
+    () => ({
+      data,
+      loading: hasBootstrapData ? false : fallback.loading,
+      error: fallback.error,
+      setDocument: fallback.setDocument,
+    }),
+    [data, fallback.loading, fallback.error, fallback.setDocument, hasBootstrapData],
+  );
 }
 
-export function usePublicMediaLibrary() {
-  const initial = getInitialPublicCollection('mediaAssets');
+export function usePublicMediaLibrary(options?: PublicFirestoreReadOptions) {
+  const { data: assets, loading, error, addDocument, updateDocument, removeDocument } =
+    usePublicCollection<MediaAssetRecord>('mediaAssets', options);
 
-  return useMediaLibrary({
-    ...PUBLIC_FIRESTORE_READ_OPTIONS,
-    initialData: initial.data,
-    hasInitialData: initial.hasData,
-    keepDataOnSuppressedError: true,
-    onData: (data) => updatePublicCollectionCache('mediaAssets', data as PublicBootstrapCollectionItem[]),
-  });
+  return useMemo(
+    () => ({ assets, loading, error, addDocument, updateDocument, removeDocument }),
+    [assets, loading, error, addDocument, updateDocument, removeDocument],
+  );
 }

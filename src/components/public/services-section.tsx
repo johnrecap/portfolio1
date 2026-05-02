@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { Layers, Rocket, Code2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -38,13 +37,10 @@ export const ServicesSection = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {services.map((service, index) => (
-          <motion.div
+          <div
             key={index}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-            className="group relative"
+            className="group relative animate-in fade-in slide-in-from-bottom-4 duration-500"
+            style={{ animationDelay: `${index * 80}ms` }}
           >
             <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-teal-500 rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
             <div className="relative h-full bg-slate-950/80 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 hover:border-slate-700 transition-colors flex flex-col items-start gap-6">
@@ -58,7 +54,7 @@ export const ServicesSection = () => {
                 </p>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </section>

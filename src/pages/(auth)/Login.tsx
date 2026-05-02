@@ -3,8 +3,8 @@ import { toast } from 'sonner';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { Terminal, Shield, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { auth } from '@/lib/firebase';
-import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User } from 'firebase/auth';
+import { getAuthInstance } from '@/lib/firebase';
+import type { User } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 import { isSuperAdminUser } from '@/lib/admin/auth';
 
@@ -16,7 +16,20 @@ export default function Login() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
+    let unsubscribe: (() => void) | undefined;
+    let isMounted = true;
+
+    async function subscribe() {
+      const [{ onAuthStateChanged }, auth] = await Promise.all([
+        import('firebase/auth'),
+        getAuthInstance(),
+      ]);
+
+      if (!isMounted) {
+        return;
+      }
+
+      unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         if (isSuperAdminUser(user)) {
           setCurrentUser(user);
@@ -26,7 +39,14 @@ export default function Login() {
       }
       setAuthChecking(false);
     });
-    return () => unsub();
+    }
+
+    void subscribe().catch(() => setAuthChecking(false));
+
+    return () => {
+      isMounted = false;
+      unsubscribe?.();
+    };
   }, []);
 
   if (authChecking) {
@@ -48,6 +68,10 @@ export default function Login() {
     setIsLoading(true);
 
     try {
+      const [{ GoogleAuthProvider, signInWithPopup }, auth] = await Promise.all([
+        import('firebase/auth'),
+        getAuthInstance(),
+      ]);
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       

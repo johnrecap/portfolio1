@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, Calendar, ChevronRight, Clock, FileText, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +13,7 @@ import { usePageConfig } from '@/hooks/usePageConfig';
 import { readComposerText } from '@/lib/admin/page-content';
 import { ALL_BLOG_CATEGORY, buildBlogCategories, filterBlogsByCategory } from '@/lib/content-utils';
 import { getLocalizedValue, resolveMediaField, type BlogRecord } from '@/lib/content-hub';
+import { mergePublicBlogPosts } from '@/lib/demo-blog-posts';
 
 export const Blog = () => {
   const { data: articles, loading } = usePublicCollection<BlogRecord>('blogs');
@@ -27,6 +27,7 @@ export const Blog = () => {
 
   const displayName = i18n.language === 'ar' ? profile.displayNameAr || profile.displayName : profile.displayName;
   const isArabic = i18n.language === 'ar';
+  const mergedArticles = useMemo(() => mergePublicBlogPosts(articles), [articles]);
   const heroSection = pageConfig.sections.find((section) => section.type === 'blogHero');
   const listingSection = pageConfig.sections.find((section) => section.type === 'blogListing');
   const seoTitle = isArabic
@@ -53,11 +54,11 @@ export const Blog = () => {
   const listingSubtitle = listingSection
     ? readComposerText(listingSection.content, 'subtitle', '', isArabic)
     : '';
-  const categories = useMemo(() => buildBlogCategories(articles), [articles]);
+  const categories = useMemo(() => buildBlogCategories(mergedArticles), [mergedArticles]);
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
   const filteredArticles = useMemo(() => {
-    return filterBlogsByCategory(articles, activeCategory).filter((article) => {
+    return filterBlogsByCategory(mergedArticles, activeCategory).filter((article) => {
       if (!normalizedQuery) {
         return true;
       }
@@ -76,7 +77,7 @@ export const Blog = () => {
 
       return haystack.includes(normalizedQuery);
     });
-  }, [activeCategory, articles, normalizedQuery]);
+  }, [activeCategory, mergedArticles, normalizedQuery]);
 
   const visibleArticles = filteredArticles.slice(0, visibleCount);
 
@@ -96,38 +97,30 @@ export const Blog = () => {
     <div className="relative flex flex-col gap-16 overflow-hidden py-8">
       <PageSeo title={seoTitle} description={seoDescription} image={pageConfig.seo.image} />
 
-      <div className="pointer-events-none absolute top-[10%] h-[600px] w-[600px] rounded-full bg-teal-500/10 blur-[120px] rtl:right-[-10%] ltr:left-[-10%]" />
-
       <header className="relative z-10 flex max-w-4xl flex-col gap-8 border-b border-border pb-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2">
+        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <FileText className="h-5 w-5 text-primary" />
           <span className="font-label text-sm uppercase tracking-wider text-primary">{eyebrow}</span>
-        </motion.div>
+        </div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+        <h1
           className="font-heading text-4xl font-black leading-[1.1] tracking-tight md:text-5xl"
         >
           {title}
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        <p
           className="text-xl leading-relaxed text-muted-foreground"
         >
           {subtitle}
-        </motion.p>
+        </p>
       </header>
 
       <div className="relative z-10 grid grid-cols-1 gap-12 lg:grid-cols-4">
         <aside className="order-2 flex flex-col gap-8 lg:order-1 lg:col-span-1">
           <div className="sticky top-24 flex flex-col gap-8">
             <div>
-              <h3 className="mb-4 font-heading text-lg font-bold">{t('blog.searchLabel')}</h3>
+              <h2 className="mb-4 font-heading text-lg font-bold">{t('blog.searchLabel')}</h2>
               <div className="relative">
                 <Search className="absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground rtl:right-3 ltr:left-3" />
                 <Input
@@ -143,7 +136,7 @@ export const Blog = () => {
             </div>
 
             <div>
-              <h3 className="mb-4 font-heading text-lg font-bold">{t('blog.categories')}</h3>
+              <h2 className="mb-4 font-heading text-lg font-bold">{t('blog.categories')}</h2>
               <div className="flex flex-col gap-2">
                 {categories.map((category) => {
                   const isActive = activeCategory === category;
@@ -185,8 +178,7 @@ export const Blog = () => {
             <EmptyState title={t('blog.noArticles')} description={t('blog.noArticlesDescription')} className="py-20" />
           ) : (
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              <AnimatePresence mode="popLayout">
-                {visibleArticles.map((article, index) => {
+                {visibleArticles.map((article) => {
                   const cover = resolveMediaField(
                     {
                       url: article.coverImage || article.image,
@@ -198,13 +190,9 @@ export const Blog = () => {
                   const articleExcerpt = getLocalizedValue(article.excerpt, article.excerptAr, isArabic) || article.excerpt;
 
                   return (
-                    <motion.div
-                      layout
+                    <div
                       key={article.id}
-                      initial={{ opacity: 0, scale: 0.95, y: 30 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      className="animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300"
                     >
                       <Link to={`/blog/${article.slug}`} className="group flex h-full">
                         <article className="relative isolate flex w-full flex-col items-start gap-6 overflow-hidden rounded-[2rem] border border-border bg-card p-8 shadow-sm transition-all duration-500 hover:border-primary/50 hover:shadow-xl md:p-10">
@@ -278,10 +266,9 @@ export const Blog = () => {
                           </div>
                         </article>
                       </Link>
-                    </motion.div>
+                    </div>
                   );
                 })}
-              </AnimatePresence>
             </div>
           )}
 

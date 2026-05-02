@@ -1,4 +1,6 @@
-import { cn } from "@/lib/utils";
+function cx(...values: Array<string | undefined>) {
+  return values.filter(Boolean).join(' ');
+}
 
 type EmptyStateProps = {
   title: string;
@@ -9,7 +11,7 @@ type EmptyStateProps = {
 export function EmptyState({ title, description, className }: EmptyStateProps) {
   return (
     <div
-      className={cn(
+      className={cx(
         "rounded-3xl border border-border/60 bg-card/60 px-6 py-14 text-center shadow-sm",
         className,
       )}
@@ -36,7 +38,7 @@ export function SkeletonBlocks({
   className,
 }: SkeletonBlockProps) {
   return (
-    <div className={cn("grid gap-4", className)}>
+    <div className={cx("grid gap-4", className)}>
       {Array.from({ length: count }).map((_, index) => (
         <div
           key={index}
@@ -55,7 +57,7 @@ export function SkeletonLine({ className }: SkeletonLineProps) {
   return (
     <span
       aria-hidden="true"
-      className={cn("block h-4 animate-pulse rounded-full bg-muted/60", className)}
+      className={cx("block h-4 animate-pulse rounded-full bg-muted/60", className)}
     />
   );
 }
@@ -64,7 +66,7 @@ export function SkeletonMedia({ className }: SkeletonLineProps) {
   return (
     <div
       aria-hidden="true"
-      className={cn("animate-pulse rounded-[1.5rem] bg-muted/60", className)}
+      className={cx("animate-pulse rounded-[1.5rem] bg-muted/60", className)}
     />
   );
 }

@@ -1,8 +1,8 @@
-import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, Code, ExternalLink, Monitor, Rocket } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { OptimizedImage } from '@/components/shared/OptimizedImage';
 import { PageSeo } from '@/components/shared/PageSeo';
 import { EmptyState, SkeletonBlocks, SkeletonMedia } from '@/components/shared/PageState';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
@@ -105,7 +105,7 @@ export const ProjectDetail = () => {
 
           <div className="flex flex-wrap gap-3">
             {project.demoUrl ? (
-              <a href={project.demoUrl} target="_blank" rel="noreferrer">
+              <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
                 <Button size="lg" className="gap-2">
                   {t('projectDetail.livePreview')}
                   <ExternalLink className="h-4 w-4" />
@@ -113,7 +113,7 @@ export const ProjectDetail = () => {
               </a>
             ) : null}
             {project.githubUrl ? (
-              <a href={project.githubUrl} target="_blank" rel="noreferrer">
+              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                 <Button
                   variant="outline"
                   size="lg"
@@ -127,10 +127,8 @@ export const ProjectDetail = () => {
           </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl"
+        <div
+          className="overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-300"
         >
           <div className="flex items-center justify-between border-b border-slate-800 bg-[#161b22] px-5 py-3 font-mono text-xs text-slate-400">
             <span dir={isArabic ? 'rtl' : 'ltr'}>{isArabic ? title : `${project.slug}.app`}</span>
@@ -140,10 +138,11 @@ export const ProjectDetail = () => {
             {mediaLoading ? (
               <SkeletonMedia className="h-full w-full rounded-none bg-slate-800/70" />
             ) : heroImage.url ? (
-              <img
-                src={heroImage.url}
+              <OptimizedImage
+                imageUrl={heroImage.url}
                 alt={title}
-                referrerPolicy="no-referrer"
+                priority
+                sizes="(min-width: 1024px) 520px, 100vw"
                 className="h-full w-full object-cover object-top"
               />
             ) : (
@@ -152,7 +151,7 @@ export const ProjectDetail = () => {
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
       </section>
 
       <section className="grid gap-8 lg:grid-cols-[1fr_320px] lg:items-start">
@@ -161,7 +160,7 @@ export const ProjectDetail = () => {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {galleryImages.map((imageUrl) => (
                 <div key={imageUrl} className="overflow-hidden rounded-[1.25rem] border border-border/60 bg-card/60 shadow-sm">
-                  <img src={imageUrl} alt={title} referrerPolicy="no-referrer" className="aspect-video w-full object-cover" />
+                  <OptimizedImage imageUrl={imageUrl} alt={title} className="aspect-video w-full object-cover" />
                 </div>
               ))}
             </div>

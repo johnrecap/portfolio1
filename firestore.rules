@@ -274,19 +274,33 @@ service cloud.firestore {
     }
 
     function isValidProject() {
-      return hasRequiredFields(['title', 'slug', 'description', 'category', 'image']) &&
+      return hasOnlyAllowedFields([
+          'title', 'titleAr', 'slug', 'description', 'descriptionAr', 'category', 'type',
+          'image', 'imageAssetId', 'demoUrl', 'githubUrl', 'color', 'featured',
+          'featuredOrder', 'tags', 'highlightLabel', 'highlightLabelAr', 'galleryImages',
+          'problem', 'problemAr', 'solution', 'solutionAr', 'projectRole', 'projectRoleAr',
+          'result', 'resultAr', 'seo', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['title', 'slug', 'description', 'category']) &&
         validStringLength('title', 1, 100) &&
         validStringLength('slug', 1, 100) &&
         validStringLength('description', 1, 5000) &&
         validStringLength('category', 1, 50) &&
-        validStringLength('image', 1, 2000000) &&
+        optionalString('titleAr') &&
+        optionalString('descriptionAr') &&
+        optionalString('image') &&
+        optionalString('imageAssetId') &&
         optionalString('demoUrl') &&
         optionalString('githubUrl') &&
         optionalString('color') &&
         optionalList('tags') &&
+        optionalList('galleryImages') &&
+        optionalMap('seo') &&
         (!( 'type' in request.resource.data) || request.resource.data.type in ['web', 'mobile', 'dashboard', 'backend', 'other']) &&
         optionalBool('featured') &&
         optionalNumber('featuredOrder') &&
+        optionalString('highlightLabel') &&
+        optionalString('highlightLabelAr') &&
         optionalString('problem') &&
         optionalString('problemAr') &&
         optionalString('solution') &&
@@ -298,21 +312,51 @@ service cloud.firestore {
     }
 
     function isValidBlog() {
-      return hasRequiredFields(['title', 'slug', 'excerpt', 'content', 'category', 'createdAt']) &&
+      return hasOnlyAllowedFields([
+          'title', 'titleAr', 'slug', 'excerpt', 'excerptAr', 'content', 'contentAr',
+          'category', 'coverImage', 'coverImageAssetId', 'image', 'imageAssetId',
+          'tags', 'readTime', 'featured', 'seo', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['title', 'slug', 'excerpt', 'content', 'category', 'createdAt']) &&
         validStringLength('title', 1, 200) &&
         validStringLength('slug', 1, 200) &&
         validStringLength('excerpt', 1, 1000) &&
         validStringLength('content', 1, 50000) &&
-        validStringLength('category', 1, 50);
+        validStringLength('category', 1, 50) &&
+        optionalString('titleAr') &&
+        optionalString('excerptAr') &&
+        optionalString('contentAr') &&
+        optionalString('coverImage') &&
+        optionalString('coverImageAssetId') &&
+        optionalString('image') &&
+        optionalString('imageAssetId') &&
+        optionalList('tags') &&
+        optionalString('readTime') &&
+        optionalBool('featured') &&
+        optionalMap('seo');
     }
 
     function isValidSkill() {
-      return hasRequiredFields(['name', 'category', 'proficiency']) &&
+      return hasOnlyAllowedFields([
+          'name', 'nameAr', 'category', 'categoryAr', 'description', 'descriptionAr',
+          'proficiency', 'icon', 'iconAssetId', 'categoryOrder', 'order', 'featured',
+          'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['name', 'category', 'proficiency']) &&
         validStringLength('name', 1, 50) &&
         validStringLength('category', 1, 50) &&
         request.resource.data.proficiency is number &&
         request.resource.data.proficiency >= 0 &&
-        request.resource.data.proficiency <= 100;
+        request.resource.data.proficiency <= 100 &&
+        optionalString('nameAr') &&
+        optionalString('categoryAr') &&
+        optionalString('description') &&
+        optionalString('descriptionAr') &&
+        optionalString('icon') &&
+        optionalString('iconAssetId') &&
+        optionalNumber('categoryOrder') &&
+        optionalNumber('order') &&
+        optionalBool('featured');
     }
 
     function isValidTestimonial() {
@@ -357,7 +401,11 @@ service cloud.firestore {
     }
 
     function isValidMessage() {
-      return hasRequiredFields(['name', 'email', 'message', 'createdAt']) &&
+      return hasOnlyAllowedFields([
+          'name', 'email', 'whatsapp', 'budget', 'message', 'read', 'userId',
+          'status', 'priority', 'adminNotes', 'createdAt', 'updatedAt'
+        ]) &&
+        hasRequiredFields(['name', 'email', 'message', 'createdAt']) &&
         validStringLength('name', 1, 100) &&
         isValidEmail(request.resource.data.email) &&
         validStringLength('message', 1, 5000) &&

@@ -19,6 +19,7 @@ import type { ProfileSettings } from '@/lib/admin/types';
 import { normalizeSiteSettings } from '@/lib/admin/settings';
 import { resolveMediaField } from '@/lib/content-hub';
 import { buildProfileImageStyle } from '@/lib/profile-image';
+import { updatePublicDocumentCache } from '@/lib/public-bootstrap';
 
 type ProfileSettingsForm = ReturnType<typeof createDefaultProfileSettings>;
 type SiteSettingsForm = ReturnType<typeof createDefaultSiteSettings>;
@@ -114,6 +115,8 @@ export const DashboardSiteSettings = () => {
     setIsSaving(true);
     try {
       await Promise.all([setProfileDocument(profileForm), setSiteDocument(siteForm)]);
+      updatePublicDocumentCache('settings', 'profile', { id: 'profile', ...profileForm });
+      updatePublicDocumentCache('settings', 'site', { id: 'site', ...siteForm });
       toast.success(t('dashboardSettings.saveSuccess'));
     } catch {
       toast.error(t('dashboardSettings.saveError'));

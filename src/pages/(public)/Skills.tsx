@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { Blocks, Cloud, Code, Layers, Server, ShieldCheck, Smartphone, Wrench } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState, SkeletonBlocks, SkeletonLine } from '@/components/shared/PageState';
@@ -84,25 +83,18 @@ export const Skills = () => {
       <PageSeo title={t('nav.skills')} description={t('skills.subtitle')} />
 
       <header className="mb-8 max-w-3xl">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+        <h1
           className="mb-6 font-heading text-3xl font-extrabold leading-[1.1] tracking-tight text-primary md:text-5xl"
         >
           {t('skills.title')}
           <br />
           {t('skills.production')}
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
+        </h1>
+        <p
           className="mb-8 max-w-2xl text-xl leading-relaxed text-muted-foreground"
         >
           {t('skills.subtitle')}
-        </motion.p>
+        </p>
         <div className="flex items-center gap-4 md:gap-6">
           <div className="rounded-2xl border border-slate-800 bg-slate-900/50 px-6 py-4">
             <span className="block font-heading text-3xl font-bold text-teal-500">{displayedSkills.length}</span>
@@ -123,18 +115,15 @@ export const Skills = () => {
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {groupedSkills.map((group, index) => (
-              <motion.div
+              <div
                 key={group.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="rounded-3xl border border-border/50 bg-card p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="rounded-3xl border border-border/50 bg-card p-8 shadow-sm transition-all duration-300 animate-in fade-in zoom-in-95 hover:-translate-y-1 hover:shadow-xl"
+                style={{ animationDelay: `${Math.min(index, 5) * 50}ms` }}
               >
                 <div className={`mb-6 flex h-12 w-12 items-center justify-center rounded-full ${getColorForCategory(group.id)}`}>
                   {getIconForCategory(group.id)}
                 </div>
-                <h3 className="mb-4 font-heading text-2xl font-bold capitalize">{group.label}</h3>
+                <h2 className="mb-4 font-heading text-2xl font-bold capitalize">{group.label}</h2>
                 <div className="mt-6 flex flex-col gap-4">
                   {group.items.map((skill) => {
                     const icon = resolveMediaField({ url: skill.icon, assetId: skill.iconAssetId }, assets);
@@ -166,7 +155,7 @@ export const Skills = () => {
                     );
                   })}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}

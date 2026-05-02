@@ -1,4 +1,5 @@
 import { normalizeMediaUrl } from './media';
+import type { OptimizedImageEntry } from './image-sources';
 
 type TimestampLike = { seconds?: number | null } | null | undefined;
 
@@ -49,6 +50,7 @@ export type ProjectRecord = {
   color?: string | null;
   image?: string | null;
   imageAssetId?: string | null;
+  imageMetadata?: OptimizedImageEntry | null;
   galleryImages?: string[] | null;
   galleryAssetIds?: string[] | null;
   tags?: string[] | null;

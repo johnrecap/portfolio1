@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { Code2, GitCommit, Users, Zap } from 'lucide-react';
 
@@ -36,13 +35,10 @@ export const StatsStrip = () => {
           {stats.map((stat, i) => {
             const Icon = stat.icon;
             return (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="flex flex-col items-center justify-center text-center p-2 group"
+                className="group flex flex-col items-center justify-center p-2 text-center animate-in fade-in slide-in-from-bottom-2 duration-500"
+                style={{ animationDelay: `${i * 70}ms` }}
               >
                 <div className="mb-3 p-3 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                   <Icon className="w-5 h-5" />
@@ -53,7 +49,7 @@ export const StatsStrip = () => {
                 <div className="text-xs md:text-sm text-muted-foreground font-medium uppercase tracking-wider">
                   {stat.subtitle || stat.label}
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>

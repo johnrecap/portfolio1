@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { buildFirestoreErrorInfo, db, handleFirestoreError, type FirestoreErrorInfo, OperationType } from '@/lib/firebase';
-import { collection, onSnapshot, query, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, orderBy, setDoc } from 'firebase/firestore';
+import { buildFirestoreErrorInfo, getFirestoreInstance, handleFirestoreError, type FirestoreErrorInfo, OperationType } from '@/lib/firebase';
 
 export type UseFirestoreOptions = {
+  disabled?: boolean;
   suppressPermissionDenied?: boolean;
   orderByCreatedAt?: boolean;
   initialData?: unknown;
@@ -95,43 +95,78 @@ export function useDocument<T>(path: string, docId: string, options?: UseFiresto
   const [data, setData] = useState<(T & { id: string }) | null>(
     hasInitialData ? (options?.initialData as (T & { id: string }) | null) : null,
   );
-  const [loading, setLoading] = useState(!hasInitialData);
+  const [loading, setLoading] = useState(!hasInitialData && options?.disabled !== true);
   const [error, setError] = useState<FirestoreErrorInfo | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(doc(db, path, docId), (snapshot) => {
-      let nextData: (T & { id: string }) | null;
-      if (snapshot.exists()) {
-        nextData = { id: snapshot.id, ...snapshot.data() } as T & { id: string };
-      } else {
-        nextData = null;
-      }
-      setData(nextData);
-      options?.onData?.(nextData);
-      setError(null);
+    if (options?.disabled === true) {
       setLoading(false);
-    }, (error) => {
-      if (shouldSuppressDocumentError(error, options)) {
-        if (options?.keepDataOnSuppressedError !== true) {
-          setData(null);
-        }
-        setError(null);
-        setLoading(false);
+      return;
+    }
+
+    let isActive = true;
+    let unsubscribe: (() => void) | null = null;
+
+    async function subscribe() {
+      const [{ doc, onSnapshot }, db] = await Promise.all([
+        import('firebase/firestore'),
+        getFirestoreInstance(),
+      ]);
+
+      if (!isActive) {
         return;
       }
 
+      unsubscribe = onSnapshot(doc(db, path, docId), (snapshot) => {
+        let nextData: (T & { id: string }) | null;
+        if (snapshot.exists()) {
+          nextData = { id: snapshot.id, ...snapshot.data() } as T & { id: string };
+        } else {
+          nextData = null;
+        }
+        setData(nextData);
+        options?.onData?.(nextData);
+        setError(null);
+        setLoading(false);
+      }, (error) => {
+        if (shouldSuppressDocumentError(error, options)) {
+          if (options?.keepDataOnSuppressedError !== true) {
+            setData(null);
+          }
+          setError(null);
+          setLoading(false);
+          return;
+        }
+
+        const errorInfo = buildFirestoreErrorInfo(error, OperationType.GET, `${path}/${docId}`);
+        setData(null);
+        setError(errorInfo);
+        setLoading(false);
+        reportFirestoreReadError(errorInfo);
+      });
+    }
+
+    void subscribe().catch((error) => {
       const errorInfo = buildFirestoreErrorInfo(error, OperationType.GET, `${path}/${docId}`);
-      setData(null);
       setError(errorInfo);
       setLoading(false);
       reportFirestoreReadError(errorInfo);
     });
 
-    return () => cleanupFirestoreSubscription(unsubscribe, OperationType.GET, `${path}/${docId}`);
-  }, [path, docId, options?.suppressPermissionDenied, options?.keepDataOnSuppressedError]);
+    return () => {
+      isActive = false;
+      if (unsubscribe) {
+        cleanupFirestoreSubscription(unsubscribe, OperationType.GET, `${path}/${docId}`);
+      }
+    };
+  }, [path, docId, options?.disabled, options?.suppressPermissionDenied, options?.keepDataOnSuppressedError]);
 
   const setDocument = async (docData: any, merge: boolean = true) => {
     try {
+      const [{ doc, setDoc }, db] = await Promise.all([
+        import('firebase/firestore'),
+        getFirestoreInstance(),
+      ]);
       await setDoc(doc(db, path, docId), docData, { merge });
     } catch (err) {
       handleFirestoreError(err, OperationType.WRITE, `${path}/${docId}`);
@@ -146,46 +181,82 @@ export function useCollection<T>(path: string, options?: UseFirestoreOptions) {
   const [data, setData] = useState<(T & { id: string })[]>(
     hasInitialData ? (options?.initialData as (T & { id: string })[]) : [],
   );
-  const [loading, setLoading] = useState(!hasInitialData);
+  const [loading, setLoading] = useState(!hasInitialData && options?.disabled !== true);
   const [error, setError] = useState<FirestoreErrorInfo | null>(null);
 
   useEffect(() => {
-    const shouldOrderByCreatedAt = options?.orderByCreatedAt === true;
-    const collectionQuery = shouldOrderByCreatedAt
-      ? query(collection(db, path), orderBy('createdAt', 'desc'))
-      : query(collection(db, path));
-    const unsubscribe = onSnapshot(collectionQuery, (snapshot) => {
-      const result: any[] = [];
-      snapshot.forEach(doc => {
-        result.push({ id: doc.id, ...doc.data() });
-      });
-      const nextData = sortByCreatedAtDesc(result) as (T & { id: string })[];
-      setData(nextData);
-      options?.onData?.(nextData);
-      setError(null);
+    if (options?.disabled === true) {
       setLoading(false);
-    }, (error) => {
-      if (shouldSuppressCollectionError(error, options)) {
-        if (options?.keepDataOnSuppressedError !== true) {
-          setData([]);
-        }
-        setError(null);
-        setLoading(false);
+      return;
+    }
+
+    let isActive = true;
+    let unsubscribe: (() => void) | null = null;
+
+    async function subscribe() {
+      const [{ collection, onSnapshot, orderBy, query }, db] = await Promise.all([
+        import('firebase/firestore'),
+        getFirestoreInstance(),
+      ]);
+
+      if (!isActive) {
         return;
       }
 
+      const shouldOrderByCreatedAt = options?.orderByCreatedAt === true;
+      const collectionQuery = shouldOrderByCreatedAt
+        ? query(collection(db, path), orderBy('createdAt', 'desc'))
+        : query(collection(db, path));
+
+      unsubscribe = onSnapshot(collectionQuery, (snapshot) => {
+        const result: any[] = [];
+        snapshot.forEach(doc => {
+          result.push({ id: doc.id, ...doc.data() });
+        });
+        const nextData = sortByCreatedAtDesc(result) as (T & { id: string })[];
+        setData(nextData);
+        options?.onData?.(nextData);
+        setError(null);
+        setLoading(false);
+      }, (error) => {
+        if (shouldSuppressCollectionError(error, options)) {
+          if (options?.keepDataOnSuppressedError !== true) {
+            setData([]);
+          }
+          setError(null);
+          setLoading(false);
+          return;
+        }
+
+        const errorInfo = buildFirestoreErrorInfo(error, OperationType.LIST, path);
+        setData([]);
+        setError(errorInfo);
+        setLoading(false);
+        reportFirestoreReadError(errorInfo);
+      });
+    }
+
+    void subscribe().catch((error) => {
       const errorInfo = buildFirestoreErrorInfo(error, OperationType.LIST, path);
-      setData([]);
       setError(errorInfo);
       setLoading(false);
       reportFirestoreReadError(errorInfo);
     });
 
-    return () => cleanupFirestoreSubscription(unsubscribe, OperationType.LIST, path);
-  }, [path, options?.suppressPermissionDenied, options?.orderByCreatedAt, options?.keepDataOnSuppressedError]);
+    return () => {
+      isActive = false;
+      if (unsubscribe) {
+        cleanupFirestoreSubscription(unsubscribe, OperationType.LIST, path);
+      }
+    };
+  }, [path, options?.disabled, options?.suppressPermissionDenied, options?.orderByCreatedAt, options?.keepDataOnSuppressedError]);
 
   const addDocument = async (docData: any) => {
     try {
+      const [{ addDoc, collection, serverTimestamp }, db] = await Promise.all([
+        import('firebase/firestore'),
+        getFirestoreInstance(),
+      ]);
       await addDoc(collection(db, path), {
         ...docData,
         createdAt: serverTimestamp()
@@ -197,6 +268,10 @@ export function useCollection<T>(path: string, options?: UseFirestoreOptions) {
 
   const updateDocument = async (id: string, docData: any) => {
     try {
+      const [{ doc, updateDoc }, db] = await Promise.all([
+        import('firebase/firestore'),
+        getFirestoreInstance(),
+      ]);
       await updateDoc(doc(db, path, id), docData);
     } catch (err) {
       handleFirestoreError(err, OperationType.UPDATE, path);
@@ -205,6 +280,10 @@ export function useCollection<T>(path: string, options?: UseFirestoreOptions) {
 
   const removeDocument = async (id: string) => {
     try {
+      const [{ deleteDoc, doc }, db] = await Promise.all([
+        import('firebase/firestore'),
+        getFirestoreInstance(),
+      ]);
       await deleteDoc(doc(db, path, id));
     } catch (err) {
       handleFirestoreError(err, OperationType.DELETE, path);

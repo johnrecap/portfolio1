@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { motion } from 'motion/react';
 import { ArrowRight, Check, Copy, Layers3, Rocket, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button-variants';
 import { useProfile } from '@/hooks/useProfile';
 import { readComposerText } from '@/lib/admin/page-content';
 import { SkeletonLine } from '@/components/shared/PageState';
@@ -44,7 +43,7 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
   return (
     <section className="relative overflow-hidden pt-10 pb-16 md:pt-20 md:pb-24">
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(20,184,166,0.14),transparent_62%)]" />
         <div className="absolute inset-x-0 top-28 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       </div>
 
@@ -57,15 +56,9 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
               : 'grid lg:grid-cols-[1.15fr_0.85fr]'
         }`}
       >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-          className={`space-y-8 ${isCentered ? 'text-center' : ''}`}
-        >
+        <div className={`space-y-8 ${isCentered ? 'text-center' : ''}`}>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-semibold text-primary">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
             </span>
             {t('hero.availability')}
@@ -139,94 +132,89 @@ export const HeroSection = ({ variant = 'split', content = {} }: HeroSectionProp
               <p className="mt-2 text-sm font-medium text-foreground">{t('hero.languageValue')}</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {!isMinimal ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97, x: 16 }}
-          animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ duration: 0.55, delay: 0.1 }}
-          className={`relative ${isCentered ? 'w-full max-w-3xl' : ''}`}
-        >
-          <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-primary/15 via-transparent to-teal-400/15 blur-2xl" />
-          <div className="relative overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 bg-[#161b22] px-5 py-3 font-mono text-xs text-slate-400">
-              <div className="flex gap-2">
-                <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
-                <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
-                <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
-              </div>
-              <div className="flex items-center gap-2">
-                <Terminal className="h-4 w-4" />
-                build-summary.ts
-              </div>
-              <div className="w-12" />
-            </div>
-
-            <div className="space-y-6 p-6 text-sm text-slate-200">
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                <div className="mb-2 flex items-center gap-2 text-primary">
-                  <Layers3 className="h-4 w-4" />
-                  <span className="font-mono text-xs uppercase tracking-[0.18em]">
-                    {t('hero.cardTitle')}
-                  </span>
+          <div className={`relative ${isCentered ? 'w-full max-w-3xl' : ''}`}>
+            <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-teal-400/10" />
+            <div className="relative overflow-hidden rounded-[2rem] border border-slate-800 bg-[#0d1117] shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-800 bg-[#161b22] px-5 py-3 font-mono text-xs text-slate-400">
+                <div className="flex gap-2">
+                  <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
+                  <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
+                  <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
                 </div>
-                <p className="leading-7 text-slate-300">{t('hero.cardDescription')}</p>
-              </div>
-
-              <div
-                className="cursor-pointer rounded-2xl border border-slate-800 bg-slate-950/60 p-4 transition-colors hover:border-slate-700"
-                onClick={handleCopy}
-                dir="ltr"
-              >
-                <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
-                  <span>{t('hero.commandLabel')}</span>
-                  {copied ? (
-                    <span className="inline-flex items-center gap-1 text-emerald-400">
-                      <Check className="h-4 w-4" />
-                      {t('hero.commandCopied')}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-slate-400">
-                      <Copy className="h-4 w-4" />
-                      {t('hero.commandHint')}
-                    </span>
-                  )}
+                <div className="flex items-center gap-2">
+                  <Terminal className="h-4 w-4" />
+                  build-summary.ts
                 </div>
-                <code className="block overflow-x-auto font-mono text-sm text-slate-100">
-                  {profileLoading ? <SkeletonLine className="my-1 h-4 w-72 bg-slate-700/70" /> : installCommand}
-                </code>
+                <div className="w-12" />
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-6 p-6 text-sm text-slate-200">
                 <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-teal-300">
-                    <Rocket className="h-4 w-4" />
+                  <div className="mb-2 flex items-center gap-2 text-primary">
+                    <Layers3 className="h-4 w-4" />
                     <span className="font-mono text-xs uppercase tracking-[0.18em]">
-                      {t('hero.outcomesTitle')}
+                      {t('hero.cardTitle')}
                     </span>
                   </div>
-                  <p className="text-sm leading-7 text-slate-300">{t('hero.outcomesText')}</p>
+                  <p className="leading-7 text-slate-300">{t('hero.cardDescription')}</p>
                 </div>
-                <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                  <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
-                    {t('hero.stackTitle')}
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-2" dir="ltr">
-                    {['React', 'TypeScript', 'Firebase', 'Node.js'].map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-200"
-                      >
-                        {item}
+
+                <div
+                  className="cursor-pointer rounded-2xl border border-slate-800 bg-slate-950/60 p-4 transition-colors hover:border-slate-700"
+                  onClick={handleCopy}
+                  dir="ltr"
+                >
+                  <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
+                    <span>{t('hero.commandLabel')}</span>
+                    {copied ? (
+                      <span className="inline-flex items-center gap-1 text-emerald-400">
+                        <Check className="h-4 w-4" />
+                        {t('hero.commandCopied')}
                       </span>
-                    ))}
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-slate-400">
+                        <Copy className="h-4 w-4" />
+                        {t('hero.commandHint')}
+                      </span>
+                    )}
+                  </div>
+                  <code className="block overflow-x-auto font-mono text-sm text-slate-100">
+                    {profileLoading ? <SkeletonLine className="my-1 h-4 w-72 bg-slate-700/70" /> : installCommand}
+                  </code>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                    <div className="mb-2 flex items-center gap-2 text-teal-300">
+                      <Rocket className="h-4 w-4" />
+                      <span className="font-mono text-xs uppercase tracking-[0.18em]">
+                        {t('hero.outcomesTitle')}
+                      </span>
+                    </div>
+                    <p className="text-sm leading-7 text-slate-300">{t('hero.outcomesText')}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+                    <p className="font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                      {t('hero.stackTitle')}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2" dir="ltr">
+                      {['React', 'TypeScript', 'Firebase', 'Node.js'].map((item) => (
+                        <span
+                          key={item}
+                          className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-200"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </motion.div>
         ) : null}
       </div>
     </section>

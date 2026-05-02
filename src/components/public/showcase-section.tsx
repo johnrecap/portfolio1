@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { FolderKanban, Languages, LayoutDashboard, Layers3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePublicCollection } from '@/hooks/public-firestore';
@@ -73,15 +72,12 @@ export const ShowcaseSection = ({ variant = 'grid', content = {} }: ShowcaseSect
         ) : (
           <div className={`grid gap-5 md:grid-cols-2 ${variant === 'spotlight' ? 'xl:grid-cols-3' : 'xl:grid-cols-4'}`}>
             {stats.map((item, index) => (
-              <motion.div
+              <div
                 key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
                 className={`rounded-[1.75rem] border border-border/60 bg-card/60 p-6 shadow-sm ${
                   variant === 'spotlight' && index === 0 ? 'md:col-span-2 xl:col-span-1' : ''
-                }`}
+                } animate-in fade-in slide-in-from-bottom-3 duration-500`}
+                style={{ animationDelay: `${index * 60}ms` }}
               >
                 <div className="mb-5 inline-flex rounded-2xl bg-primary/10 p-3 text-primary">
                   <item.icon className="h-5 w-5" />
@@ -92,7 +88,7 @@ export const ShowcaseSection = ({ variant = 'grid', content = {} }: ShowcaseSect
                 <p className="mt-3 font-heading text-4xl font-black text-foreground">{item.value}</p>
                 <h3 className="mt-4 text-lg font-semibold text-foreground">{item.title}</h3>
                 <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.description}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}

@@ -564,6 +564,7 @@ export const DashboardProjects = () => {
                       <div className="flex gap-2">
                         <button
                           type="button"
+                          aria-label={t('dashboardProjects.editProject')}
                           onClick={() => handleEdit(project)}
                           className="rounded-full border border-border bg-background/70 p-2 text-muted-foreground transition-colors hover:text-foreground"
                         >
@@ -571,6 +572,7 @@ export const DashboardProjects = () => {
                         </button>
                         <button
                           type="button"
+                          aria-label={t('dashboardProjects.delete')}
                           onClick={() => setDeleteId(project.id)}
                           className="rounded-full border border-border bg-background/70 p-2 text-muted-foreground transition-colors hover:text-destructive"
                         >

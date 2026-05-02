@@ -8,6 +8,7 @@ export default defineConfig(() => ({
   build: {
     outDir: '../../dist/demos/shopnest-commerce',
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1200,
   },
   plugins: [react(), tailwindcss()],
   resolve: {

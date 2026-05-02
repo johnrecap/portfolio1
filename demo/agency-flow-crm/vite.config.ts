@@ -15,6 +15,7 @@ export default defineConfig(() => {
     build: {
       outDir: '../../dist/demos/agency-flow-crm',
       emptyOutDir: false,
+      chunkSizeWarningLimit: 1200,
     },
     server: {
       hmr: process.env.DISABLE_HMR !== 'true',

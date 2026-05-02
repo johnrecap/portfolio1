@@ -183,17 +183,23 @@
       "type": "object",
       "properties": {
         "title": { "type": "string" },
+        "titleAr": { "type": "string" },
         "slug": { "type": "string" },
         "description": { "type": "string" },
+        "descriptionAr": { "type": "string" },
         "category": { "type": "string" },
         "type": { "type": "string", "enum": ["web", "mobile", "dashboard", "backend", "other"] },
         "color": { "type": "string" },
         "image": { "type": "string" },
+        "imageAssetId": { "type": "string" },
         "tags": { "type": "array" },
         "demoUrl": { "type": "string" },
         "githubUrl": { "type": "string" },
         "featured": { "type": "boolean" },
         "featuredOrder": { "type": "number" },
+        "highlightLabel": { "type": "string" },
+        "highlightLabelAr": { "type": "string" },
+        "galleryImages": { "type": "array" },
         "problem": { "type": "string" },
         "problemAr": { "type": "string" },
         "solution": { "type": "string" },
@@ -202,9 +208,11 @@
         "projectRoleAr": { "type": "string" },
         "result": { "type": "string" },
         "resultAr": { "type": "string" },
-        "createdAt": { "type": "timestamp" }
+        "seo": { "type": "object" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
       },
-      "required": ["title", "slug", "description", "category", "image"]
+      "required": ["title", "slug", "description", "category"]
     },
     "Blog": {
       "title": "Blog",
@@ -212,11 +220,23 @@
       "type": "object",
       "properties": {
         "title": { "type": "string" },
+        "titleAr": { "type": "string" },
         "slug": { "type": "string" },
         "excerpt": { "type": "string" },
+        "excerptAr": { "type": "string" },
         "content": { "type": "string" },
+        "contentAr": { "type": "string" },
         "category": { "type": "string" },
-        "createdAt": { "type": "timestamp" }
+        "coverImage": { "type": "string" },
+        "coverImageAssetId": { "type": "string" },
+        "image": { "type": "string" },
+        "imageAssetId": { "type": "string" },
+        "tags": { "type": "array" },
+        "readTime": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "seo": { "type": "object" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
       },
       "required": ["title", "slug", "excerpt", "content", "category", "createdAt"]
     },
@@ -226,10 +246,19 @@
       "type": "object",
       "properties": {
         "name": { "type": "string" },
+        "nameAr": { "type": "string" },
         "category": { "type": "string" },
+        "categoryAr": { "type": "string" },
+        "description": { "type": "string" },
+        "descriptionAr": { "type": "string" },
         "proficiency": { "type": "number" },
         "icon": { "type": "string" },
-        "createdAt": { "type": "timestamp" }
+        "iconAssetId": { "type": "string" },
+        "categoryOrder": { "type": "number" },
+        "order": { "type": "number" },
+        "featured": { "type": "boolean" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
       },
       "required": ["name", "category", "proficiency"]
     },
@@ -287,7 +316,11 @@
         "budget": { "type": "string" },
         "read": { "type": "boolean" },
         "message": { "type": "string" },
-        "createdAt": { "type": "timestamp" }
+        "status": { "type": "string", "enum": ["new", "reviewed", "archived"] },
+        "priority": { "type": "string", "enum": ["normal", "high"] },
+        "adminNotes": { "type": "string" },
+        "createdAt": { "type": "timestamp" },
+        "updatedAt": { "type": "timestamp" }
       },
       "required": ["name", "email", "message", "createdAt"]
     }
