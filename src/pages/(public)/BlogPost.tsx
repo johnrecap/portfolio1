@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, Calendar, Clock, Copy, Github, Link as LinkIcon, Linkedin } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, Calendar, Clock, Copy, Github, Link as LinkIcon, Linkedin } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Link, useParams } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { PageSeo } from '@/components/shared/PageSeo';
 import { usePublicCollection, usePublicMediaLibrary } from '@/hooks/public-firestore';
 import { useProfile } from '@/hooks/useProfile';
 import { sortByCreatedAtDesc } from '@/hooks/useFirestore';
+import { PUBLIC_MOSTAQL_URL } from '@/lib/admin/defaults';
 import { getLocalizedValue, resolveEntitySeo, resolveMediaField, type BlogRecord } from '@/lib/content-hub';
 import { mergePublicBlogPosts } from '@/lib/demo-blog-posts';
 
@@ -298,6 +299,15 @@ export const BlogPost = () => {
                   {t('blogPost.github')}
                 </a>
               ) : null}
+              <a
+                href={PUBLIC_MOSTAQL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 font-bold text-primary hover:underline"
+              >
+                <BriefcaseBusiness className="h-4 w-4" />
+                Mostaql
+              </a>
                 </>
               )}
             </div>

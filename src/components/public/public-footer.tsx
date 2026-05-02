@@ -7,6 +7,7 @@ import { buttonVariants } from '@/components/ui/button-variants';
 import { useProfile } from '@/hooks/useProfile';
 import { useContactSettings, useFooterSettings, useSiteSettings } from '@/hooks/usePlatformSettings';
 import { resolveLocalizedSiteBrand } from '@/lib/admin/brand';
+import { PUBLIC_MOSTAQL_URL } from '@/lib/admin/defaults';
 
 function useDeferredPublicReads() {
   const [enabled, setEnabled] = useState(false);
@@ -55,6 +56,7 @@ export const PublicFooter = () => {
     profile.linkedinUrl ? { href: profile.linkedinUrl, label: 'LinkedIn' } : null,
     profile.websiteUrl ? { href: profile.websiteUrl, label: t('footer.website') } : null,
   ].filter(Boolean) as { href: string; label: string }[];
+  const requiredSocialLinks = [{ href: PUBLIC_MOSTAQL_URL, label: 'Mostaql' }];
   const footerLinks =
     footerSettings.links.length > 0
       ? footerSettings.links.map((item) => ({
@@ -67,7 +69,13 @@ export const PublicFooter = () => {
           { href: '/projects', label: t('nav.projects') },
           { href: '/contact', label: t('nav.contact') },
         ];
-  const socialLinks = footerSettings.socialLinks.length > 0 ? footerSettings.socialLinks : fallbackSocialLinks;
+  const baseSocialLinks = footerSettings.socialLinks.length > 0 ? footerSettings.socialLinks : fallbackSocialLinks;
+  const socialLinks = [
+    ...baseSocialLinks,
+    ...requiredSocialLinks.filter((requiredLink) =>
+      !baseSocialLinks.some((item) => item.href === requiredLink.href),
+    ),
+  ];
   const footerContentLoading = profileLoading || footerLoading || siteLoading || contactLoading;
 
   return (

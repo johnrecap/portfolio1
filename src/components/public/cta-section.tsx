@@ -1,9 +1,10 @@
-import { ArrowRight, Github, Linkedin, Terminal } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, Github, Linkedin, Terminal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useProfile';
 import { buttonVariants } from '@/components/ui/button-variants';
 import { readComposerText } from '@/lib/admin/page-content';
+import { PUBLIC_MOSTAQL_URL } from '@/lib/admin/defaults';
 
 type CTASectionProps = {
   variant?: 'banner' | 'card' | 'terminal-strip';
@@ -45,6 +46,12 @@ export const CTASection = ({ variant = 'card', content = {} }: CTASectionProps) 
           icon: Linkedin,
         }
       : null,
+    {
+      href: PUBLIC_MOSTAQL_URL,
+      label: 'Mostaql',
+      internal: false,
+      icon: BriefcaseBusiness,
+    },
   ].filter(Boolean) as Array<{
     href: string;
     label: string;
