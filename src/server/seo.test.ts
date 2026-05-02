@@ -194,8 +194,8 @@ test('buildRouteHeadTags targets React developer service intent on the homepage'
     siteUrl: 'https://portfolio.saeeddev.com',
   });
 
-  assert.match(html, /<title>Mohamed Saied - React Developer \| Portfolio &amp; Projects<\/title>/);
-  assert.match(html, /React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps/);
+  assert.match(html, /<title>Mohamed Saied - React Developer \| Egypt<\/title>/);
+  assert.match(html, /Expert React developer in Egypt specializing in bilingual websites/);
 });
 
 test('buildRouteHeadTags targets Mohamed Saied identity intent on the about page', () => {
@@ -239,7 +239,7 @@ test('buildRouteHeadTags uses keyword static fallbacks when bootstrap page data 
   packet.documents = {};
 
   const cases = [
-    ['/', /Mohamed Saied - React Developer \| Portfolio &amp; Projects/, /React developer in Egypt/],
+    ['/', /Mohamed Saied - React Developer \| Egypt/, /Expert React developer in Egypt/],
     ['/about', /About Mohamed Saied - Product Engineer in Egypt/, /Learn how Mohamed Saied builds websites/],
     ['/projects', /React Dashboards, Web Apps, and Internal Tools Portfolio/, /Explore live React dashboard demos/],
     ['/skills', /React, TypeScript, and Firebase Developer Skills/, /bilingual websites, and internal tools/],
@@ -261,10 +261,10 @@ test('buildRouteHeadTags removes exact duplicate SEO title and description text'
   const packet = createDefaultSeoPacket();
   packet.documents['pages/home'] = {
     id: 'home',
-    title: 'Mohamed Saied - React Developer | Portfolio & Projects | Mohamed Saied - React Developer | Portfolio & Projects',
+    title: 'Mohamed Saied - React Developer for Websites and Dashboards | Mohamed Saied - React Developer for Websites and Dashboards',
     seo: {
       description:
-        'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps.React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps.',
+        'React developer in Egypt building public websites, admin dashboards, internal tools, and bilingual Arabic-English web apps for small teams.React developer in Egypt building public websites, admin dashboards, internal tools, and bilingual Arabic-English web apps for small teams.',
     },
   };
 
@@ -272,9 +272,9 @@ test('buildRouteHeadTags removes exact duplicate SEO title and description text'
     siteUrl: 'https://portfolio.saeeddev.com',
   });
 
-  assert.match(html, /<title>Mohamed Saied - React Developer \| Portfolio &amp; Projects<\/title>/);
-  assert.doesNotMatch(html, /Projects \| Mohamed Saied/);
-  assert.doesNotMatch(html, /web apps\.React developer/);
+  assert.match(html, /<title>Mohamed Saied - React Developer \| Egypt<\/title>/);
+  assert.doesNotMatch(html, /Dashboards \| Mohamed Saied/);
+  assert.doesNotMatch(html, /small teams\.React developer/);
 });
 
 test('buildRouteHeadTags emits long-tail SEO metadata for bundled demo project routes', () => {

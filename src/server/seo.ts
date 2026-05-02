@@ -2,12 +2,17 @@ import type { PublicBootstrapCollectionItem, PublicBootstrapPacket } from '../li
 import { DEMO_BLOG_POSTS } from '../lib/demo-blog-posts.js';
 
 export const DEFAULT_CANONICAL_SITE_URL = 'https://portfolio.saeeddev.com';
+const OPTIMIZED_HOME_TITLE = 'Mohamed Saied - React Developer | Egypt';
+const OPTIMIZED_HOME_DESCRIPTION =
+  'Expert React developer in Egypt specializing in bilingual websites, admin dashboards, and internal tools. Available for freelance projects.';
+const LEGACY_HOME_TITLE = 'Mohamed Saied - React Developer for Websites and Dashboards';
+const LEGACY_HOME_DESCRIPTION =
+  'React developer in Egypt building public websites, admin dashboards, internal tools, and bilingual Arabic-English web apps for small teams.';
 
 const STATIC_ROUTE_SEO_TARGETS: Record<string, { title: string; description: string }> = {
   '/': {
-    title: 'Mohamed Saied - React Developer | Portfolio & Projects',
-    description:
-      'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps. View a portfolio of real projects.',
+    title: OPTIMIZED_HOME_TITLE,
+    description: OPTIMIZED_HOME_DESCRIPTION,
   },
   '/about': {
     title: 'About Mohamed Saied - Product Engineer in Egypt',
@@ -183,6 +188,11 @@ function stripTrailingTitleDuplicate(title: string) {
   return title.trim().replace(/\s+/g, ' ');
 }
 
+function normalizeSeoTitle(title: string) {
+  const normalized = stripTrailingTitleDuplicate(title);
+  return normalized === LEGACY_HOME_TITLE ? OPTIMIZED_HOME_TITLE : normalized;
+}
+
 function stripRepeatedText(value: string) {
   const normalized = value.trim().replace(/\s+/g, ' ');
   const halfLength = normalized.length / 2;
@@ -193,7 +203,8 @@ function stripRepeatedText(value: string) {
 
   const firstHalf = normalized.slice(0, halfLength).trim();
   const secondHalf = normalized.slice(halfLength).trim();
-  return firstHalf && firstHalf === secondHalf ? firstHalf : normalized;
+  const deduped = firstHalf && firstHalf === secondHalf ? firstHalf : normalized;
+  return deduped === LEGACY_HOME_DESCRIPTION ? OPTIMIZED_HOME_DESCRIPTION : deduped;
 }
 
 function findBySlug(items: PublicBootstrapCollectionItem[] | undefined, slug: string) {
@@ -243,7 +254,7 @@ export function buildRouteHeadTags(routePath: string, packet: PublicBootstrapPac
     getStringField(site, 'siteTagline') ||
     'Portfolio, projects, and product engineering work by Mohamed Saied.';
 
-  let title = stripTrailingTitleDuplicate(getStringField(pageSeo, 'title') || getStringField(page, 'title') || fallbackTitle);
+  let title = normalizeSeoTitle(getStringField(pageSeo, 'title') || getStringField(page, 'title') || fallbackTitle);
   let description = stripRepeatedText(getStringField(pageSeo, 'description') || fallbackDescription);
   let image = getStringField(pageSeo, 'image') || getStringField(seo, 'defaultImage');
   let pageType = 'website';

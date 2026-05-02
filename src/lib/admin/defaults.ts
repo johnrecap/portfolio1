@@ -33,6 +33,9 @@ export const PUBLIC_MOSTAQL_URL = 'https://mostaql.com/u/Beyond_Screenn';
 export const PUBLIC_KHAMSAT_URL = 'https://khamsat.com/user/mohamed_saied1212';
 export const PUBLIC_WHATSAPP_PHONE = '+201063887871';
 export const PUBLIC_WHATSAPP_URL = `https://wa.me/${PUBLIC_WHATSAPP_PHONE.replace(/[^\d]/g, '')}`;
+const DEFAULT_SEO_TITLE = 'Mohamed Saied - React Developer | Egypt';
+const DEFAULT_SEO_DESCRIPTION =
+  'Expert React developer in Egypt specializing in bilingual websites, admin dashboards, and internal tools. Available for freelance projects.';
 
 const DEFAULT_PAGE_SECTIONS: Record<PlatformPageId, AdminPageSection[]> = {
   home: [
@@ -71,10 +74,10 @@ const DEFAULT_PAGE_METADATA: Record<
   { title: string; titleAr: string; description: string; descriptionAr: string }
 > = {
   home: {
-    title: 'Mohamed Saied - React Developer | Portfolio & Projects',
+    title: DEFAULT_SEO_TITLE,
     titleAr: 'مواقع ولوحات تحكم',
     description:
-      'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps. View a portfolio of real projects.',
+      DEFAULT_SEO_DESCRIPTION,
     descriptionAr:
       'مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق صغيرة وأصحاب مشاريع يحتاجون إلى هيكل واضح وتنفيذ عملي.',
   },
@@ -157,10 +160,10 @@ export function createDefaultProfileSettings(): ProfileSettings {
     githubUrl: PUBLIC_GITHUB_URL,
     linkedinUrl: PUBLIC_LINKEDIN_URL,
     websiteUrl: '',
-    metaTitle: 'Mohamed Saied - React Developer | Portfolio & Projects',
+    metaTitle: DEFAULT_SEO_TITLE,
     metaTitleAr: 'محمد ستوديو | محمد سعيد',
     metaDescription:
-      'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps. View a portfolio of real projects.',
+      DEFAULT_SEO_DESCRIPTION,
     metaDescriptionAr:
       'يبني محمد سعيد مواقع عامة، ولوحات إدارة، وأدوات داخلية لفرق صغيرة وأصحاب مشاريع يحتاجون إلى هيكل واضح، وتنفيذ عملي، ودعم ثنائي اللغة.',
     profileImage: '',
@@ -238,10 +241,10 @@ export function createDefaultFooterSettings(): FooterSettings {
 
 export function createDefaultSeoSettings(): SeoSettings {
   return {
-    defaultTitle: 'Mohamed Saied - React Developer | Portfolio & Projects',
+    defaultTitle: DEFAULT_SEO_TITLE,
     defaultTitleAr: 'محمد ستوديو | محمد سعيد',
     defaultDescription:
-      'React developer in Egypt building websites, dashboards, and bilingual Arabic-English web apps. View a portfolio of real projects.',
+      DEFAULT_SEO_DESCRIPTION,
     defaultDescriptionAr:
       'مواقع عامة، ولوحات إدارة، وأدوات داخلية يبنيها محمد سعيد مع تركيز على الوضوح، والتنفيذ العملي، ودعم العربية والإنجليزية.',
     ogImage: '',

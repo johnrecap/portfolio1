@@ -156,8 +156,12 @@ async function createApp() {
         siteUrl: process.env.PUBLIC_SITE_URL || process.env.SITE_URL || DEFAULT_CANONICAL_SITE_URL,
       });
       const htmlWithHead = indexHtml
-        .replace(/<title>.*?<\/title>/, '')
-        .replace(/<meta name="description" content=".*?" \/>/, '');
+        .replace(/\s*<title>[\s\S]*?<\/title>/i, '')
+        .replace(/\s*<meta\s+(?:data-rh="true"\s+)?name="description"[^>]*>/gi, '')
+        .replace(/\s*<meta\s+(?:data-rh="true"\s+)?name="robots"[^>]*>/gi, '')
+        .replace(/\s*<link\s+(?:data-rh="true"\s+)?rel="canonical"[^>]*>/gi, '')
+        .replace(/\s*<meta\s+(?:data-rh="true"\s+)?property="og:[^"]+"[^>]*>/gi, '')
+        .replace(/\s*<meta\s+(?:data-rh="true"\s+)?name="twitter:[^"]+"[^>]*>/gi, '');
       const html = htmlWithHead.includes('</head>')
         ? htmlWithHead.replace('</head>', `${routeHeadTags}${bootstrapScript}</head>`)
         : `${bootstrapScript}${indexHtml}`;
