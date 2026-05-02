@@ -161,7 +161,8 @@ async function createApp() {
         .replace(/\s*<meta\s+(?:data-rh="true"\s+)?name="robots"[^>]*>/gi, '')
         .replace(/\s*<link\s+(?:data-rh="true"\s+)?rel="canonical"[^>]*>/gi, '')
         .replace(/\s*<meta\s+(?:data-rh="true"\s+)?property="og:[^"]+"[^>]*>/gi, '')
-        .replace(/\s*<meta\s+(?:data-rh="true"\s+)?name="twitter:[^"]+"[^>]*>/gi, '');
+        .replace(/\s*<meta\s+(?:data-rh="true"\s+)?name="twitter:[^"]+"[^>]*>/gi, '')
+        .replace(/\s*<script\s+id="static-seo-schema"[\s\S]*?<\/script>/i, '');
       const html = htmlWithHead.includes('</head>')
         ? htmlWithHead.replace('</head>', `${routeHeadTags}${bootstrapScript}</head>`)
         : `${bootstrapScript}${indexHtml}`;
