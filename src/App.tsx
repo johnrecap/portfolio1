@@ -35,6 +35,11 @@ const TerminalEasterEgg = lazy(() =>
 const NotFound = lazy(() =>
   import('./pages/(public)/NotFound').then((module) => ({ default: module.NotFound })),
 );
+const LifeReminderPrivacyPolicy = lazy(() =>
+  import('./pages/standalone/LifeReminderPrivacyPolicy').then((module) => ({
+    default: module.LifeReminderPrivacyPolicy,
+  })),
+);
 const PublicFooter = lazy(() =>
   import('./components/public/public-footer').then((module) => ({ default: module.PublicFooter })),
 );
@@ -239,6 +244,8 @@ const AuthLayout = () => {
 };
 
 const router = createBrowserRouter([
+  { path: '/privacy-policy', element: withSuspense(<LifeReminderPrivacyPolicy />) },
+  { path: '/life-reminder-pro/privacy-policy', element: withSuspense(<LifeReminderPrivacyPolicy />) },
   {
     path: '/',
     element: <PublicLayout />,
