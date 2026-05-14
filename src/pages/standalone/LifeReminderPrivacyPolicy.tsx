@@ -91,7 +91,7 @@ const policySections = [
 
 export function LifeReminderPrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-[#f4f7fb] text-slate-950">
+    <div className="min-h-screen bg-[#f4f7fb] text-left text-slate-950 ltr" dir="ltr">
       <Helmet>
         <title>Privacy Policy | Life Reminder Pro</title>
         <meta
